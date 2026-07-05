@@ -283,7 +283,10 @@ s32 func_80057124(MOJI_TASK *m) {
     return 1;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057144);
+void func_80057144(MOJI_TASK *m) {
+    m->x40 = Game_work.zennyCount;
+    func_8005BF10(0, m->x40, m->script += 1);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057184);
 
@@ -293,7 +296,14 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800572C8);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057408);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_8005753C);
+void func_8005753C(MOJI_TASK *m) {
+    u8 *p = m->script;
+    if (p[0] == 0xD5) {
+        m->script = p + (p[1] + 2);
+    } else {
+        m->script = p + 3;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057574);
 

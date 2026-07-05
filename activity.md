@@ -119,3 +119,11 @@
   rewrite. Without this, func_80057DB8's three Moji_flag accesses each grew
   by one lui (+12 bytes of .text shifting all data).
 - sha1 OK; mutation test on func_80057DB8.
+- Third batch, 6 more (117 total): moji func_80057144 (zennyCount ->
+  m->x40 + func_8005BF10 call with `m->script += 1` as arg),
+  moji func_8005753C (0xD5-opcode conditional script skip — needed
+  `p + (p[1] + 2)` parenthesization to add before the pointer),
+  scene func_8001D888 (Cd_read_sync2 drain loop), func_8001FB54/FB8C
+  (stage-band -> id via ternary CHAIN, value lands in $v0),
+  sound func_80019AA4 (reusing the call-result variable for the if/else
+  keeps the value in $v0). sha1 OK; mutation test on func_8001FB54.

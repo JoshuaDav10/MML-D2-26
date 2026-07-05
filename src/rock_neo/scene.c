@@ -30,7 +30,14 @@ s32 func_8001D878(void) {
     return D_80098AB8[0] & 0x20;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D888);
+s32 Cd_read_sync2();
+s32 func_80012E98(s32);
+
+void func_8001D888(void) {
+    while (Cd_read_sync2()) {
+        func_80012E98(1);
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D8C0);
 
@@ -193,9 +200,19 @@ void func_8001FB24(void) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FB54);
+extern s16 D_80098212; // sdata ($gp)
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FB8C);
+void func_8001FB54(void) {
+    s8 v = Game_work.x52;
+    D_80098212 = (v < 0) ? 0x6B : (v < 6) ? 0x69 : (v < 8) ? 0x6A : 0x6B;
+}
+
+extern s16 D_80098236; // sdata ($gp)
+
+void func_8001FB8C(void) {
+    s8 v = Game_work.x52;
+    D_80098236 = (v < 0) ? 0x78 : (v < 2) ? 0x76 : (v < 6) ? 0x77 : 0x78;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FBC4);
 

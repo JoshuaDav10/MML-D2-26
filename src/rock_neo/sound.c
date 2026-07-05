@@ -37,7 +37,16 @@ void func_80019A70(void) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019AA4);
+extern u16 D_800822F2;
+extern u16 D_800822F4;
+
+void func_80019AA4(void) {
+    s32 v = Sce_flag_test(0x35);
+    if (v != 0) v = 0x2D;
+    else v = 0xFFFF;
+    D_800822F2 = v;
+    D_800822F4 = v;
+}
 
 void func_80019AE0(void) {
     if (Sce_flag_test(0x1E1)) {
