@@ -28,7 +28,9 @@ typedef struct PL_WORK {
     u16 xB4;      // cleared by func_80042044 when keys don't select the action
     u8 xB6[0xBD - 0xB6];
     u8 xBD;
-    u8 xBE[0x10C - 0xBE];
+    u8 xBE[0x108 - 0xBE];
+    u16 x108;     // cleared by func_80040224 with x9/xA
+    u8 x10A[0x10C - 0x10A];
     u16 x10C;     // func_80041EF4 clears when no key match
     u8 x10E[0x110 - 0x10E];
     s8 x110;

@@ -394,3 +394,17 @@
   leg right; only the sb/la interleave differs.
 - Mutation tests: 4/4 (one per TU) failed the check while mutated;
   restored; final clean rebuild 0 errors, OK, cmp byte-identical.
+
+## 2026-07-05 — Fable (day session, batch 13)
+- 5 more matches (209 total, ~12.6% volume): player func_8003F224 +
+  func_80040224, scene func_8001D8C0, moji func_80054ADC + func_80055BB0.
+- The DE84 goto-shared-return trick generalized: func_8003F224's tail
+  `if (k & x140) return 0; return 1;` collapses to sltiu unless the
+  return-1 is a label also reached from the entry test.
+- New reliable knob: `and` operand mirror flips with source operand order
+  (`pl->x13E & k` ↔ `k & pl->x13E`) — used three times this batch.
+- moji x7C dispatch pair typed: D_8008AAC0 is a second fn table alongside
+  D_8008AB08; 54ADC caches script2[1] in a local (no reload after the sb),
+  55BB0 reads m->x7C from the field (reload) — the asm tells you which.
+- Mutation tests 3/3 failed while mutated; final rebuild 0 errors, OK,
+  cmp byte-identical.

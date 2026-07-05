@@ -69,7 +69,28 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003EEC0);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F188);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F224);
+s32 func_8003F224(PL_WORK *pl) {
+    u16 k = pl->x11C;
+    s32 g;
+
+    if (Game_work.x54[2] != 0) goto one;
+    /* the shared return-1 label keeps the tail a branch (separate returns
+       collapse to a setcc/sltiu) — same trick as scene func_8001DE84 */
+    g = ((u8 *)&Game_work)[0x83];
+    if (g == 0) {
+        if (pl->x13E & k) {
+            return 1;
+        }
+    }
+    if (g != 1) {
+        return 0;
+    }
+    if (pl->x140 & k) {
+        return 0;
+    }
+one:
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F288);
 
@@ -133,7 +154,22 @@ void func_80040170(void) {}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040178);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040224);
+void func_80040B68(PL_WORK *, s32);
+void func_800394AC(void);
+
+void func_80040224(PL_WORK *pl) {
+    u16 k = pl->x11C;
+
+    func_80040B68(pl, 0);
+    if (((u8 *)&Game_work)[0x83] != 1) {
+        if (!(pl->x140 & k)) {
+            pl->x9 = 0;
+            pl->xA = 0;
+            func_800394AC();
+            pl->x108 = 0;
+        }
+    }
+}
 
 void func_80040294(void) {}
 

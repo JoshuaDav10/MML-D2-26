@@ -1,14 +1,14 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (307 still active
+- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (302 still active
   INCLUDE_ASM stubs; count verified by preprocessing src and counting
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 204 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 209 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~3820 of ~31,300 mapped instructions (~12.2%)
+- Volume: ~3950 of ~31,300 mapped instructions (~12.6%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -35,7 +35,8 @@
     (MojiTaskExec re-dispatch, x44-or-D_8008CACC base), func_80055C1C
     (flag 0x10000 clear + func_80039E18 call; callee typed s32),
     func_80057A24 (stack2 push + Sce_flag_on(D_80098830|0x500)),
-    func_80058788 (slot-index magic-div, Moji_flag3 bit clear)
+    func_80058788 (slot-index magic-div, Moji_flag3 bit clear),
+    func_80054ADC + func_80055BB0 (D_8008AAC0 fn-table dispatchers)
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8
   - scene: func_8001D928 (flag-array clear + Scene_work reset), func_8001D878, func_8001DEDC, func_8001F820, func_8001D974,
@@ -48,6 +49,7 @@
     label defeats the setcc/sltu tail), func_8001F740 (stage_no dispatch),
     func_8001E390 (Sce_flag on/off sweep 0x2E0..0x2EB, u32 counter),
     func_8001E460 (flag pair set/clear at n+0x7E0/n+0x7C0),
+    func_8001D8C0 (Sce_flag clear-or-restore via func_800176DC),
     func_8001F580 (Cd_read_comb kick; distinct u16 keep copy of u16 no)
     (func_8001FCA4, func_8001FC50, func_8001FDE4 attempted, NOT matched —
     same jump-canonicalization family; see activity 2026-07-05)
@@ -98,7 +100,10 @@
     func_8003EE68 (state 7 setup, x74/x75 typed, shot enable + 41DDC),
     func_80040380 (x112/x113 swap on key match), func_80040710 (x128 vs
     x12A select, xA=0/0x100), func_80040AEC (Game_work x83==1 or x140 key),
-    func_80041E90 (x56 -=/+= x116 around func_8002FEA4, s16 params)
+    func_80041E90 (x56 -=/+= x116 around func_8002FEA4, s16 params),
+    func_8003F224 (x83-gated key test; goto-shared return-1 defeats the
+    sltiu tail; field-first & order), func_80040224 (state reset unless
+    x83==1 or x140 key; x108 typed)
     (func_80041EF4 attempted, NOT matched — cc1 elides the original's two
     andi 0xFFFF truncations; every source shape proves nonzero_bits ≤0xFFFF.
     See activity 2026-07-05 day session)
@@ -107,6 +112,18 @@
     table load AND defeat arg anchor-CSE)
 
 ## Last verified build
+- 2026-07-05 (Fable day session, batch 13) — clean rebuild 0 errors, hash
+  OK, cmp byte-identical after player func_8003F224/func_80040224, scene
+  func_8001D8C0, moji func_80054ADC/func_80055BB0; 3/3 mutation tests
+  failed while mutated; restored OK.
+- 2026-07-05 (Fable day session, batch 12) — clean rebuild 0 compile
+  errors, hash OK, `cmp` byte-identical after cd func_8001D254/D2BC, moji
+  func_80057A24/58788, sound func_8001A0A8, scene func_8001E460; 4/4
+  mutation tests failed while mutated. NOTE: this batch caught a FALSE
+  PASS (cd.c decl conflict + partial .o + stale exe) — see LESSONS.
+- 2026-07-05 (Fable day session, batch 11) — clean rebuild hash OK after
+  4 moji + player func_80041E90 + scene func_8001E390/F580; 3/3 mutation
+  tests failed while mutated; restored OK.
 - 2026-07-05 (Fable day session, batch 10) — clean rebuild (error-grepped,
   0 rock_neo compile errors) hash OK after scene func_8001DE84/func_8001F740,
   main func_8001319C, debug func_800629F0; three mutation tests (one per

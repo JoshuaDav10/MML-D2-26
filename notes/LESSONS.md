@@ -455,3 +455,12 @@ iteration teaches something; this file is how the project gets smarter.
   won the diff; updating the old declaration didn't change the matched
   caller's bytes (constant args). grep the TU for the function name before
   writing the definition.
+- **The goto-shared-return trick (func_8001DE84) is a FAMILY tool**: any
+  tail of the form `if (cond) return K; return 1-K;` that cc1 collapses to
+  sltu/sltiu can be fixed by making the final return a label that an
+  EARLIER branch also jumps to (func_8003F224 confirmed). Look for the
+  original's fallthrough-into-li + shared epilogue label.
+- **`and` operand order follows source operand order** (func_8003F224,
+  func_80040224): `pl->field & k` puts k (the older live register) first
+  in the emitted and (`and $v0,$k,$field`); `k & pl->field` mirrors it.
+  Cheap first knob for a single-insn and mirror.

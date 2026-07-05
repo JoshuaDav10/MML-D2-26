@@ -47,7 +47,27 @@ void func_8001D888(void) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D8C0);
+extern u8 Sce_flag[];
+extern u8 D_800B6130[];
+void func_80067E18(void);
+void func_80067E4C(void);
+void func_800176DC(u8 *, u8 *, s32);
+
+void func_8001D8C0(s32 f) {
+    s32 *p;
+    s32 i;
+
+    if (f == 0) {
+        p = (s32 *)Sce_flag;
+        for (i = 0x3F; i >= 0; i--) {
+            *p++ = 0;
+        }
+        func_80067E18();
+        func_80067E4C();
+    } else {
+        func_800176DC(D_800B6130, Sce_flag, 8);
+    }
+}
 
 void func_8001D928(s32 a) {
     s32 *p;
