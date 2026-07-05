@@ -9,6 +9,13 @@ extern volatile s32 idk_framecounter_maybe; // 0x80098888, lui-accessed (not sda
 extern s32 D_80098158;             // sdata ($gp)
 extern s32 D_800979D8;             // sdata ($gp)
 void ChangeTh(u32);
+void func_8007FF70(void);
+void func_8007FF80(void);
+long func_8001246C();
+extern s32 D_800988D8; // sdata ($gp)
+extern u16 D_801F8100[];
+extern s32 D_801F8108[];
+void CloseTh(s32);
 extern u16 *D_801F8300;
 
 // clang-format off
@@ -19,7 +26,16 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", idk_Init_system_maybe);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_800120A8);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_8001215C);
+void func_8001215C(u8 *x) {
+    ClearOTagR((unsigned long *)(x + 0x70), 8);
+    *(u16 *)(x + 0xA) = 0;
+    x[0x2A] = 0;
+    x[0x2B] = 0;
+    x[0x2C] = 1;
+    x[0x2D] = 0;
+    x[0x2E] = 0;
+    x[0x2F] = 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_800121AC);
 
@@ -53,7 +69,12 @@ void func_80012424(void) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_8001246C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012938);
+void func_80012938(void) {
+    func_8007FF70();
+    D_800988D8 = OpenEvent(0xF0000010, 0x1000, 0x1000, func_8001246C);
+    EnableEvent(D_800988D8);
+    func_8007FF80();
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012988);
 
@@ -72,9 +93,21 @@ s32 func_80012E98(s32 arg0) {
     ChangeTh(0xFF000000);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012ECC);
+void func_80012ECC(void) {
+    u16 **q = (u16 **)0x801F8300;
+    **q = 0;
+    func_8007FF70();
+    CloseTh(*(s32 *)(*q + 4));
+    func_8007FF80();
+    ChangeTh(0xFF000000);
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012F24);
+void func_80012F24(s32 n) {
+    D_801F8100[n << 6] = 0;
+    func_8007FF70();
+    CloseTh(D_801F8108[n << 5]);
+    func_8007FF80();
+}
 
 void func_80012F78(s32 arg0) {
     D_80098158 = arg0;

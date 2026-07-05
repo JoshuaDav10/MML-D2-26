@@ -139,7 +139,16 @@ void func_800402B4(void) {}
 
 void func_800402BC(void) {}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800402C4);
+s32 func_800402C4(PL_WORK* pl) {
+    if (pl->x11C & pl->x124) {
+        if (pl->x11C & pl->x134) {
+            pl->x9 = 1;
+            pl->xA = 0;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8004030C);
 

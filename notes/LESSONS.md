@@ -319,3 +319,22 @@ iteration teaches something; this file is how the project gets smarter.
   the aliasing rule). Slot-4 fields written as `Moji_work[4].flags` etc.
   reloc to the same bytes as the original's separate D_800BB9C8/D_800BBA8A
   symbols (constant-index into the extern array).
+- **ASPSX $at-expansion operand order is PER-SYMBOL, not uniform**
+  (func_80012F24): bare-symbol+reg accesses to main.c's D_801F81xx family
+  expand `addu $at,REG,$at` (base-reg-first) in the original binary, while
+  every other symbol (sound's Game_work+0x1BA, jtbl loads) expands
+  `addu $at,$at,REG`. GAS and stock maspsx only produce the latter.
+  tools/maspx now has ASPSX_REGFIRST_SYM_PREFIXES ("D_801F8") gating the
+  reg-first order for loads AND stores (stores were previously left to GAS
+  entirely). If a future function mismatches ONLY in an addu-$at operand
+  order, add its symbol prefix to that table — don't hunt C shapes; the
+  source form cannot control this (it's an assembler macro).
+- **`sh $0,SYM($reg)` / `lw $x,SYM($reg)` (symbol-indexed with variable
+  offset) comes from ARRAY INDEXING with a scaled index** (`D_801F8100[n <<
+  6]`, `D_801F8108[n << 5]` — cc1 CSEs both scaled offsets into one n<<7
+  register). Casting arithmetic (`*(u16*)((u8*)sym + off)`) makes cc1
+  compute the address into a real register instead — different bytes.
+- **Raw-constant pointers (0x801F8300) use lui/ori, symbols use lui/%hi**:
+  `u16 **q = (u16 **)0x801F8300;` reproduces the lui/ori pair; an extern
+  symbol declaration would assemble to %hi/%lo with a negative low offset
+  (different bytes) when the low half >= 0x8000.

@@ -214,3 +214,13 @@
 - New externs: u8 *D_8008CE10[]/D_8008D0D4[]/D_8008CCA4[], s8 D_800BE2F7[],
   u8 D_8009899C (gp), u16 D_80098912[].
 - Clean rebuild + hash OK + mutation test (player 0x35->0x37 FAILED, restored OK).
+
+## 2026-07-05 — Fable (overnight autonomous, batch 3)
+- 6 more matches (160 total, ~7.8% volume): main func_8001215C/12938/12ECC/
+  12F24, scene func_8001D928, player func_800402C4 (x124/x134 typed).
+- **maspsx patched (tools/maspx)**: the D_801F81xx family in main.c expands
+  bare-symbol+reg accesses base-reg-first (addu $at,reg,$at) in the original
+  binary, unlike everywhere else ($at-first) — added a per-symbol quirk
+  table (ASPSX_REGFIRST_SYM_PREFIXES) + store expansion for quirk symbols.
+  Clean rebuild validated the change against all 160 matched functions.
+- Mutation test: func_80012F24 store 0->1 FAILED the check; restored, OK.

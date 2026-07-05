@@ -1,14 +1,14 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (330 still active
+- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (324 still active
   INCLUDE_ASM stubs; count verified by preprocessing src and counting
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 154 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 160 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~2320 of ~31,300 mapped instructions (~7.4%)
+- Volume: ~2440 of ~31,300 mapped instructions (~7.8%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -30,7 +30,7 @@
     func_800555F4, func_80057BB4, func_80058740 (x44 jump-offset table)
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8
-  - scene: func_8001D878, func_8001DEDC, func_8001F820, func_8001D974,
+  - scene: func_8001D928 (flag-array clear + Scene_work reset), func_8001D878, func_8001DEDC, func_8001F820, func_8001D974,
     func_8001DDC0, func_8001DD88, func_8001D854, func_8001DEE4, func_8001E7E4, func_8001E810,
     func_8001F1DC, func_8001F20C (SCENE_WORK typed), func_8001FB24,
     Sce_flag_test (the flag-bit reader; unused 8-byte frame local),
@@ -48,12 +48,15 @@
     func_80016BC0, func_80016BF4, func_80016D0C, func_80016D38,
     func_80016D64, func_80016DAC, func_80016E90
   - main: func_800131FC, func_8001326C, func_80012FA4, func_80012FC8,
-    vsync_cb, func_80012F78, func_80012E98, func_80012298, func_80012424
+    vsync_cb, func_80012F78, func_80012E98, func_80012298, func_80012424,
+    func_8001215C (OT/flag init), func_80012938 (OpenEvent setup),
+    func_80012ECC, func_80012F24 (thread close pair; D_801F81xx quirk)
   - player: 10 empty funcs func_8003FFA8, func_80040130..func_800402BC,
     func_8003BE40, func_80040140, func_800406A8, func_800406DC,
     func_80040B34 (key-vs-mask tests, PL_WORK typed), func_80042208,
     func_800405F4 (x11C vs x128|x12A), func_8003F498/F4E8/F538/F588
-    (func_80041DDC(pl,0x33..0x36,0,1) sibling quad, xA byte guard)
+    (func_80041DDC(pl,0x33..0x36,0,1) sibling quad, xA byte guard),
+    func_800402C4 (x124/x134 vs x11C key test, PL_WORK fields typed)
   - debug: func_800629E0
 
 ## Last verified build

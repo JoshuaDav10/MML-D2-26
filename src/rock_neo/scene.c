@@ -6,6 +6,10 @@ extern u8 D_80098198;
 extern u8 D_80098199;
 
 extern u8 D_80098AB8[];
+extern s32 D_800BE438[];
+extern s32 D_800989F8; // lui-accessed (not sdata)
+extern s32 D_800989FC; // lui-accessed (not sdata)
+extern s32 D_80098A00; // lui-accessed (not sdata)
 extern s32 D_800988E8;    // lui-accessed (not sdata)
 extern s32 D_800ACDBC[];
 extern s32 D_800BC740;
@@ -41,7 +45,21 @@ void func_8001D888(void) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D8C0);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D928);
+void func_8001D928(s32 a) {
+    s32 *p;
+    s32 i;
+
+    if (a == 0) {
+        p = D_800BE438;
+        for (i = 0xF; i >= 0; i--) {
+            *p++ = 0;
+        }
+    }
+    *(s32 *)&Scene_work = 0;
+    D_800989F8 = 0;
+    D_800989FC = 0;
+    D_80098A00 = 0;
+}
 
 void func_8001D974(void) {
     Game_work.x53++;
