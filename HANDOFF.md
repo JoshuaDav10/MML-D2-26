@@ -122,6 +122,43 @@ Batches 4-8b, all clean-rebuilt + hash-gated + mutation-tested + pushed to dev
    patchasm + normalizing stream diff) — the tree got exactly one edit and
    matched on the first in-tree build.
 
+## Strategy for the medium/large phase (agreed with user 2026-07-05)
+
+The quick-win era is ending. Remaining 266 stubs by size: 115 under 60
+insns, 60 at 60-99, 67 at 100-199, 33 at 200+. The plan:
+
+1. **Finish the sub-60 tier first** (~115 fns) — still cheap, still feeds
+   struct knowledge. Batch cadence as now.
+2. **60-199 tier: hunt FAMILIES, not sizes** — pick functions sharing
+   vocabulary (moji table dispatchers, player state siblings, cd queue
+   users). Use tools/m2ctx.py + m2c for rough drafts on anything >100
+   insns; drafts are never trusted, only iterated against the byte diff.
+3. **200+ tier (33 fns): one per session, moji first** — MOJI_TASK is the
+   best-typed struct and moji owns 5 of the 12 biggest (func_80053B40,
+   func_80059E74, func_8005ACA8, func_80057FF8, func_80056820, each
+   340-520 insns). Each is a MojiTaskExec-scale focused effort.
+   **Biggest overall: cd/func_8001BB4C (~860 insns)** — the CD
+   streaming/loader state machine; save it for late, after its smaller
+   cd siblings firm up the command/queue structs.
+4. Parked families (jump-canonicalization, register-birth, andi-elision)
+   stay parked until a future match reveals the missing shape.
+
+## Overlay-link expedition (independent track, delegable)
+
+The 176 ARM**/ST** overlays are extracted but don't LINK yet. Making them
+link is build plumbing (splat yaml, linker scripts, symbol tables), NOT
+matching work — an overlay builds entirely from its own extracted asm via
+INCLUDE_ASM, zero C needed. It therefore does not depend on main-exe
+matching progress and can proceed concurrently — even by a weaker
+agent/model — under these guardrails:
+- Work on a SEPARATE branch off dev; never commit to dev/main.
+- Success is the byte-compare of the built overlay vs the original file —
+  gate everything on that, no "looks right".
+- After every change, `make CPP=cpp check_rock_neo_only` must still print
+  OK (protects the main exe from Makefile/config edits).
+- Prove the pattern on ONE overlay (e.g. ST00) end-to-end before touching
+  the other 175.
+
 ## Where to pick up next (day session's view)
 
 1. Smallest remaining stubs are now ≥35 insns: get the list with the
