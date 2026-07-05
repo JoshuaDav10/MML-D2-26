@@ -170,7 +170,7 @@ void func_80016BC0(void) {
 
 // clang-format on
 void func_80016BF4(void) {
-    if (Game_work.routine_0 >= 3 && Game_work.routine_0 != 6 && !D_80098910) {
+    if (Game_work.routine_0 >= 3 && Game_work.routine_0 != 6 && !D_80098910[0]) {
         if ((D_800C0C26 & 9) == 9) {
             if (Game_work.xA++ >= 61) {
                 *(s8*)0x1F800001 = 2;

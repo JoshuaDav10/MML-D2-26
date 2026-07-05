@@ -1,6 +1,9 @@
 #include "common.h"
 #include "rock_neo/game.h"
 
+extern u8 D_80098198;
+extern u8 D_80098199;
+
 extern u8 D_80098AB8[];
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D854);
@@ -29,7 +32,11 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", Sce_flag_off);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DD88);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DDC0);
+s32 func_8001DDC0(u8 *arg0) {
+    D_80098198 = arg0[0];
+    D_80098199 = arg0[1];
+    return *(s16*)&D_80098198;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DDE4);
 

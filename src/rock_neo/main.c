@@ -48,9 +48,15 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012F24);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012F78);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012FA4);
+void func_80012FA4(s32 arg0) {
+    u16 *p = (u16 *)(0x801F8100 + (arg0 << 7));
+    *p |= 0x40;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012FC8);
+void func_80012FC8(s32 arg0) {
+    u16 *p = (u16 *)(0x801F8100 + (arg0 << 7));
+    *p &= 0xFFBF;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012FEC);
 

@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-04, end of day)
+# HANDOFF — MML Decomp session state (2026-07-04, late evening)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -10,11 +10,16 @@
 
 - **Branch: `dev`** — ALL commits go here. NEVER commit to or merge `main`;
   only the user promotes to main. Push target: `origin` (JoshuaDav10/MML-D2-26).
-- **The build matches byte-for-byte** with 30 functions decompiled to real C.
+- **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 46 / 475** functions, ~0.6% of instruction volume — small-
-  function harvest phase. See `progress.md`.
+- **Matched: 64 / 475** functions — small-function harvest phase. See
+  `progress.md` (includes 7 upstream game.c functions found to be
+  compiled+matching all along but previously uncounted).
+- **NEW: the pipeline can now emit $gp-relative (sdata) access** via
+  `tools/gprel.py` (between maspsx and patchasm). Before this, C code could
+  never match any function touching an sdata global (GAS -G0 always emitted
+  lui/$at). Read LESSONS.md §2 (rewritten) before declaring any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
 ## What was accomplished this session (chronological)
@@ -74,14 +79,12 @@ see `git log` on dev.
 1. **Continue small-function harvest**: `wc -l asm/rock_neo/nonmatchings/*/*.s
    | sort -n` — everything ≤25 lines is quick wins; many moji script handlers
    share MOJI_TASK vocabulary.
-2. **main.c small funcs** (func_80012FA4/80012FC8 ~15 lines, vsync_cb 16)
-   and the moji 11–14 line script handlers (func_80054410, func_8005457C,
-   func_80056128, func_80057124, func_80058C08 — MOJI_TASK vocabulary).
-   NOTE: game.c's 4 ifdef-disabled functions are ALREADY enabled and
-   verified (`#define ACCEPT_REORDERING_BULLSHIT` at top of game.c);
-   stripping the dead INCLUDE_ASM branches there is optional cleanup.
-   All trivial 8-line (jr ra/nop) stubs are exhausted — everything
-   remaining requires actually reading the asm.
+2. DONE (late 2026-07-04 session): main.c func_80012FA4/FC8, the moji
+   script handlers (func_80054410/5457C/54B88/5563C/56128/57124/58C08),
+   scene func_8001DDC0, sound func_8001B2F0 — all hash-verified.
+   Many remaining small funcs touch sdata globals; gprel.py now makes those
+   matchable. All trivial 8-line (jr ra/nop) stubs are exhausted —
+   everything remaining requires actually reading the asm.
 3. **Medium functions (25–80 lines)**: consider installing m2c
    (github.com/matt-kempster/m2c) for draft C — `tools/m2ctx.py` already
    exists for generating its context. Drafts are never trusted, only iterated

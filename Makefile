@@ -263,7 +263,7 @@ $(BUILD_DIR)/%.s.o: %.s
 	$(AS) $(AS_FLAGS) -o $@ $<
 
 $(BUILD_DIR)/%.c.o: %.c
-	$(CPP) $(CPP_FLAGS) $< | $(CC) $(CC_FLAGS) | $(MASPSX) | $(PYTHON) $(PYPATCHASM) | $(AS) $(AS_FLAGS) -o $@
+	$(CPP) $(CPP_FLAGS) $< | $(CC) $(CC_FLAGS) | $(MASPSX) | $(PYTHON) tools/gprel.py | $(PYTHON) $(PYPATCHASM) | $(AS) $(AS_FLAGS) -o $@
 $(BUILD_DIR)/$(ASSETS_DIR)/%.bin.o: $(ASSETS_DIR)/%.bin
 	$(LD) -r -b binary -o $@ $<
 

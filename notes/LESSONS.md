@@ -19,12 +19,34 @@ iteration teaches something; this file is how the project gets smarter.
    reorder pass in `tools/patchasm.py` (moves bodies to their in-place
    `.globl` markers). `static` functions have no marker — avoid `static`.
 
-2. **Global addressing (-G8)**:
-   - `extern s8 foo;` (scalar ≤8 bytes) → `$gp`-relative access (`lw v0,offset($gp)`).
-   - `extern u8 foo[];` (unsized array) → `lui`/`%lo` addressing.
-   - Read the target asm first: `lui`+`lw` means declare as unsized array (or
-     a >8-byte struct); `($gp)` means declare as a plain scalar.
-   - A pointer global accessed via lui: declare `extern T *foo[];` and use `foo[0]`.
+2. **Global addressing (-G8) — the real mechanism (rewritten 2026-07-04;
+   the earlier version of this rule had never actually been exercised)**:
+   - cc1 does NOT choose the addressing mode. It emits a bare memory operand
+     (`sb $2,foo`) for every global, plus `.extern foo, SIZE` for small
+     scalar externs, and delegates the sdata decision to the assembler.
+   - Our GAS runs -G0, so by default every bare ref becomes lui/$at
+     (2 instructions, address recomputed per access) — never $gp.
+   - `tools/gprel.py` (between maspsx and patchasm) closes the gap: a small
+     `.extern` symbol that is gp-accessed anywhere in the extracted original
+     asm (census of `%gp_rel(` in asm/rock_neo/**/*.s) gets its bare refs
+     rewritten to explicit `%gp_rel(sym)($gp)`, and load-delay nops that
+     maspsx deleted (it assumed a multi-insn $at expansion) are restored.
+     It also drops those `.extern` directives — GAS would otherwise emit a
+     COMMON symbol that the linker allocates at a bogus address, silently
+     shifting the whole data segment.
+   - Declaration style is still the per-TU control:
+     `extern u8 foo;` → gp candidate; `extern u8 foo[];` (+ `foo[0]` at use
+     sites) → forced lui/$at. A pointer global accessed via lui:
+     `extern T *foo[];` and use `foo[0]`.
+   - The original binary mixes addressing PER TU for the same symbol:
+     D_80098910 is gp-accessed in still-unsplit asm but lui-accessed by
+     original game.c — hence game.c declares it as an unsized array. When a
+     diff shows gp-vs-lui disagreement, flip the declaration in that TU, not
+     the tool.
+   - Symptom table: whole-binary pointer shifts after adding an extern ⇒
+     COMMON leak (declaration made a small extern the pass didn't approve);
+     `relocation truncated R_MIPS_GPREL16` ⇒ gp-rewrote a symbol out of gp
+     range (declare it as array).
 
 3. **Swap/temp-variable ordering drives register allocation.** For a byte swap,
    `t = x[a]; x[a] = x[b]; x[b] = t;` matched; the equivalent
@@ -71,3 +93,23 @@ iteration teaches something; this file is how the project gets smarter.
 - Liveness audit (prove the C is really in the binary): deliberately break a
   matched function (`+1` → `+2`), rebuild — check MUST fail; revert — OK.
   If breaking the C didn't break the build, the C wasn't being compiled in.
+
+## Session 2026-07-04 (evening) additions
+- **Global-load vs pointer-store aliasing (func_80057124)**: cc1 will not
+  hoist a load of a lui-addressed global above a store through a pointer
+  (may-alias). If the target asm loads the global BEFORE the pointer store,
+  the source must too: read the global into a local temp first
+  (`s32 z = Game_work.zennyCount; m->script2 += 1; m->x40 = z;`).
+- **`*p |= x` on a computed address**: writing the deref inline
+  (`*(u16*)(C + (i<<7)) |= x`) recomputes the address for the store
+  (lui/addiu %lo form). Computing the pointer into a local first
+  (`u16 *p = (u16*)(C + (i<<7)); *p |= x;`) materializes the constant once
+  via lui/ori and reuses one address register for lhu+sh (func_80012FA4/FC8).
+- **diff.py misalignment red herring**: when an upstream function in the same
+  file is the wrong size, diff.py's TARGET column for functions after it
+  appears to show missing/extra instructions at the top. Check the original
+  .s file before "fixing" a function that may already match (func_80058C08).
+- **Counting matched functions**: `objdump -t build/src/rock_neo/X.c.o | grep
+  -c "F .text"` minus active INCLUDE_ASM stubs (count `.include nonmatchings`
+  in preprocessed source). This caught 7 upstream game.c functions that were
+  compiled+matching but never counted.

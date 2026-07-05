@@ -31,7 +31,9 @@ unknown_t func_8001D494(unknown_t, unknown_t, unknown_t);
 unknown_t Sce_flag_off(unknown_t);
 unknown_t func_80063BA8();
 unknown_t func_800665E8();
-extern u16 D_80098910;
+// unsized-array decl on purpose: original game.c addresses this via lui/$at,
+// even though other original TUs access it via $gp (see tools/gprel.py)
+extern u16 D_80098910[];
 extern DR_MODE D_80098A10[];
 extern s16 D_80098A70;
 extern s16 D_80098A72;

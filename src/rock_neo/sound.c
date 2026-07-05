@@ -1,5 +1,7 @@
 #include "common.h"
 
+s32 func_80071220();
+
 extern s32 D_800821F8[];
 extern s32 *D_800AD15C[];
 
@@ -67,7 +69,9 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001AE6C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001AEF0);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001B2F0);
+void func_8001B2F0(s16 arg0) {
+    func_80071220(arg0);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001B314);
 
