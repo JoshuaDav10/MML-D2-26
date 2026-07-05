@@ -281,7 +281,13 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041B8C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041DDC);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041E90);
+void func_8002FEA4(PL_WORK *, s16, s16, s16);
+
+void func_80041E90(PL_WORK *pl, s16 x, s16 y, s16 z) {
+    pl->x56 -= pl->x116;
+    func_8002FEA4(pl, x, y, z);
+    pl->x56 += pl->x116;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041EF4);
 

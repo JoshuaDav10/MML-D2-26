@@ -420,3 +420,25 @@ iteration teaches something; this file is how the project gets smarter.
   (func_8001319C): the bracketed form emitted addu $v0,$4,$2 (index first),
   the explicit left-assoc pointer arithmetic addu $v0,$v0,$4 (pointer
   first). Same bytes otherwise; flip between them on an addu operand mirror.
+- **OPEN PROBLEM — surviving andi 0xFFFF truncations (func_80041EF4)**: the
+  original masks two lhu-loaded u16s with andi 0xFFFF when passing one of
+  them (if/else-selected) to func_80041F54's int-typed 4th arg. cc1's
+  combine elides the masks in every source shape tried (~12): nonzero_bits
+  accumulates across multi-set pseudos AND reassigned params (the dead
+  entry copy is flow-deleted first), so all defs trace to lhu → provably
+  ≤0xFFFF. Verified via -dj/-dc dumps: zero_extends present in .jump,
+  gone after combine. A matching source needs a reaching def combine can't
+  trace; lb/lw/call results change the bytes. Parked; revisit if another
+  function keeps a "redundant" andi.
+- **Register-birth family grows (func_8001A6DC, cf. func_80042044)**: when
+  a call result must live across a second call whose arg derives from a
+  still-live param (`a = f(n); b = f(n + 1);`), cc1 schedules the n+1 arg
+  setup above the a=v0 copy, making a's and n's ranges disjoint → they
+  share $s0 and the function is 2 insns short (no $s2 save/restore).
+  Statement splits, named temps, and K&R protos don't stop the reorder.
+- **Scratch TUs must mirror the real include chain**: func_8001E390 was
+  drafted against local `void Sce_flag_on(s32);` decls, but rock_neo.h
+  (pulled in via game.h) already declares them `unknown_t (unknown_t)` —
+  in-tree that's a compile error. The unknown_t (int) prototypes produce
+  the same bytes; drop local decls that shadow rock_neo.h ones, and check
+  rock_neo.h before declaring any Sce_/Game_/Moji_ function locally.

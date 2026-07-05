@@ -17,7 +17,9 @@ typedef struct PL_WORK {
     u8 x0[0x9];
     u8 x9;        // routine/state id (func_800406A8 family sets 5/7/8)
     u16 xA;       // sub-state counter (low byte checked by func_80040140)
-    u8 xC[0x6E - 0xC];
+    u8 xC[0x56 - 0xC];
+    u16 x56;      // func_80041E90 -=/+= x116 around func_8002FEA4
+    u8 x58[0x6E - 0x58];
     u16 life;
     u8 x70[0x74 - 0x70];
     u8 x74;       // set to 1 with x75 by func_8003EE68
@@ -26,17 +28,21 @@ typedef struct PL_WORK {
     u16 xB4;      // cleared by func_80042044 when keys don't select the action
     u8 xB6[0xBD - 0xB6];
     u8 xBD;
-    u8 xBE[0x110 - 0xBE];
+    u8 xBE[0x10C - 0xBE];
+    u16 x10C;     // func_80041EF4 clears when no key match
+    u8 x10E[0x110 - 0x10E];
     s8 x110;
     u8 x111;
     u8 x112;      // func_80040380 swaps into x113 and zeroes
     u8 x113;
-    u8 x114[0x11C - 0x114];
+    u8 x114[0x116 - 0x114];
+    u16 x116;     // func_80041E90 offset applied to x56
+    u8 x118[0x11C - 0x118];
     u16 x11C;     // key/input mask (func_80040B34 tests vs x13E)
     u16 x11E;     // key/input mask (func_800406A8 family tests vs x138)
     u8 x120[0x124 - 0x120];
     u16 x124;     // key/input mask (func_800402C4 tests vs x11C)
-    u8 x126[0x128 - 0x126];
+    u16 x126;     // key/input mask (func_80041EF4 alt of x124)
     u16 x128;     // key/input mask (func_800405F4 ORs with x12A, tests vs x11C)
     u16 x12A;     // key/input mask
     u8 x12C[0x134 - 0x12C];

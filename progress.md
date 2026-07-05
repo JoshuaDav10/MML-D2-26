@@ -1,14 +1,14 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (320 still active
+- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (313 still active
   INCLUDE_ASM stubs; count verified by preprocessing src and counting
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 191 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 198 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~3480 of ~31,300 mapped instructions (~11.1%)
+- Volume: ~3660 of ~31,300 mapped instructions (~11.7%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -29,7 +29,11 @@
     func_800560D0 (x78 compare-select), func_8005BC90 (x7C state seq),
     func_800555F4, func_80057BB4, func_80058740 (x44 jump-offset table),
     func_80057D00 (stack2 push + double-table jump), func_80057DF4
-    (script2 patch from Game_work.x84_tbl[D_800989D4])
+    (script2 patch from Game_work.x84_tbl[D_800989D4]),
+    func_800594CC (stack2 push + D_8008CCA4[D_800BE2F7[...]] jump),
+    func_80054798 (x8/xA operand pair + x7E/x7F bytes), func_80055344
+    (MojiTaskExec re-dispatch, x44-or-D_8008CACC base), func_80055C1C
+    (flag 0x10000 clear + func_80039E18 call; callee typed s32)
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8
   - scene: func_8001D928 (flag-array clear + Scene_work reset), func_8001D878, func_8001DEDC, func_8001F820, func_8001D974,
@@ -39,7 +43,9 @@
     func_8001D888 (Cd_read_sync2 drain loop), func_8001FB54, func_8001FB8C
     func_8001FD3C, func_8001FD90 (Game_work.x52 -> gp-half pairs;
     if/else + ternary-chain split), func_8001DE84 (goto-shared return-0
-    label defeats the setcc/sltu tail), func_8001F740 (stage_no dispatch)
+    label defeats the setcc/sltu tail), func_8001F740 (stage_no dispatch),
+    func_8001E390 (Sce_flag on/off sweep 0x2E0..0x2EB, u32 counter),
+    func_8001F580 (Cd_read_comb kick; distinct u16 keep copy of u16 no)
     (func_8001FCA4, func_8001FC50, func_8001FDE4 attempted, NOT matched —
     same jump-canonicalization family; see activity 2026-07-05)
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
@@ -63,7 +69,9 @@
     Sound_call + Sound_call2 (SND_CMD queue writers, 0x14 stride; call2
     needs in-place q++ to pin the store order), func_800198C0
     (Sce-flag ternary into $a0 + descending D_8008222A fill loop)
-    (func_800199A4 attempted, NOT matched — FC50 canonicalization family)
+    (func_800199A4 + func_80019918 attempted, NOT matched — FC50
+    canonicalization family; func_8001A6DC attempted, NOT matched —
+    register-birth: a shares n's $s0 instead of taking $s2)
   - game: func_800155A4, func_80015734, func_80015840, func_80016528,
     func_80016BC0, func_80016BF4, func_80016D0C, func_80016D38,
     func_80016D64, func_80016DAC, func_80016E90
@@ -83,7 +91,11 @@
     func_800402C4 (x124/x134 vs x11C key test, PL_WORK fields typed),
     func_8003EE68 (state 7 setup, x74/x75 typed, shot enable + 41DDC),
     func_80040380 (x112/x113 swap on key match), func_80040710 (x128 vs
-    x12A select, xA=0/0x100), func_80040AEC (Game_work x83==1 or x140 key)
+    x12A select, xA=0/0x100), func_80040AEC (Game_work x83==1 or x140 key),
+    func_80041E90 (x56 -=/+= x116 around func_8002FEA4, s16 params)
+    (func_80041EF4 attempted, NOT matched — cc1 elides the original's two
+    andi 0xFFFF truncations; every source shape proves nonzero_bits ≤0xFFFF.
+    See activity 2026-07-05 day session)
   - debug: func_800629E0, func_800629F0 (Debug_work joy latch + fn-table
     dispatch; stores through the NEIGHBOR symbol &Scene_work[-k] pin the
     table load AND defeat arg anchor-CSE)

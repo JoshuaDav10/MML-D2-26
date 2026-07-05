@@ -342,3 +342,32 @@
   `*(p + i + 0x71)` (left-assoc) keeps the pointer first.
 - Verification: clean rebuild hash OK; 3 mutation tests (one per touched
   TU) each failed the check; restored, final rebuild OK.
+
+## 2026-07-05 — Fable (day session, batch 11)
+- 7 more matches (198 total, ~11.7% volume): moji func_800594CC /
+  func_80054798 / func_80055344 / func_80055C1C, player func_80041E90,
+  scene func_8001E390 / func_8001F580.
+- Three matched on the first scratch draft (the MOJI_TASK vocabulary is
+  paying off); func_80055C1C needed the Opus callee-return-type idiom
+  (func_80039E18 declared s32 reserves $v0, return-1 fills the delay slot);
+  func_8001F580 needed a distinct u16 keep copy of its u16 param (s32 copy
+  gets merged back into the param's register, one callee-save short).
+- PL_WORK x56/x10C/x116/x126 typed from the asm.
+- PARKED func_80041EF4 (player): the original ends with two andi 0xFFFF
+  truncations of lhu-loaded values feeding func_80041F54's 4th arg; cc1
+  proves nonzero_bits ≤ 0xFFFF through every source shape tried (~12:
+  locals s32/u16/s16, param reassignment, single vs cross-jumped double
+  call sites, explicit casts/masks) and elides them (2 insns short).
+  RTL confirmed: the zero_extends exist in .jump, die in combine. Needs a
+  def combine can't trace — none found. Revisit if another andi-keeper
+  matches.
+- PARKED func_80019918 (sound): FC50/FCA4 jump-canonicalization family
+  (legs 2+3 assign 7, legs 1+4 assign 0x39 — cc1 cross-jumps + inverts).
+- PARKED func_8001A6DC (sound): lerp helper; register-birth problem — cc1
+  shares $s0 between param n and call-result a (24 vs 26 insns), original
+  keeps a in $s2. -dl shows a's copy scheduled after the n+1 arg setup,
+  making ranges disjoint. Same genus as func_80042044.
+- func_8001A0A8 matched in scratch; landing with batch 12.
+- Verification: clean rebuild hash OK (after fixing an Sce_flag_on decl
+  conflict with rock_neo.h's unknown_t prototypes — scratch TUs must
+  mirror the real include chain); mutation test per touched TU.

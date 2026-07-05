@@ -144,7 +144,17 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E068);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E20C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E390);
+void func_8001E390(s32 n) {
+    u32 i;
+
+    for (i = 0x2E0; i < 0x2EC; i++) {
+        if (n == i) {
+            Sce_flag_on(i);
+        } else {
+            Sce_flag_off(i);
+        }
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E3F0);
 
@@ -201,7 +211,21 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F23C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F3C8);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F580);
+void func_8002FBF4(void);
+void Cd_read_comb(s32);
+
+void func_8001F580(u16 no, s32 flag, s32 flag2) {
+    u16 keep = no; /* the distinct u16 copy is load-bearing: s32 keep gets
+                      merged back into no's register (one callee-save short) */
+
+    if (flag != 0) {
+        func_8002FBF4();
+    }
+    if (flag2 != 0) {
+        Game_work.x6A = keep;
+    }
+    Cd_read_comb((s16)no);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F5E4);
 
