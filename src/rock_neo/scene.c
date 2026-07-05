@@ -19,6 +19,10 @@ extern s32 D_800BC770;
 extern s32 D_800BC774;
 extern s32 D_800BC778;
 extern s32 D_800BC7F0;
+extern s16 D_8009827C; // sdata ($gp)
+extern s16 D_8009827E;
+extern s16 D_8009828C;
+extern s16 D_8009828E;
 extern s16 D_80098208; // sdata ($gp), stored as a block of four
 extern s16 D_8009820A;
 extern s16 D_8009820C;
@@ -240,8 +244,28 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FCA4);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FCE4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FD3C);
+void func_8001FD3C(void) {
+    s8 x;
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FD90);
+    if (Game_work.x52 == 1) {
+        D_8009827C = 0x93;
+    } else {
+        D_8009827C = 0x94;
+    }
+    x = Game_work.x52;
+    D_8009827E = (x < 0) ? 0x97 : (x < 2) ? 0x95 : (x < 5) ? 0x96 : 0x97;
+}
+
+void func_8001FD90(void) {
+    s8 x;
+
+    if (Game_work.x52 == 1) {
+        D_8009828C = 0x9D;
+    } else {
+        D_8009828C = 0x9E;
+    }
+    x = Game_work.x52;
+    D_8009828E = (x < 0) ? 0xA1 : (x < 2) ? 0x9F : (x < 5) ? 0xA0 : 0xA1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FDE4);

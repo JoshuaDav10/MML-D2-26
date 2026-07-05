@@ -248,3 +248,20 @@
   func_80042154 (this alone moves ret to $t0). Remaining delta: cc1 births
   k's pseudo before a/b so it lands in $v0 — no C shape found yet.
 - Mutation tests: all five perturbations failed the hash check; restored, OK.
+
+## 2026-07-05 — Fable (overnight autonomous, batch 6)
+- 4 more matches (172 total, ~8.7% volume): scene func_8001FD3C/func_8001FD90
+  (x52==1 if/else + x52-range ternary chain into gp s16 pairs), sound
+  Sound_call2, sub_scrn func_8005EC34 (pre-existing draft un-gated from
+  ACCEPT_REORDERING_BULLSHIT — byte-matches now that patchasm reorders).
+- New idiom proven (Sound_call2): write the queue-pointer advance as
+  `q++; D_80098938 = q;` — the in-place increment clobbers q's register, so
+  cc1's scheduler cannot hoist the global store above `q->x8 = ...`.
+  `D_80098938 = q + 1` (fine in Sound_call, which has no trailing loads)
+  reorders the tail here.
+- Parked, same family as func_8001FCA4: func_8001FC50 (cc1 cross-jumps all
+  0x81 ternary legs into one block, 2 insns short, value lands in $v1 not
+  $v0) and func_8001FDE4 (one branch inverted: original beq->store with
+  value in delay + j return; every C/goto shape tried gives bne->return).
+  cc1 jump-canonicalization; not worth more brute force tonight.
+- Mutation tests: all four perturbations failed the hash check; restored, OK.

@@ -10,16 +10,10 @@
 #include "rock_neo/sound.h"
 #include "rock_neo/sub_scrn.h"
 
-#ifndef ACCEPT_REORDERING_BULLSHIT
-
-// clang-format off
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_8005EC34);
-#else
 void func_8005EC34(void) {
     Sub_screen_back_ground_set();
     D_8008DBB0[D_800A38F0.routine_0](&D_800A38F0);
 }
-#endif
 
 #ifndef ACCEPT_REORDERING_BULLSHIT
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_8005EC80);

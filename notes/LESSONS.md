@@ -347,3 +347,15 @@ iteration teaches something; this file is how the project gets smarter.
   different RTL, so no CSE, and %hi/%lo(D_801F8114+8) relocates to the
   same bytes as %lo(D_801F811C). volatile does NOT fix this (address CSE,
   not load CSE).
+- **Queue-writer tail order needs an IN-PLACE increment** (Sound_call2):
+  with trailing `q->x8 = args[1];` then pointer advance, `D_80098938 = q + 1`
+  lets cc1's scheduler hoist the global store above the field store (global
+  mem vs q-based mem look independent). `q++; D_80098938 = q;` makes the
+  increment clobber q's own register — anti-dependence pins the order.
+  Sound_call (no trailing arg loads) matches either way; prefer q++ form.
+- **cc1 jump-canonicalization family (func_8001FCA4/FC50/FDE4, all scene
+  0x8001FCxx-FDxx)**: when several ternary/if legs assign the same constant,
+  cc1-27 cross-jumps them into one li block and/or inverts a beq→store-with-
+  value-in-delay into bne→return. No source shape found (ladder, chain,
+  goto, arm swaps all canonicalize identically). Skip siblings with this
+  shape until a compiler-level explanation is found.

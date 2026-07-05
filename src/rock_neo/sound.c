@@ -126,7 +126,21 @@ void Sound_call(s32 code, s32 arg1, s32 arg2) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", Sound_call2);
+void Sound_call2(s32 code, s32 *args) {
+    SND_CMD *q;
+
+    if (D_80098938 != &D_800BE6D8) {
+        D_80098938->x0 = 1;
+        q = D_80098938;
+        q->x2 = code;
+        q->x4 = args[0];
+        q->x8 = args[1];
+        /* q++ (not q + 1) — the in-place increment's anti-dependence stops
+           cc1's scheduler hoisting the queue-pointer store above q->x8 */
+        q++;
+        D_80098938 = q;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A0A8);
 

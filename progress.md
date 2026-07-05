@@ -6,9 +6,9 @@
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 168 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 172 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~2650 of ~31,300 mapped instructions (~8.5%)
+- Volume: ~2730 of ~31,300 mapped instructions (~8.7%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -35,18 +35,23 @@
     func_8001F1DC, func_8001F20C (SCENE_WORK typed), func_8001FB24,
     Sce_flag_test (the flag-bit reader; unused 8-byte frame local),
     func_8001D888 (Cd_read_sync2 drain loop), func_8001FB54, func_8001FB8C
-    (func_8001FCA4 attempted, NOT matched — see activity 2026-07-05)
+    func_8001FD3C, func_8001FD90 (Game_work.x52 -> gp-half pairs;
+    if/else + ternary-chain split)
+    (func_8001FCA4, func_8001FC50, func_8001FDE4 attempted, NOT matched —
+    same jump-canonicalization family; see activity 2026-07-05)
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
     Cd_read_comb, func_8001D468 (CD_CMD queue writers), func_8001C7F0,
     func_8001D7AC, func_8001B858 (fn-table dispatch via D_80098A84->x8),
     func_8001CB30 (CdReady/CdSync callback setup + func_8001D254 kick),
     func_8001D7E4 (queue-drain wait loop via func_80012E98(1))
-  - sub_scrn: Sub_screen_sort_sub, func_800605DC, Map_screen_init
+  - sub_scrn: Sub_screen_sort_sub, func_800605DC, Map_screen_init,
+    func_8005EC34 (back-ground set + routine_0 table dispatch)
   - sound: func_80019F94, func_8001B2F0, func_8001997C, func_8001B314,
     func_80019A70, func_80019AE0, func_80019AA4, func_800199F8,
     func_80019A34, func_8001A1FC, func_8001A238 (stride-8 search loops),
     func_80019FB4 (Game_work[0x50] fn-table dispatch + D_80098958 |= 0x800),
-    Sound_call (SND_CMD queue writer, 0x14 stride, D_800BE6D8 sentinel)
+    Sound_call + Sound_call2 (SND_CMD queue writers, 0x14 stride; call2
+    needs in-place q++ to pin the store order)
   - game: func_800155A4, func_80015734, func_80015840, func_80016528,
     func_80016BC0, func_80016BF4, func_80016D0C, func_80016D38,
     func_80016D64, func_80016DAC, func_80016E90
@@ -67,6 +72,11 @@
   - debug: func_800629E0
 
 ## Last verified build
+- 2026-07-05 (Fable overnight, batch 6) — clean rebuild hash OK after scene
+  func_8001FD3C/func_8001FD90, sound Sound_call2, sub_scrn func_8005EC34
+  (old ACCEPT_REORDERING_BULLSHIT draft un-gated — matches now that
+  patchasm's reorder pass exists); all four mutation tests FAILED the check
+  as required; restored, final clean rebuild OK.
 - 2026-07-05 (Fable overnight, batch 5) — clean rebuild hash OK after
   player func_80040380/func_80040710/func_80040AEC, sound Sound_call,
   cd func_8001D7E4; all five per-function mutation tests FAILED the check
