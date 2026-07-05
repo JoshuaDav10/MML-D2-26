@@ -93,3 +93,17 @@
   cross-jumped, value in $v0 not $a0).
 - sha1 OK; mutation test (Sce_flag_test mask). 99 matched, 385 stubs,
   ~4.0% instruction volume.
+
+## 2026-07-05 (overnight session)
+- Matched 6 more (105 total): moji func_80054BB4/func_80055CC4 (flag-opcode
+  pair: compute-into-locals-at-load-site form needed to keep three loads
+  live before the stores), moji func_80056148 (statement order x10=x8;
+  x12+=script[1]; x3E=x70; script+=2 found by brute-forcing orderings in a
+  scratch TU), scene func_8001DD88 (gp-byte-pair reader; the return lh had
+  to be written `*(s16*)(&D_80098199 - 1)` so it aliases the sb and stays
+  AFTER it — same bytes, forced order), cd func_8001D7AC (stride-12 table
+  `extern s32 D_80082CD0[][3]`), main func_80012298.
+- Debugged a 4-byte whole-data-segment shift: NOT a COMMON leak — my first
+  func_80056148 compiled one instruction short, shrinking .text by 4 and
+  shifting everything after. Bisected by stashing per-file.
+- MOJI_TASK.xBC (u16) typed. sha1 OK; mutation test on func_80056148.

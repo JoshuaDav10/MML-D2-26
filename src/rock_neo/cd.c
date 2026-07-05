@@ -96,7 +96,12 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D648);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D6D8);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D7AC);
+void func_8001D6D8(s32);
+extern s32 D_80082CD0[][3];
+
+void func_8001D7AC(s32 idx) {
+    func_8001D6D8(D_80082CD0[idx][0]);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D7E4);
 

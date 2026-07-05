@@ -58,7 +58,17 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", Sce_flag_on);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", Sce_flag_off);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DD88);
+extern u8 *D_80098B60;
+
+s32 func_8001DD88(void) {
+    u8 *p = D_80098B60;
+    D_80098198 = p[0];
+    D_80098199 = p[1];
+    D_80098B60 = p + 2;
+    // read via D_80098199-1 (same address as D_80098198): forces the lh to
+    // alias the D_80098199 store so it schedules after it, as in the original
+    return *(s16*)(&D_80098199 - 1);
+}
 
 s32 func_8001DDC0(u8 *arg0) {
     D_80098198 = arg0[0];
