@@ -1,8 +1,12 @@
 #include "common.h"
 
+extern u8 D_80098AB8[];
+
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D854);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D878);
+s32 func_8001D878(void) {
+    return D_80098AB8[0] & 0x20;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D888);
 
@@ -28,7 +32,7 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DDE4);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DE84);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DEDC);
+void func_8001DEDC(void) {}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DEE4);
 
@@ -88,7 +92,7 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F740);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F798);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F820);
+void func_8001F820(void) {}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F828);
 

@@ -2,11 +2,11 @@
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B3E4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B4C4);
+void func_8001B4C4(void) {}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B4CC);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B63C);
+void func_8001B63C(void) {}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B644);
 

@@ -1,6 +1,10 @@
 #include "common.h"
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/debug", func_800629E0);
+extern s32 Debug_work[];
+
+void func_800629E0(void) {
+    Debug_work[0] = 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/debug", func_800629F0);
 

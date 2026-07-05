@@ -4,7 +4,7 @@
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800133D8", func_800133D8);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800133D8", func_80013418);
+void func_80013418(void) {}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800133D8", func_80013420);
 
@@ -16,7 +16,10 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800133D8", func_800136B8);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800133D8", func_800137D4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800133D8", func_80013890);
+void func_80013890(u8 *arg0) {
+    arg0[0] = 0;
+    arg0[1] = 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800133D8", func_8001389C);
 
