@@ -13,7 +13,9 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053AA4);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053B40);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800542FC);
+void func_800542FC(s32 *arg0) {
+    arg0[5]++;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054310);
 

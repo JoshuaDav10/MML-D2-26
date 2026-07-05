@@ -5,3 +5,10 @@
 - Remotes: upstream + origin (MML-D2-26)
 - Added notes/, progress.md, activity.md, plan.md
 - Build not yet attempted
+
+## 2026-07-04 (later — diff loop + first match)
+- Validated ./diff.py inner loop (deps + Python 3.14 ast fix + root symlink)
+- Added function-reorder pass to tools/patchasm.py (fixes cc1-27 deferring C
+  bodies past INCLUDE_ASM blocks — real C can now sit mid-file)
+- First matched function: func_800542FC (moji.c), sha1 holds
+- Branch: match/func_800542FC
