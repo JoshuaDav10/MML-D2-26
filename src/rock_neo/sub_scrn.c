@@ -376,7 +376,7 @@ void Sub_screen_rb_parts_set(void) {
 
 // clang-format off
 
-#if defined(USE_OG_COMPILER) && !defined(ACCEPT_REORDERING_BULLSHIT)
+#if defined(USE_OG_COMPILER) && !defined(ACCEPT_REORDERING_BULLSHIT) /* draft compiles 6 insns short (0x1AC vs 0x1C4) — not matched yet */
 void Sub_screen_rb_parts_calc(SUB_SCREEN_WORK* subp) {
     s32 d0, d1, d2;
 

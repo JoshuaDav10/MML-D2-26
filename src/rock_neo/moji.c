@@ -25,7 +25,11 @@ u8 Moji_flag[8]; // COMMON on purpose: splat carved 0x80098A58 out of the
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053788);
 
-s32 MojiTaskExec(s32 no, u8 *script_base, u8 op) {
+s32 MojiTaskExec(no, script_base, op)
+s32 no;
+u8 *script_base;
+u8 op;
+{
     MOJI_TASK *m;
     u8 *s;
     u32 f;

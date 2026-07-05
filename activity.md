@@ -294,3 +294,17 @@
      None branch now covers constants as well as symbols (ASPSX treated
      both alike). Clean rebuild re-validated all prior matches.
 - Mutation test: Cd_read_comb arg perturbation failed the check; restored, OK.
+
+## 2026-07-05 — Fable (overnight autonomous, batch 8b: consistency fix)
+- Caught a stale-object hazard the batch-7/8 builds masked: the K&R
+  `s32 MojiTaskExec();` declaration CONFLICTS with the ANSI definition
+  (u8 promotes), so moji.c had been FAILING to compile and the link kept
+  using the last good moji.c.o — the hash still passed because the stale
+  object's bytes were correct. Fixed by converting MojiTaskExec's
+  definition to K&R style (params s32/u8*/u8 declared old-style):
+  .text is byte-identical to the ANSI object (checked via objcopy cmp;
+  only COFF debug metadata differed).
+- Tried enabling the USE_OG_COMPILER-gated Sub_screen_rb_parts_calc draft:
+  compiles 0x1AC vs 0x1C4 (6 insns short) — re-gated with a note.
+- Verified with a FULL from-scratch rebuild (`rm -rf build`): zero compile
+  errors and hash OK.

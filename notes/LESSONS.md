@@ -382,3 +382,13 @@ iteration teaches something; this file is how the project gets smarter.
   dependent consumer was dropped (function assembled 1 insn short).
   tools/maspx now routes r_source-is-None loads (symbol OR constant) through
   the same branch.
+- **A make error can hide behind a passing hash**: if a TU fails to COMPILE,
+  make leaves the previous .o and the link/hash can still pass on stale
+  bytes (this is how the moji.c K&R-vs-ANSI prototype conflict went
+  unnoticed for two batches). Grep the make output for errors (or check
+  make's exit status) BEFORE trusting check_rock_neo_only.
+- **K&R declaration requires K&R definition when params have default
+  promotions**: `s32 f();` + ANSI `s32 f(..., u8 op) {}` is a compile error
+  in cc1 (C89 rule). Convert the DEFINITION to old-style
+  (`s32 f(no, base, op) s32 no; u8 *base; u8 op; {}`) — cc1 generates
+  byte-identical .text to the ANSI definition (entry copy preserved).
