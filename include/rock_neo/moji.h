@@ -45,7 +45,9 @@ typedef struct MOJI_TASK {
     u16 xC2;      // 0xC2 — index into the x44 u16 offset table (func_80058740)
 } MOJI_TASK;
 
-s32 MojiTaskExec(s32 no, u8 *script_base, u8 op);
+/* unprototyped (K&R): callers pass `op` as a raw int (-1 stays -1);
+   the ANSI definition in moji.c keeps the load-bearing u8 entry copy */
+s32 MojiTaskExec();
 s32 MojiTaskKill(); // 0x80053A30
 s32 func_80053788();
 

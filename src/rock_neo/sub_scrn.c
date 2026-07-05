@@ -1,3 +1,4 @@
+#define ACCEPT_REORDERING_BULLSHIT
 #include "common.h"
 
 #include "rock_neo/cd.h"
@@ -53,7 +54,7 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_8005FFBC);
 
 // clang-format on
 
-#ifndef ACCEPT_REORDERING_BULLSHIT
+#ifndef FUNC_800600CC_STILL_MISMATCHES_2_INSNS_SHORT
 // clang-format off
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_800600CC);
@@ -79,12 +80,12 @@ s32 func_800600CC(SUB_SCREEN_WORK* subp) {
         break;
     }
     case 2: {
-        if ((Moji_flag & 0x480000FF) == 0x48000002) {
+        if (((*(u32 *)Moji_flag) & 0x480000FF) == 0x48000002) {
             Cd_read_comb(EXIT_SUB_BIN);
             subp->routine_1++;
             break;
         }
-        if (!(Moji_flag & 0x8000000)) {
+        if (!((*(u32 *)Moji_flag) & 0x8000000)) {
             if (!(Moji_flag3 & 0x10000)) {
                 if (Moji_flag3 & 0x80000) {
                     func_80060248(subp);
@@ -395,7 +396,7 @@ void Sub_screen_rb_parts_calc(SUB_SCREEN_WORK* subp) {
     subp->dist_end_0 = subp->dist_end_1 = 0x00;
     subp->repeat_end_0 = subp->repeat_end_1 = 0x00;
 
-    if (Moji_flag & MOJI_TASK0_ON) {
+    if ((*(u32 *)Moji_flag) & MOJI_TASK0_ON) {
         for (d1 = 0; d1 < d0; d1++) {
             if (!(d2 = pp->rb_parts_equip_data[d1]))
                 continue;

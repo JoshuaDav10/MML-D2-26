@@ -265,3 +265,19 @@
   value in delay + j return; every C/goto shape tried gives bne->return).
   cc1 jump-canonicalization; not worth more brute force tonight.
 - Mutation tests: all four perturbations failed the hash check; restored, OK.
+
+## 2026-07-05 — Fable (overnight autonomous, batch 7)
+- 9 more matches (181 total, ~10.2% volume — crossed 10%): sub_scrn
+  func_8005EC80, func_80060DB8, Sub_screen_cancel_check,
+  Sub_screen_shift_check, Sub_screen_sort_attack/energy/range/rapid,
+  Sub_screen_rb_parts_set. These were pre-existing draft bodies gated
+  behind ACCEPT_REORDERING_BULLSHIT from before the patchasm reorder pass
+  existed; with the pass they now byte-match.
+- One real fix needed: the drafts call MojiTaskExec(0, D_8008CB94, -1) and
+  the ANSI prototype (u8 op) truncated -1 to 0xFF at the call site.
+  moji.h now declares `s32 MojiTaskExec();` K&R-style so callers pass raw
+  int (original binary has addiu a2,-1) while moji.c keeps the ANSI u8
+  definition whose entry copy is register-allocation-load-bearing.
+- func_800600CC stays gated (renamed guard): compiles 0x174 vs 0x17C.
+- game.c already #defines the macro, so its drafts were live all along.
+- Mutation tests: 4 sampled functions all failed the hash check; restored, OK.

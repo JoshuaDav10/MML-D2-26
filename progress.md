@@ -6,9 +6,9 @@
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 172 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 181 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~2730 of ~31,300 mapped instructions (~8.7%)
+- Volume: ~3180 of ~31,300 mapped instructions (~10.2%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -45,7 +45,12 @@
     func_8001CB30 (CdReady/CdSync callback setup + func_8001D254 kick),
     func_8001D7E4 (queue-drain wait loop via func_80012E98(1))
   - sub_scrn: Sub_screen_sort_sub, func_800605DC, Map_screen_init,
-    func_8005EC34 (back-ground set + routine_0 table dispatch)
+    func_8005EC34 (back-ground set + routine_0 table dispatch),
+    func_8005EC80, func_80060DB8, Sub_screen_cancel_check,
+    Sub_screen_shift_check, Sub_screen_sort_attack/energy/range/rapid,
+    Sub_screen_rb_parts_set (pre-existing ACCEPT_REORDERING_BULLSHIT
+    drafts un-gated; MojiTaskExec K&R decl fixes the -1 arg)
+    (func_800600CC still gated: compiles 2 insns short)
   - sound: func_80019F94, func_8001B2F0, func_8001997C, func_8001B314,
     func_80019A70, func_80019AE0, func_80019AA4, func_800199F8,
     func_80019A34, func_8001A1FC, func_8001A238 (stride-8 search loops),
@@ -72,6 +77,13 @@
   - debug: func_800629E0
 
 ## Last verified build
+- 2026-07-05 (Fable overnight, batch 7) — clean rebuild hash OK after
+  un-gating 9 sub_scrn ACCEPT_REORDERING_BULLSHIT drafts (only byte delta
+  was MojiTaskExec's -1 arg truncated by the ANSI u8 prototype; fixed with
+  a K&R unprototyped declaration in moji.h, body signature untouched).
+  Mutation tests on 4 of the 9 (EC80 -1→-2, sort_attack 0x1f→0x1e,
+  shift_check Sound_call arg, rb_parts_set 3→4) all FAILED the check as
+  required; restored, final clean rebuild OK.
 - 2026-07-05 (Fable overnight, batch 6) — clean rebuild hash OK after scene
   func_8001FD3C/func_8001FD90, sound Sound_call2, sub_scrn func_8005EC34
   (old ACCEPT_REORDERING_BULLSHIT draft un-gated — matches now that

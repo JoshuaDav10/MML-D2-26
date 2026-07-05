@@ -359,3 +359,14 @@ iteration teaches something; this file is how the project gets smarter.
   value-in-delay into bne→return. No source shape found (ladder, chain,
   goto, arm swaps all canonicalize identically). Skip siblings with this
   shape until a compiler-level explanation is found.
+- **Negative constant through a narrow ANSI prototype truncates at the CALL
+  SITE** (sub_scrn's MojiTaskExec(..., -1)): `u8 op` in the prototype makes
+  cc1 emit li a2,0xFF; the original has li a2,-1. Fix: declare the function
+  K&R-style (`s32 MojiTaskExec();`) so callers pass default-promoted ints
+  raw, while the DEFINITION keeps its ANSI narrow param (whose callee-side
+  entry copy can be register-allocation-load-bearing). Mixed K&R decl +
+  ANSI def is how the original code behaves.
+- **Check for pre-existing gated drafts before writing C**: sub_scrn.c
+  carried 10 draft bodies behind `#ifndef ACCEPT_REORDERING_BULLSHIT` from
+  before tools/patchasm.py's reorder pass existed; 9 of 10 byte-matched
+  once enabled. game.c defines the macro (its drafts were always live).
