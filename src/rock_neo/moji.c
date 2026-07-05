@@ -1,10 +1,15 @@
 #include "rock_neo.h"
 #include "rock_neo/moji.h"
 #include "rock_neo/game.h"
+#include "rock_neo/sound.h"
 
 extern s32 D_80098AF4; // sdata ($gp)
 extern s32 D_80098824; // lui-accessed word, not in gp census
 s32 func_8005BF10(s32, s32, u8*);
+s32 func_8005DA78(s32);
+s32 func_8005DAEC(s32);
+s32 func_8005DA1C(s32);
+extern u8 *D_8008CE5C[];
 
 u8 Moji_flag[8]; // COMMON on purpose: splat carved 0x80098A58 out of the
                  // extracted data for C to provide; gprel.py gp-rewrites
@@ -171,7 +176,13 @@ void func_80054694(MOJI_TASK *m) {
     m->script += 2;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800546B0);
+s32 func_800546B0(MOJI_TASK *m) {
+    s32 v = func_80054410(m->script2 + 1);
+    m->x3F = v;
+    m->x4 = (u8)v;
+    m->script2 += 3;
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054700);
 
@@ -179,7 +190,11 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054798);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054804);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054874);
+s32 func_80054874(MOJI_TASK *m) {
+    Sound_call((u16)func_80054410(m->script2 + 1), 0, 0);
+    m->script2 += 3;
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800548C4);
 
@@ -330,11 +345,29 @@ void func_80056180(MOJI_TASK *m) {
     m->script += 2;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_8005619C);
+s32 func_8005619C(MOJI_TASK *m) {
+    if (func_8005DA78(1)) {
+        m->script2 += 1;
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800561E8);
+s32 func_800561E8(MOJI_TASK *m) {
+    if (func_8005DAEC(1)) {
+        m->script2 += 1;
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80056234);
+s32 func_80056234(MOJI_TASK *m) {
+    if (func_8005DA1C(1)) {
+        m->script2 += 1;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80056280);
 
@@ -407,7 +440,9 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800577FC);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057924);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800579D8);
+void func_800579D8(MOJI_TASK *m) {
+    func_8005BF10(1, (Game_work.x7D - Game_work.x7C) * 10, m->script += 1);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057A24);
 
@@ -418,7 +453,10 @@ void func_80057A94(MOJI_TASK *m) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057AD0);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057B24);
+void func_80057B24(MOJI_TASK *m) {
+    m->stack[m->xBE++] = m->script + 2;
+    m->script = D_8008CBA4[m->script[1]];
+}
 
 // func_80043294 is called for effect only, but declaring it s32 (its real
 // return type) keeps $v0 reserved across the call so script2 lands in $v1
@@ -491,7 +529,11 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058C28);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058CC8);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058D64);
+void func_80058D64(MOJI_TASK *m) {
+    m->x10 = func_80054410(m->script + 1);
+    m->x12 = func_80054410(m->script + 3);
+    m->script += 5;
+}
 
 extern u8 D_800BE377;
 extern u8 D_8009899C;
@@ -534,7 +576,11 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80059B44);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80059D20);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80059E24);
+void func_80059E24(MOJI_TASK *m) {
+    s32 i = m->script[1];
+    m->stack[m->xBE++] = m->script + 2;
+    m->script = D_8008CE5C[D_800BE2F8[i]];
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80059E74);
 

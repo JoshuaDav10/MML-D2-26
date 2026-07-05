@@ -1,14 +1,14 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (348 still active
+- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (339 still active
   INCLUDE_ASM stubs; count verified by preprocessing src and counting
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 136 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 145 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~1957 of ~31,300 mapped instructions (~6.3%)
+- Volume: ~2130 of ~31,300 mapped instructions (~6.8%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -21,6 +21,10 @@
     func_80057DB8, func_80058DB4, func_80057144, func_8005753C,
     func_80055C80, func_800576C4 (script2 call-stack push), func_80057B70,
     func_800553A8, func_800553F0 (Sce_flag on/off from script operand),
+    func_800546B0, func_80054874 (Sound_call from operand), func_8005619C +
+    func_800561E8 + func_80056234 (sibling cond-advance triple),
+    func_800579D8, func_80057B24 + func_80059E24 (stack pushes w/ table jump),
+    func_80058D64 (x10/x12 operand pair),
     func_800555F4, func_80057BB4, func_80058740 (x44 jump-offset table)
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8

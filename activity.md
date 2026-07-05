@@ -197,3 +197,12 @@
 - Whole function drafted and iterated in the scratch-TU pipeline
   (cpp|cc1|maspsx|gprel|patchasm + a normalizing stream-diff script) before
   touching the tree — tree got exactly one edit and matched first try.
+
+## 2026-07-05 — Fable (overnight autonomous, batch 1)
+- 9 moji matches (145 total, ~6.8% volume): func_800546B0, func_80054874,
+  func_8005619C/61E8/6234 (sibling triple gated on func_8005DA78/DAEC/DA1C),
+  func_800579D8 (Game_work.x7C/x7D u8 fields typed), func_80057B24,
+  func_80058D64, func_80059E24 (new extern u8 *D_8008CE5C[]).
+- Clean rebuild + hash OK + mutation test (func_80059E24 broken -> FAIL,
+  restored -> OK). Two iterations: u8 local re-masked (use s32 for lbu
+  operands), and a script-vs-script2 misread (0x14 vs 0x6C).

@@ -26,7 +26,10 @@ typedef struct GAME_WORK {
     s16 x68, x6A, x6C;
     u8 x6E[0x70 - 0x6E];
     s16 x70, x72, x74, x76;
-    s8 x78[0x81- 0x78];
+    s8 x78[0x7C - 0x78];
+    u8 x7C;
+    u8 x7D;
+    s8 x7E[0x81 - 0x7E];
     s8 x81;
     u8 x82;
     s8 x83;
