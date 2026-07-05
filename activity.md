@@ -323,3 +323,22 @@
   value-leg cross-jumped + final branch inverted, 2 insns short).
 - Mutation tests: all five perturbations failed the hash check; restored,
   OK (final rebuild error-grep clean).
+
+## 2026-07-05 — Fable (day session, batch 10)
+- Finished the batch the overnight session left in flight: 4 more matches
+  (191 total, ~11.1% volume): scene func_8001DE84 + func_8001F740,
+  main func_8001319C, debug func_800629F0.
+- func_8001DE84: cc1 collapses a pure `if (x&8) return 1; return 0;` tail
+  into sltu (setcc). The matching form shares the return-0 via a goto label
+  from the earlier leg — the extra inbound edge blocks the store-flag
+  transformation (LESSONS).
+- func_800629F0: original stores Debug_work.x4/.x6 BEFORE the fn-table
+  load, no address CSE with the &Debug_work call arg. Raw-address stores
+  get hoisted past (constant vs symbol disambiguates); same-symbol field
+  stores get anchor-CSE'd with the arg. Fix: store through the NEIGHBOR
+  symbol `((u16 *)&Scene_work)[-26/-25]` (Scene_work = Debug_work+0x38) —
+  symbol MEM pins the load, distinct symbol defeats the anchor (LESSONS).
+- func_8001319C: `p[i + 0x71]` mirrored the addu (index first);
+  `*(p + i + 0x71)` (left-assoc) keeps the pointer first.
+- Verification: clean rebuild hash OK; 3 mutation tests (one per touched
+  TU) each failed the check; restored, final rebuild OK.

@@ -163,7 +163,18 @@ void func_80012FEC(s32 n, char *name) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_800130D0);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_8001319C);
+void func_8001319C(void) {
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+        (*(u16 **)0x801F8300)[i + 0x30] = 0;
+    }
+    for (i = 0; i < 0x10; i++) {
+        /* explicit left-assoc pointer arithmetic (not [i + 0x71]) keeps
+           the pointer first in the addu */
+        *(*(u8 **)0x801F8300 + i + 0x71) = 0;
+    }
+}
 
 void func_800131FC(void) {
     D_80098B1C = 0;

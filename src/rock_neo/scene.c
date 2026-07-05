@@ -107,7 +107,20 @@ s32 func_8001DDC0(u8 *arg0) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DDE4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DE84);
+extern u16 D_800C0C2A; // Joy1.trg, lui-accessed
+
+s32 func_8001DE84(void) {
+    if (Game_work.x5A == 0) {
+        if (Sce_flag_test(Scene_work.x1 + 0x380) == 0) goto zero;
+    }
+    /* the goto (shared return-0 label) is load-bearing: separate
+       `return 0;`s let cc1 collapse the tail to a setcc (sltu) */
+    if (D_800C0C2A & 8) {
+        return 1;
+    }
+zero:
+    return 0;
+}
 
 void func_8001DEDC(void) {}
 
@@ -194,7 +207,15 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F5E4);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F6C4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F740);
+extern void (*D_8008980C[])(void);
+void func_8001F798(s32);
+
+void func_8001F740(void) {
+    s8 *p = &Game_work.stage_no;
+
+    func_8001F798(*p);
+    D_8008980C[*p]();
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F798);
 

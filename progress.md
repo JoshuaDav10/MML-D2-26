@@ -1,14 +1,14 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (324 still active
+- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (320 still active
   INCLUDE_ASM stubs; count verified by preprocessing src and counting
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 187 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 191 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~3390 of ~31,300 mapped instructions (~10.8%)
+- Volume: ~3480 of ~31,300 mapped instructions (~11.1%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -38,7 +38,8 @@
     Sce_flag_test (the flag-bit reader; unused 8-byte frame local),
     func_8001D888 (Cd_read_sync2 drain loop), func_8001FB54, func_8001FB8C
     func_8001FD3C, func_8001FD90 (Game_work.x52 -> gp-half pairs;
-    if/else + ternary-chain split)
+    if/else + ternary-chain split), func_8001DE84 (goto-shared return-0
+    label defeats the setcc/sltu tail), func_8001F740 (stage_no dispatch)
     (func_8001FCA4, func_8001FC50, func_8001FDE4 attempted, NOT matched —
     same jump-canonicalization family; see activity 2026-07-05)
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
@@ -71,7 +72,9 @@
     func_8001215C (OT/flag init), func_80012938 (OpenEvent setup),
     func_80012ECC, func_80012F24 (thread close pair; D_801F81xx quirk),
     func_80012E10 (OpenTh slot setup), func_80012FEC (PCopen/PCread
-    loader; neighbor-symbol constant-index defeats address CSE)
+    loader; neighbor-symbol constant-index defeats address CSE),
+    func_8001319C (0x801F8300 table clear loops; left-assoc pointer
+    arithmetic pins the addu operand order)
   - player: 10 empty funcs func_8003FFA8, func_80040130..func_800402BC,
     func_8003BE40, func_80040140, func_800406A8, func_800406DC,
     func_80040B34 (key-vs-mask tests, PL_WORK typed), func_80042208,
@@ -81,9 +84,16 @@
     func_8003EE68 (state 7 setup, x74/x75 typed, shot enable + 41DDC),
     func_80040380 (x112/x113 swap on key match), func_80040710 (x128 vs
     x12A select, xA=0/0x100), func_80040AEC (Game_work x83==1 or x140 key)
-  - debug: func_800629E0
+  - debug: func_800629E0, func_800629F0 (Debug_work joy latch + fn-table
+    dispatch; stores through the NEIGHBOR symbol &Scene_work[-k] pin the
+    table load AND defeat arg anchor-CSE)
 
 ## Last verified build
+- 2026-07-05 (Fable day session, batch 10) — clean rebuild (error-grepped,
+  0 rock_neo compile errors) hash OK after scene func_8001DE84/func_8001F740,
+  main func_8001319C, debug func_800629F0; three mutation tests (one per
+  touched TU) all FAILED the check as required; restored, final clean
+  rebuild OK.
 - 2026-07-05 (Fable overnight, batch 9) — clean rebuild (error-grepped) hash
   OK after moji func_80057D00/func_80057DF4, player func_8003EE68, sound
   func_800198C0, sub_scrn func_80060248; all five mutation tests FAILED the

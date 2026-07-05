@@ -1,12 +1,28 @@
 #include "common.h"
+#include "rock_neo/scene.h"
+#include "rock_neo/joy.h"
 
 extern s32 Debug_work[];
+extern void (*D_8008DBD4[])();
 
 void func_800629E0(void) {
     Debug_work[0] = 0;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/debug", func_800629F0);
+void func_800629F0(void) {
+    u16 a = D_800C0C2A;
+    u16 b = D_800C0C26;
+    s32 i = *(s8 *)0x800C4C18; /* Debug_work.x8 — raw address keeps the lb
+                                  independent of the call arg (no CSE) */
+
+    /* stores through the NEIGHBOR symbol (Scene_work = Debug_work+0x38):
+       symbol MEM pins the fn-table load below the stores (raw addresses
+       get hoisted past), and a symbol distinct from the Debug_work arg
+       defeats cc1's anchor-CSE (arg = store_addr - k). Bytes identical. */
+    ((u16 *)&Scene_work)[-26] = a; /* Debug_work.x4 */
+    ((u16 *)&Scene_work)[-25] = b; /* Debug_work.x6 */
+    D_8008DBD4[i](Debug_work);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/debug", func_80062A50);
 

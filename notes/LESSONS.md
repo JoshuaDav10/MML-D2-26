@@ -392,3 +392,31 @@ iteration teaches something; this file is how the project gets smarter.
   in cc1 (C89 rule). Convert the DEFINITION to old-style
   (`s32 f(no, base, op) s32 no; u8 *base; u8 op; {}`) — cc1 generates
   byte-identical .text to the ANSI definition (entry copy preserved).
+
+## Session 2026-07-05 (Fable, day/batch 10+) additions — proven against the hash
+- **setcc (sltu) tail vs branch+li: share the return-0 by goto** (func_8001DE84):
+  a function ending `if (x & 8) return 1; return 0;` gets its tail collapsed
+  to `sltu $v0,$0,$v0` when the diamond is clean. The original's
+  bnez-with-li-1-in-delay + fallthrough-0 shape came from an EARLIER leg
+  jumping to the same return-0 (`goto zero;` ... `zero: return 0;`) — the
+  extra inbound edge to the 0-store blocks jump.c's store-flag conversion.
+  Separate `return 0;` statements do NOT work even though they're equivalent C.
+- **Store-order + fn-table-load pinning: three addressing forms behave
+  differently** (func_800629F0). Original: sh field1, sh field2, lw
+  fntbl[i], la $a0,&struct.
+  - RAW-ADDRESS stores (`*(u16 *)0x800C4C14 = a`): right bytes, but the
+    scheduler hoists the symbol-indexed lw above them (constant vs symbol
+    MEM disambiguates) and sinks one sh to the jalr slot. Mismatch.
+  - SAME-SYMBOL field stores (`Debug_work.x4 = a`): order pinned (symbol
+    MEM vs variable-indexed symbol MEM can't be disambiguated), but cse
+    anchor-CSEs the &Debug_work call arg against a store address
+    (la sym+4 ... addiu $a0,-4). Mismatch.
+  - NEIGHBOR-SYMBOL stores (`((u16 *)&Scene_work)[-26]` where Scene_work =
+    Debug_work+0x38): symbol MEM still pins the lw, and the arg's
+    Debug_work ref no longer shares a symbol with the stores, so no anchor.
+    %lo(Scene_work-52) assembles to the same bytes as %lo(Debug_work+4).
+    Extends the batch-4 neighbor-symbol trick from loads to stores.
+- **`p[i + K]` vs `*(p + i + K)` steer the index addu operand order**
+  (func_8001319C): the bracketed form emitted addu $v0,$4,$2 (index first),
+  the explicit left-assoc pointer arithmetic addu $v0,$v0,$4 (pointer
+  first). Same bytes otherwise; flip between them on an addu operand mirror.

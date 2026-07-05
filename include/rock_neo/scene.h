@@ -4,7 +4,9 @@
 #include "rock_neo.h"
 
 typedef struct SCENE_WORK {
-    u8 x0[0x8];
+    u8 x0;
+    u8 x1;        // Sce flag index base (func_8001DE84: Sce_flag_test(x1 + 0x380))
+    u8 x2[0x8 - 0x2];
     u8 x8;         // func_8001F20C copies arg0[0] here
     u8 x9;         // func_8001F20C copies arg0[1] here
     u8 xA[0x10 - 0xA];
