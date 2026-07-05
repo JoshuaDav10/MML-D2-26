@@ -5,7 +5,9 @@
 extern s32 D_80098AF4; // sdata ($gp)
 s32 func_8005BF10(s32, s32, u8*);
 
-u8 Moji_flag[8];
+u8 Moji_flag[8]; // COMMON on purpose: splat carved 0x80098A58 out of the
+                 // extracted data for C to provide; gprel.py gp-rewrites
+                 // refs to small .comm symbols in the census (see tool)
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053788);
 
@@ -134,7 +136,11 @@ void func_80054AB4(MOJI_TASK *m) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054ADC);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054B4C);
+extern s32 (*D_8008AB08[])();
+
+void func_80054B4C(MOJI_TASK *m) {
+    D_8008AB08[m->x7C]();
+}
 
 s32 func_80054B88(MOJI_TASK *m) {
     m->flags |= MOJI_TASK0_ON;
@@ -293,7 +299,13 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057574);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800576C4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057708);
+extern u8 D_80098830;
+extern u8 *D_8008CBA4[];
+
+void func_80057708(MOJI_TASK *m) {
+    m->stack[m->xBE++] = m->script + 1;
+    m->script = D_8008CBA4[D_80098830];
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057744);
 
@@ -305,7 +317,10 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800579D8);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057A24);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057A94);
+void func_80057A94(MOJI_TASK *m) {
+    m->stack[m->xBE++] = m->script + 1;
+    m->script = D_8008CBA4[D_80098830];
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057AD0);
 
@@ -325,7 +340,16 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057D00);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057D60);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057DB8);
+extern u8 D_800BE2F8[];
+
+s32 func_80057DB8(MOJI_TASK *m) {
+    u32 f = *(u32*)Moji_flag;
+    u32 hi = f & ~0xFF;
+    *(u32*)Moji_flag = hi;
+    *(u32*)Moji_flag = hi | D_800BE2F8[f & 0xFF];
+    m->script2 += 1;
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057DF4);
 
@@ -357,7 +381,22 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058CC8);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058D64);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058DB4);
+extern u8 D_800BE377;
+extern u8 D_8009899C;
+
+s32 func_80058DB4(MOJI_TASK *m) {
+    u8 c;
+    s32 i;
+    u8 *p;
+
+    c = 0xFF;
+    i = 0x7F;
+    p = &D_800BE377;
+    D_8009899C = 0;
+    m->script2 += 1;
+    for (; i >= 0; i--) { *p-- = c; }
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058DEC);
 

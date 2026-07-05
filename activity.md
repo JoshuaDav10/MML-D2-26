@@ -107,3 +107,15 @@
   func_80056148 compiled one instruction short, shrinking .text by 4 and
   shifting everything after. Bisected by stashing per-file.
 - MOJI_TASK.xBC (u16) typed. sha1 OK; mutation test on func_80056148.
+- Second batch, 6 more (111 total): moji func_80054B4C (D_8008AB08 fn-table
+  dispatch via new MOJI_TASK.x7C), func_80057708/func_80057A94 (identical
+  script-stack-push + D_8008CBA4[D_80098830] table jump), func_80057DB8
+  (Moji_flag u32 masking via *(u32*)Moji_flag), func_80058DB4 (0x80-byte
+  0xFF fill; init order c,i,p found by brute force), sub_scrn func_800605DC.
+- Pipeline fix: gprel.py now also gp-rewrites refs to small `.comm` symbols
+  (tentative definitions like `u8 Moji_flag[8];` in moji.c) when the census
+  approves them — the COMMON itself is intentional (splat carves 0x80098A58
+  out of the extracted data for C to provide), only the refs needed the
+  rewrite. Without this, func_80057DB8's three Moji_flag accesses each grew
+  by one lui (+12 bytes of .text shifting all data).
+- sha1 OK; mutation test on func_80057DB8.

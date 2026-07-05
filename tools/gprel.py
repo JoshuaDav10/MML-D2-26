@@ -43,6 +43,11 @@ import re
 import sys
 
 EXTERN_RE = re.compile(r"^\s*\.extern\s+([A-Za-z_$][\w$]*)\s*,\s*(\d+)\s*$")
+# tentative definition (`u8 Moji_flag[8];`) -> `.comm NAME,SIZE`: the COMMON
+# is intentional (splat carves such symbols out of the extracted data for C
+# to provide), but bare refs to it still need the gp rewrite when the
+# original accesses it via $gp. Keep the directive, rewrite the refs.
+COMM_RE = re.compile(r"^\s*\.comm\s+([A-Za-z_$][\w$]*)\s*,\s*(\d+)\s*$")
 
 MEM_OPS = (
     "lb", "lbu", "lh", "lhu", "lw", "lwl", "lwr",
@@ -86,7 +91,17 @@ def main():
         if m and 0 < int(m.group(2)) <= 8:
             small_externs.add(m.group(1))
 
-    sdata_syms = small_externs & gp_census() if small_externs else set()
+    small_comms = set()
+    for line in lines:
+        m = COMM_RE.match(line)
+        if m and 0 < int(m.group(2)) <= 8:
+            small_comms.add(m.group(1))
+
+    sdata_syms = (
+        (small_externs | small_comms) & gp_census()
+        if (small_externs or small_comms)
+        else set()
+    )
     for name in sorted(small_externs - sdata_syms):
         print(
             f"gprel.py: note: small extern {name} not gp-accessed in "

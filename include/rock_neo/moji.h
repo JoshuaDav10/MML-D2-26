@@ -27,7 +27,9 @@ typedef struct MOJI_TASK {
     s8 x72;
     u8 x73[0x78 - 0x73];
     s8 x78;
-    u8 x79[0xBC - 0x79];
+    u8 x79[0x7C - 0x79];
+    u8 x7C;       // 0x7C — index into the D_8008AB08 function table (func_80054B4C)
+    u8 x7D[0xBC - 0x7D];
     u16 xBC;      // 0xBC — cleared by opcode handlers (func_80054BB4 etc.)
     u16 xBE;      // 0xBE — script stack pointer (index into stack[])
     u16 xC0;      // 0xC0 — script2 stack pointer (index into stack2[])

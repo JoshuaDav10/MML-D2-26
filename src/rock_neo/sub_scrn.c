@@ -122,7 +122,12 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_80060248);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_800602A4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_800605DC);
+void func_800602A4(SUB_SCREEN_WORK*, s32);
+
+void func_800605DC(void) {
+    Sub_screen_rb_parts_calc(&D_800A38F0);
+    func_800602A4(&D_800A38F0, 0);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_80060618);
 
