@@ -139,3 +139,34 @@ on `splat.us.HEAD00`. Ran splat split + full build on `overlay-expedition`.
   N/A for pure data).
 
 <!-- Next sprint: append below this line -->
+
+---
+
+## Sprint: Phase 2 — Single-chunk data (2026-07-05)
+
+**What we did:** Added overlay configs for all 9 remaining single-chunk archives:
+KAIFONT, MAP_A1–B3, BS16VAB1, ST0B_00E, ST0B_01B. Same HEAD00/FONT pattern;
+splat split + clean build on `overlay-expedition`.
+
+### Lessons
+
+1. **FONT template generalizes cleanly** — type **1** TIM (`0x10220` end `0x10A20`), type **5**
+   VAB (`0x22A30` end `0x23230`), and smaller type-1 TIM (`0x4120` end `0x4920`) all
+   byte-match with `vram: 0x80010000` and `build.json` third field = header type.
+
+2. **MAP_A* / MAP_B* are one mechanical family** — identical layout; only inner path
+   and archive name differ. Good candidate for a single commit / shared generator script.
+
+3. **Overlay count now 196/205.** Remaining 9 are all multi-chunk or novel types
+   (Phase 3 / 3b).
+
+### Verification
+
+```
+rm -rf build && make CPP=cpp
+cmp disks/us/CDDATA/DAT/{KAIFONT,MAP_A1,MAP_A2,MAP_B1,MAP_B2,MAP_B3,BS16VAB1,ST0B_00E,ST0B_01B}.BIN build/*.BIN  # all silent
+make CPP=cpp check_rock_neo_only  # OK
+overlay sweep: 196/205
+```
+
+<!-- Next sprint: append below this line -->
