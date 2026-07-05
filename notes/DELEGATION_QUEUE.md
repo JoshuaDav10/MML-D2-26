@@ -251,6 +251,93 @@ in the repo). A local pre-push hook is the next best structural guard.
 
 ---
 
+## Brief 6 — Callgraph + data-xref extraction (NEW 2026-07-05)
+
+### Problem
+
+Picking matching targets by FAMILY (shared callees, shared globals) beats
+picking by size, and struct fields firm up fastest when every function
+touching a symbol is known. Today that knowledge is rebuilt ad hoc by
+grepping asm per question.
+
+### Task
+
+Write `tools/xref.py` (stdlib only) that scans every
+`asm/rock_neo/nonmatchings/**/*.s` AND the matched C in `src/rock_neo/`
+(via the extracted asm comments only — do NOT parse C) and emits
+`notes/XREF.md` with three sections:
+
+1. **Callgraph**: per function, the `jal` targets (and `j` tail-calls to
+   other glabels); plus a reverse index (callee -> callers).
+2. **Data xrefs**: per data symbol (`D_*`, named globals), the functions
+   referencing it, with the access widths seen (lb/lbu/lh/lhu/lw/sb/sh/sw)
+   and addressing mode (gp vs lui/at) per site.
+3. **Family suggestions**: groups of 3+ unmatched functions sharing >=2
+   callees or >=2 data symbols, sorted by group size ascending (small
+   families first).
+
+Regeneration must be one command (`python3 tools/xref.py`) and
+deterministic (stable sort orders — the file will be diffed in git).
+
+### Hard rules
+
+- Read-only with respect to everything except `notes/XREF.md`.
+- No new dependencies; no editing src/ or include/.
+- Work on a branch off dev named `infra/xref`; commit there; do not merge.
+
+### Verification protocol
+
+1. Spot-check 3 functions by hand (`grep jal asm/.../<fn>.s`) against the
+   callgraph section — counts and targets must agree exactly.
+2. Spot-check one gp-accessed symbol (e.g. Moji_flag3) and one lui-accessed
+   symbol (e.g. D_800988E8) — modes must be reported correctly.
+3. Run twice; `git diff` between runs must be empty.
+
+---
+
+## Brief 7 — Matched-count tooling + total reconciliation (NEW 2026-07-05)
+
+### Problem
+
+progress.md's totals drift: the historical figure says 475 mapped
+functions, but `tools/census.py` reports 263 active stubs while 221 are
+matched (sum 484). The counting method exists in prose
+(notes/LESSONS.md "Counting matched functions") but is not scripted, so
+every session recounts differently.
+
+### Task
+
+1. Add `--matched` mode to `tools/census.py`: for each TU, count
+   `F .text` symbols in `build/src/rock_neo/<tu>.c.o` (objdump -t), count
+   active INCLUDE_ASM stubs (cpp-preprocessed, as the census already
+   does), and report per-TU matched = functions-in-object minus stubs,
+   plus totals. Requires a built tree; error out clearly if build/ is
+   missing.
+2. Reconcile the 475-vs-484 discrepancy: identify exactly which functions
+   are counted by one method and not the other (e.g. upstream game.c
+   functions, functions with no stub file, duplicated names) and write
+   the findings into a short `notes/COUNTS.md` with the authoritative
+   method stated.
+3. Update the two total lines at the top of progress.md ONLY if the
+   reconciliation proves them wrong, in a dedicated commit explaining the
+   correction.
+
+### Hard rules
+
+- Do not change how check_rock_neo_only works; this is bookkeeping only.
+- No matching claims: this tool counts, it does not verify. The hash
+  remains the only match authority.
+- Branch off dev named `infra/counts`; commit there; do not merge.
+
+### Verification protocol
+
+1. `tools/census.py --matched` total must equal the hand method from
+   LESSONS.md on two TUs picked at random (show the arithmetic).
+2. The reconciliation table in notes/COUNTS.md must sum exactly:
+   matched + active stubs = authoritative total, no unexplained rows.
+
+---
+
 ## What is NOT in this queue (do not pick up)
 
 - Anything in `src/rock_neo/*.c` or `include/rock_neo/` — matching work.
