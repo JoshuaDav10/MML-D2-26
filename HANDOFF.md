@@ -33,7 +33,9 @@
   moji.c's `u8 Moji_flag[8];` — the COMMON is intentional, splat carves the
   symbol out of the extracted data). Read LESSONS.md §2 before declaring
   any extern.
-- Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
+- Overlays: MEASURED 2026-07-05 — 186/205 CDDATA/DAT .BIN files already
+  build byte-identical; 19 lack configs entirely. The old "ST** don't
+  link" note was stale. Plan: `notes/OVERLAY_EXPEDITION.md` (delegable).
 
 ## What was accomplished in the 2026-07-05 DAY session (most recent)
 
@@ -143,21 +145,15 @@ insns, 60 at 60-99, 67 at 100-199, 33 at 200+. The plan:
 4. Parked families (jump-canonicalization, register-birth, andi-elision)
    stay parked until a future match reveals the missing shape.
 
-## Overlay-link expedition (independent track, delegable)
+## Overlay expedition (independent track, delegable)
 
-The 176 ARM**/ST** overlays are extracted but don't LINK yet. Making them
-link is build plumbing (splat yaml, linker scripts, symbol tables), NOT
-matching work — an overlay builds entirely from its own extracted asm via
-INCLUDE_ASM, zero C needed. It therefore does not depend on main-exe
-matching progress and can proceed concurrently — even by a weaker
-agent/model — under these guardrails:
-- Work on a SEPARATE branch off dev; never commit to dev/main.
-- Success is the byte-compare of the built overlay vs the original file —
-  gate everything on that, no "looks right".
-- After every change, `make CPP=cpp check_rock_neo_only` must still print
-  OK (protects the main exe from Makefile/config edits).
-- Prove the pattern on ONE overlay (e.g. ST00) end-to-end before touching
-  the other 175.
+REMEASURED 2026-07-05: the old "overlays don't link" claim was stale.
+186/205 CDDATA/DAT .BIN files already rebuild byte-identical; the real
+job is writing configs for the 19 missing files (fonts/maps/screens +
+six ST/EXIT code overlays) and adding a 205-file check target. Full
+phased plan, hard rules, and an unfakeable verification protocol:
+**`notes/OVERLAY_EXPEDITION.md`** — written for delegation to a weaker
+agent on the `overlay-expedition` branch.
 
 ## Where to pick up next (day session's view)
 
