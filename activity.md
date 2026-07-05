@@ -206,3 +206,11 @@
 - Clean rebuild + hash OK + mutation test (func_80059E24 broken -> FAIL,
   restored -> OK). Two iterations: u8 local re-masked (use s32 for lbu
   operands), and a script-vs-script2 misread (0x14 vs 0x6C).
+
+## 2026-07-05 — Fable (overnight autonomous, batch 2)
+- 9 more matches (154 total, ~7.4% volume): moji func_80057AD0, func_80057D60,
+  func_800560D0 (if/else not ternary — $v0 rule), func_80059530 (x73 is s8:
+  lb readback), func_8005BC90; player func_8003F498/F4E8/F538/F588 quad.
+- New externs: u8 *D_8008CE10[]/D_8008D0D4[]/D_8008CCA4[], s8 D_800BE2F7[],
+  u8 D_8009899C (gp), u16 D_80098912[].
+- Clean rebuild + hash OK + mutation test (player 0x35->0x37 FAILED, restored OK).

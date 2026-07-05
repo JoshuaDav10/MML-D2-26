@@ -30,7 +30,7 @@ typedef struct MOJI_TASK {
     u8 x70;
     u8 x71;
     s8 x72;
-    u8 x73;
+    s8 x73; // read back signed (func_80059530 lb)
     u8 x74[0x78 - 0x74];
     u8 x78;       // MojiTaskExec stores 0x80 (unsigned constant form)
     u8 x79[0x7C - 0x79];

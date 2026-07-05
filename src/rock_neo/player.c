@@ -2,6 +2,7 @@
 #include "rock_neo/player.h"
 
 void func_8003BE6C(PL_WORK*, s32);
+s32 func_80041DDC(PL_WORK*, s32, s32, s32);
 void func_80040764(void);
 
 void func_8003BE40(s32 arg0) {
@@ -66,13 +67,33 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F288);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F3E8);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F498);
+void func_8003F498(PL_WORK* pl) {
+    if (*(u8*)&pl->xA == 0) {
+        func_80041DDC(pl, 0x33, 0, 1);
+        *(u8*)&pl->xA += 1;
+    }
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F4E8);
+void func_8003F4E8(PL_WORK* pl) {
+    if (*(u8*)&pl->xA == 0) {
+        func_80041DDC(pl, 0x34, 0, 1);
+        *(u8*)&pl->xA += 1;
+    }
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F538);
+void func_8003F538(PL_WORK* pl) {
+    if (*(u8*)&pl->xA == 0) {
+        func_80041DDC(pl, 0x35, 0, 1);
+        *(u8*)&pl->xA += 1;
+    }
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F588);
+void func_8003F588(PL_WORK* pl) {
+    if (*(u8*)&pl->xA == 0) {
+        func_80041DDC(pl, 0x36, 0, 1);
+        *(u8*)&pl->xA += 1;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F5D8);
 

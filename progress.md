@@ -1,14 +1,14 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (339 still active
+- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (330 still active
   INCLUDE_ASM stubs; count verified by preprocessing src and counting
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 145 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 154 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~2130 of ~31,300 mapped instructions (~6.8%)
+- Volume: ~2320 of ~31,300 mapped instructions (~7.4%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -24,7 +24,9 @@
     func_800546B0, func_80054874 (Sound_call from operand), func_8005619C +
     func_800561E8 + func_80056234 (sibling cond-advance triple),
     func_800579D8, func_80057B24 + func_80059E24 (stack pushes w/ table jump),
-    func_80058D64 (x10/x12 operand pair),
+    func_80058D64 (x10/x12 operand pair), func_80057AD0 (stack2 push),
+    func_80057D60 + func_80059530 (stack pushes w/ double-table jumps),
+    func_800560D0 (x78 compare-select), func_8005BC90 (x7C state seq),
     func_800555F4, func_80057BB4, func_80058740 (x44 jump-offset table)
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8
@@ -50,7 +52,8 @@
   - player: 10 empty funcs func_8003FFA8, func_80040130..func_800402BC,
     func_8003BE40, func_80040140, func_800406A8, func_800406DC,
     func_80040B34 (key-vs-mask tests, PL_WORK typed), func_80042208,
-    func_800405F4 (x11C vs x128|x12A)
+    func_800405F4 (x11C vs x128|x12A), func_8003F498/F4E8/F538/F588
+    (func_80041DDC(pl,0x33..0x36,0,1) sibling quad, xA byte guard)
   - debug: func_800629E0
 
 ## Last verified build
