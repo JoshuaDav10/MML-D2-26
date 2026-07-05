@@ -35,6 +35,49 @@
   any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
+## NEXT BIG TARGET: MojiTaskExec (prep notes, 2026-07-05 Fable read-through)
+
+133-line asm at asm/rock_neo/nonmatchings/moji/MojiTaskExec.s — the script-VM
+task-slot initializer. Read once; highly tractable (mostly straight-line
+stores, two small branches). Key facts extracted:
+
+- **Signature**: `s32 MojiTaskExec(s32 no, u8 *script_base, s32 op)` —
+  args land in s3/s1/s4. Returns 0 on the early-out path, 1 on success
+  (`addiu v0,1` at 0x53970 is the success return value, set mid-body).
+- **MOJI_TASK stride confirmed 0xC4**: index math is ((no*2+no)<<4+no)<<2
+  = no*196 = no*0xC4. `extern MOJI_TASK Moji_work[];` at 0x800BB6B8
+  (lui/addiu %lo(Moji_work) in the asm). Declare and index `&Moji_work[no]`.
+- **D_800BB9C8 == Moji_work[4].flags and D_800BBA8A == Moji_work[4].xC2**
+  (0x800BB6B8+4*0xC4=0x800BB9C8; +0xC2=0x800BBA8A). Write them as
+  `Moji_work[4].field` — relocs resolve to the same bytes (same trick as
+  the `&D_80098199 - 1` alias read). The `if (no != 4)` block force-kills
+  slot 4: checks its 0x40000 flag (calls func_8001D494(0,1,0) — same call
+  as the m->flags&0x40000 check above), zeroes its flags, sets xC2=0xFF.
+- **Early out**: `if ((*(u32*)Moji_flag & 0x400000) || D_80098824) return 0;`
+  (D_80098824: lui-accessed word — plain scalar extern, NOT in gp census).
+- **Init body** (order matters, use the asm): flags=0x80000000; x3F=1;
+  x3E=0; xC2=(u8)op; x4/x8/xA/xC/xE=0 (sh); x3C = x3E (lbu RELOAD after
+  the sb — write it as a field-to-field copy, aliasing gives the reload);
+  then op==0xFF? -> {x48=script2=script_base; x44=0} else {x44=script_base;
+  x48=script2=script_base+*(u16*)(script_base+(u8)op*2)} (the x44 offset
+  table from func_80058740!); x3A=2; x3D=3; x71/x72/x73/x7D/x7E/x7F/x3B=0;
+  x78=0x80; x70=x3E; xC0/xBE/x38/xBC=0 (sh); script=script2 (lw x6C early,
+  sw 0x14 late).
+- **Final flag update**: `*(u32*)Moji_flag |= 0x80000000 | (0x8000000 >> no)`
+  where the shift is `srav` — an ARITHMETIC shift, so the source operand is
+  SIGNED: `(s32)0x8000000 >> no` (plain s32 constant works).
+- **New MOJI_TASK fields to type first** (add to moji.h before starting):
+  u16 x4 region (x4/x8/xA/xC/xE stores as sh), u16 x38, u8 x3A, u8 x3C,
+  u8* x48, u8 x70/x71/x73 views, u8 x7D/x7E/x7F. Cross-check against the
+  already-typed fields — several (x3B, x3D, x3E, x3F, x72, x78, xBC, xBE,
+  xC0, xC2, x44, script/script2) are already in moji.h and hash-proven.
+- **Plan**: (1) extend moji.h fields; (2) draft in the scratch TU against
+  the full pipeline before touching the tree; (3) expect iteration on the
+  zeroing-store ORDER (many sb/sh to schedule) and on the op==0xFF branch
+  shape; (4) the two func_8001D494(0,1,0) call sites are identical — write
+  them identically. Budget: one focused session. Matching this pins the
+  handler calling convention for all ~50 remaining func_8005xxxx stubs.
+
 ## What was accomplished in the 2026-07-05 Fable session (most recent)
 
 1. **Audited the Opus session** (independent from-scratch `rm -rf build`
