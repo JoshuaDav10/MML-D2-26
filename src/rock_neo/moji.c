@@ -1,13 +1,19 @@
 #include "rock_neo.h"
 #include "rock_neo/moji.h"
 #include "rock_neo/game.h"
+
+extern s32 D_80098AF4; // sdata ($gp)
+s32 func_8005BF10(s32, s32, u8*);
+
 u8 Moji_flag[8];
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053788);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", MojiTaskExec);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", MojiTaskExec2);
+void MojiTaskExec2(s32 arg0, u8 arg1) {
+    MojiTaskExec(arg0, 0x80153000, arg1);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", MojiTaskKill);
 
@@ -117,7 +123,10 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_8005497C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054A04);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054A84);
+s32 func_80054A84(MOJI_TASK *m) {
+    m->script2 = m->stack2[--m->xC0];
+    return 1;
+}
 
 void func_80054AB4(MOJI_TASK *m) {
     m->script = m->stack[--m->xBE];
@@ -283,7 +292,9 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057B70);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057BB4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057BFC);
+s32 func_80057BFC(MOJI_TASK *m) {
+    return func_8005BF10(1, D_80098AF4, m->script += 1);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057C2C);
 

@@ -19,7 +19,7 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 82 / 475** functions (~3.3% of instruction volume, 402 active
+- **Matched: 99 / 475** functions (~4.0% of instruction volume, 385 active
   stubs left) — small-function harvest phase. See `progress.md`.
 - **NEW: the pipeline can now emit $gp-relative (sdata) access** via
   `tools/gprel.py` (between maspsx and patchasm). Before this, C code could
@@ -27,7 +27,20 @@
   lui/$at). Read LESSONS.md §2 (rewritten) before declaring any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
-## What was accomplished in the NIGHT 2026-07-04 session (most recent)
+## What was accomplished in the LATE-NIGHT 2026-07-04 session (most recent)
+
+1. **17 more matches (99 total)** across moji/player/scene/cd/main/sound.
+   New typed knowledge: SCENE_WORK struct (include/rock_neo/scene.h),
+   PL_WORK key-mask fields (x11C/x11E vs x138/x13E) + x9/xA state fields,
+   MOJI_TASK second call stack (stack2[8] @0x4C, u16 xC0).
+2. **Sce_flag_test matched** — the scene-flag bit reader (many callers
+   ahead). Its three tricks (dead 8-byte local array for the empty frame,
+   param reassignment for in-place srl, mask-as-local so the load schedules
+   mid-computation) are in LESSONS.md "late night additions".
+3. Player key-test family (func_800406A8/DC, func_80040B34) share one
+   shape — more siblings likely nearby in player.c.
+
+## What was accomplished in the NIGHT 2026-07-04 session
 
 1. **18 more matches (82 total)** — all ≤14-instruction functions across
    main/sound/cd/Code800133D8/scene/moji, hash-verified + mutation-tested.

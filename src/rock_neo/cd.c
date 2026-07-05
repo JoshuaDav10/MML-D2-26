@@ -8,6 +8,8 @@ typedef struct {
 } CD_CMD;      // 0x10 — Cd command queue entry
 
 extern CD_CMD *unknown_Cd_strucptr;
+extern s32 D_800989C4;
+void CdSyncCallback(s32);
 extern u8 D_800A3A40[];
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B3E4);
@@ -30,7 +32,10 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B89C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001BB4C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001C7F0);
+void func_8001C7F0(void) {
+    D_800989C4 += 1;
+    CdSyncCallback(0);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001C824);
 

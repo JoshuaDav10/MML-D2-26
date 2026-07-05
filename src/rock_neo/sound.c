@@ -6,6 +6,9 @@ void SpuSetKey(s32, u32);
 extern s32 D_800821F8[];
 extern s32 *D_800AD15C[];
 extern s16 D_80082274;
+extern s16 D_800822D6;
+extern s16 D_80082218;
+s32 Sce_flag_test(s32);
 extern s8 Game_work[]; // this TU only reads byte x53; full type in game.h
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_800198C0);
@@ -26,11 +29,23 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_800199F8);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019A34);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019A70);
+void func_80019A70(void) {
+    if (Sce_flag_test(0x1E1)) {
+        D_800822D6 = 0x25;
+    } else {
+        D_800822D6 = 0x30;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019AA4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019AE0);
+void func_80019AE0(void) {
+    if (Sce_flag_test(0x1E1)) {
+        D_80082218 = 0x25;
+    } else {
+        D_80082218 = 0x30;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019B14);
 

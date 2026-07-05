@@ -1,5 +1,6 @@
 #include "common.h"
 #include "rock_neo/game.h"
+#include "rock_neo/scene.h"
 
 extern u8 D_80098198;
 extern u8 D_80098199;
@@ -13,6 +14,11 @@ extern s32 D_800BC748;
 extern s32 D_800BC770;
 extern s32 D_800BC774;
 extern s32 D_800BC778;
+extern s32 D_800BC7F0;
+extern s16 D_80098208; // sdata ($gp), stored as a block of four
+extern s16 D_8009820A;
+extern s16 D_8009820C;
+extern s16 D_8009820E;
 
 void func_8001D854(u8 arg0) {
     if (D_80098788 == 0) {
@@ -36,7 +42,17 @@ void func_8001D974(void) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D990);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", Sce_flag_test);
+extern u8 Sce_flag[];
+
+s32 Sce_flag_test(s32 flagno) {
+    u8 buf[8]; // unused, but the original allocates an 8-byte frame here
+    s32 bit, mask;
+
+    bit = flagno & 7;
+    flagno = (u32)flagno >> 3;
+    mask = 0x80 >> bit;
+    return (Sce_flag[flagno] & mask) != 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", Sce_flag_on);
 
@@ -114,9 +130,20 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F070);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F158);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F1DC);
+void func_8001F1DC(void) {
+    Scene_work.x10 = 0;
+    Scene_work.x18 = 0;
+    Scene_work.x1C = 0;
+    Scene_work.x8 = 0;
+    Scene_work.x9 = 0;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F20C);
+void func_8001F20C(u8 *arg0, s32 arg1) {
+    D_800BC7F0 = arg1;
+    Scene_work.xA4 = arg0;
+    Scene_work.x8 = arg0[0];
+    Scene_work.x9 = arg0[1];
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F23C);
 
@@ -142,7 +169,19 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F9AC);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FA94);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FB24);
+void func_8001FB24(void) {
+    if (Game_work.x52 == 6) {
+        D_8009820E = 0x67;
+        D_8009820C = 0x67;
+        D_8009820A = 0x67;
+        D_80098208 = 0x67;
+    } else {
+        D_8009820E = 0x66;
+        D_8009820C = 0x66;
+        D_8009820A = 0x66;
+        D_80098208 = 0x66;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FB54);
 

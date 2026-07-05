@@ -9,6 +9,7 @@ extern volatile s32 idk_framecounter_maybe; // 0x80098888, lui-accessed (not sda
 extern s32 D_80098158;             // sdata ($gp)
 extern s32 D_800979D8;             // sdata ($gp)
 void ChangeTh(u32);
+extern u16 *D_801F8300;
 
 // clang-format off
 
@@ -49,7 +50,12 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012C80);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012E10);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012E98);
+s32 func_80012E98(s32 arg0) {
+    u16 *p = D_801F8300;
+    p[1] = arg0;
+    p[0] = 1;
+    ChangeTh(0xFF000000);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012ECC);
 

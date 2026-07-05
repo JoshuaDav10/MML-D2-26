@@ -14,15 +14,27 @@ typedef struct WPN_DATA {
 extern WPN_DATA Rock_buster_parts_tbl[];
 
 typedef struct PL_WORK {
-    u8 x0[0x6E];
+    u8 x0[0x9];
+    u8 x9;        // routine/state id (func_800406A8 family sets 5/7/8)
+    u16 xA;       // sub-state counter (low byte checked by func_80040140)
+    u8 xC[0x6E - 0xC];
     u16 life;
     u8 x70[0xBD - 0x70];
     u8 xBD;
     u8 xBE[0x110 - 0xBE];
     s8 x110;
-    u8 x111[0x170 - 0x111];
+    u8 x111[0x11C - 0x111];
+    u16 x11C;     // key/input mask (func_80040B34 tests vs x13E)
+    u16 x11E;     // key/input mask (func_800406A8 family tests vs x138)
+    u8 x120[0x138 - 0x120];
+    u16 x138;
+    u8 x13A[0x13E - 0x13A];
+    u16 x13E;
+    u8 x140[0x170 - 0x140];
     s8 weapon_right_no;
-    u8 x171[0x450 - 0x171];
+    u8 x171[0x449 - 0x171];
+    u8 x449;
+    u8 x44A[0x450 - 0x44A];
     u8 rb_parts_equip_data[4];
     u8 rb_parts_sort_data[0x454 + 0x20 - 0x454];
     u8 x474[0x474 + 0x80 - 0x474];

@@ -1,6 +1,12 @@
 #include "common.h"
+#include "rock_neo/player.h"
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003BE40);
+void func_8003BE6C(PL_WORK*, s32);
+void func_80040764(void);
+
+void func_8003BE40(s32 arg0) {
+    func_8003BE6C(&Player_work, arg0);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003BE6C);
 
@@ -88,7 +94,11 @@ void func_80040130(void) {}
 
 void func_80040138(void) {}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040140);
+void func_80040140(PL_WORK* pl) {
+    if (*(u8*)&pl->xA == 2) {
+        func_80040764();
+    }
+}
 
 void func_80040170(void) {}
 
@@ -126,9 +136,23 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800405F4);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040630);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800406A8);
+s32 func_800406A8(PL_WORK* pl) {
+    if (pl->x11E & pl->x138) {
+        pl->x9 = 7;
+        pl->xA = 0;
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800406DC);
+s32 func_800406DC(PL_WORK* pl) {
+    if (pl->x11E & pl->x138) {
+        pl->x9 = 8;
+        pl->xA = 0;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040710);
 
@@ -138,7 +162,14 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040818);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040AEC);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040B34);
+s32 func_80040B34(PL_WORK* pl) {
+    if (pl->x11C & pl->x13E) {
+        pl->x9 = 5;
+        pl->xA = 0;
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040B68);
 
@@ -180,4 +211,10 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80042094);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80042154);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80042208);
+s32 func_80042208(void) {
+    if (*(s16*)&Player_work.life >= 0) {
+        Player_work.x449 = 1;
+        return 1;
+    }
+    return 0;
+}

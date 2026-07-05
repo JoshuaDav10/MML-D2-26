@@ -154,3 +154,27 @@ iteration teaches something; this file is how the project gets smarter.
 - **CD_CMD queue**: unknown_Cd_strucptr points into a 0x10-stride command
   queue; writers fill {cmd, arg0, arg1} and advance the pointer (cmds seen:
   1, 4, 6). Cd_read_sync2's sentinel compare is the queue-drained check.
+
+## Session 2026-07-04 (late night) additions — proven against the hash
+- **Empty stack frame = dead local array**: Sce_flag_test allocates/frees an
+  8-byte frame it never touches. Reproduced with an unused `u8 buf[8];`
+  local — cc1 keeps frame space for local arrays even at -O2 when all real
+  computation lives in registers. If a leaf function has `addiu sp,-N` with
+  no stores to the frame, add a dead N-byte local array.
+- **Param reassignment for in-place shifts**: `srl a0,a0,3` (result back in
+  the argument register) comes from literally reassigning the parameter
+  (`flagno = (u32)flagno >> 3;`), not from a fresh local.
+- **Split computation across a load**: li 0x80 ... lbu ... srav (mask
+  computation straddling the array load) = mask computed into a LOCAL in a
+  separate statement; the scheduler then hoists the load between li and
+  srav. Inline `(0x80 >> (x & 7))` keeps li+sra adjacent — one insn off.
+- **Branch sense from the asm**: bgez that jumps TO the store/return-1 block
+  = `if (x >= 0) { ...; return 1; } return 0;`. bltz jumping to return-0 is
+  NOT equivalent codegen even though it's equivalent C.
+- **`m->field += 1` as a call argument** (`f(a, b, m->script += 1)`) passes
+  the incremented value straight from the RMW register — no reload. Args
+  evaluate right-to-left, so the RMW's load comes first.
+- **Struct fields confirmed**: MOJI_TASK stack2[8] @0x4C + u16 xC0 sp
+  (script2 mirror of the script call stack); PL_WORK x9 (state id),
+  u16 xA (sub-state), key masks x11C/x11E vs x138/x13E, x449; SCENE_WORK
+  created (0x800C4C48, size 0xA8): x8/x9 bytes, x10/x18/x1C words, xA4 ptr.

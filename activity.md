@@ -71,3 +71,25 @@
   through the real pipeline is fast and decisive.
 - sha1 OK; mutation test (func_8001D414) done. 82 matched, 402 stubs left,
   ~3.3% instruction volume.
+
+## 2026-07-04 (late night — 17-function batch, 99 total)
+- Matched 17 more (~209 instructions): moji MojiTaskExec2 (wrapper passing
+  script base 0x80153000), func_80054A84 (script2 stack pop — MOJI_TASK
+  gains stack2[8] @0x4C + u16 xC0), func_80057BFC (gp global D_80098AF4 +
+  `m->script += 1` passed as call arg); player func_8003BE40, func_80040140,
+  func_800406A8/DC + func_80040B34 (key-mask tests; PL_WORK gains x9, xA,
+  x11C, x11E, x138, x13E, x449), func_80042208; scene func_8001F1DC/F20C
+  (new SCENE_WORK struct + include/rock_neo/scene.h), func_8001FB24,
+  Sce_flag_test; cd func_8001C7F0 (CdSyncCallback); main func_80012E98;
+  sound func_80019A70/AE0 (Sce_flag_test callers).
+- Sce_flag_test was the puzzle of the batch: needed (a) `mask` computed as a
+  separate local so the load schedules into the middle of the mask
+  computation, (b) param reassignment (`flagno = (u32)flagno >> 3`) for the
+  in-place srl, and (c) an UNUSED `u8 buf[8]` local to reproduce the
+  original's empty 8-byte stack frame.
+- Condition sense matters: func_80042208 needed `if (x >= 0) {...; return 1;}
+  return 0;` (bgez around) not `if (x < 0) return 0;` (bltz to).
+- if/else-with-direct-stores again beat a temp for func_8001FB24 (4 stores
+  cross-jumped, value in $v0 not $a0).
+- sha1 OK; mutation test (Sce_flag_test mask). 99 matched, 385 stubs,
+  ~4.0% instruction volume.
