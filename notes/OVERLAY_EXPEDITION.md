@@ -4,6 +4,11 @@ Written 2026-07-05 by the main decomp session (Claude). This is a
 self-contained brief for an agent working on the overlay build. Read it
 fully before touching anything.
 
+**Patch 2026-07-05 (Phase 0 investigation):** Classifications, phase names, and
+imitation targets below were corrected after byte-level analysis. Details in
+`notes/OVERLAY_EXPEDITION_LESSONS.md` (Sprint: Phase 0). Ground-truth counts
+(205 / 186 / 19) unchanged.
+
 ## Ground truth (measured 2026-07-05, do not trust older notes)
 
 The project docs used to say "ST** overlays don't link." That is STALE.
@@ -15,23 +20,23 @@ Measured state:
 - **19 files are simply missing a config** — no splat yaml under
   `config/overlay/`, so the build never attempts them:
 
-  | file | size | guess |
-  |---|---|---|
-  | BS16VAB1.BIN | 147456 | sound bank? (VAB) |
-  | EXIT_MAP.BIN | 83968 | code+data overlay |
-  | EXIT_SUB.BIN | 40960 | code+data overlay |
-  | EXIT_SUP.BIN | 307200 | code+data overlay |
-  | FONT.BIN | 36864 | pure data (font) |
-  | GAMEOVER.BIN | 327680 | screen data |
-  | GAUGE.BIN | 43008 | HUD data |
-  | KAIFONT.BIN | 36864 | pure data (font) |
-  | MAP_A1/A2/B1/B2/B3.BIN | 69632 ea | map data family |
-  | ST0B_00D.BIN | 108544 | stage overlay |
-  | ST0B_00E.BIN | 94208 | stage overlay |
-  | ST0B_01B.BIN | 38912 | stage overlay |
-  | ST17B.BIN | 106496 | stage overlay |
-  | ST19B.BIN | 55296 | stage overlay |
-  | ST1E_06.BIN | 350208 | stage overlay |
+  | file | size | type (measured) | imitate |
+  |---|---|---|---|
+  | FONT.BIN | 36864 | data: type-3 font.dat (1 chunk) | `splat.us.HEAD00` |
+  | KAIFONT.BIN | 36864 | data: type-3 kaifont.dat (1 chunk) | `splat.us.FONT` |
+  | MAP_A1/A2/B1/B2/B3.BIN | 69632 ea | data: type-1 TIM (1 chunk each) | `splat.us.HEAD00` |
+  | BS16VAB1.BIN | 147456 | data: type-5 VAB (1 chunk) | `splat.us.HEAD00` |
+  | ST0B_00E/01B.BIN | 94208/38912 | data: type-1 TIM (1 chunk + pad) | `splat.us.HEAD00` |
+  | ST19B.BIN | 55296 | data: 2× type-1 TIM @0/@0x8800 | `splat.us.SUB_WPN` |
+  | ST17B.BIN | 106496 | data: 2× type-1 TIM @0/@0x8800 + pad | `splat.us.ST19B` |
+  | ST0B_00D.BIN | 108544 | data: 2× TIM + terminator | `splat.us.ST1E_06` |
+  | ST1E_06.BIN | 350208 | data: 2× TIM + terminator | `splat.us.SUB_WPN` layout |
+  | GAUGE.BIN | 43008 | data: type-1 + type-10 TIM | no template (type 10 novel) |
+  | GAMEOVER.BIN | 327680 | data: TIM + VAB + more | `HEAD00` + `BS16VAB1` |
+  | EXIT_MAP/SUB.BIN | 83968/40960 | data: type-9 TIM + raw tail | `splat.us.HEAD00` (type 9 novel) |
+  | EXIT_SUP.BIN | 307200 | data: 4 chunks (types 1/10/1/9) | `GAUGE` + `EXIT_MAP` |
+
+  **None of the 19 are code/progbin overlays** — all are dashchunk asset archives.
 
 The goal of this expedition: **all 205 files build and byte-match**, with
 a check target that proves it in one command.
@@ -43,9 +48,9 @@ a check target that proves it in one command.
    `for f in disks/us/CDDATA/DAT/*.BIN; do b=$(basename $f);
    [ -f "build/$b" ] || echo $b; done`
 2. For each missing file, determine what it is. Tools you have:
-   - Compare against a SIMILAR already-configured file. E.g. diff the
-     yaml/config layout of `config/overlay/ST17/` (exists) vs the missing
-     `ST17B.BIN`. Stage overlays follow a strong family pattern.
+   - Compare against a SIMILAR already-configured **data archive** (e.g.
+     `splat.us.HEAD00` for single-chunk, `splat.us.SUB_WPN` for two-chunk
+     `@0`/`@0x8800`). Do **not** assume `ST17B` ↔ `ST17` progbin similarity.
    - `xxd file | head`: PS-X EXE header? VAB/VAG magic? Pure pixel data?
    - How does the existing build handle *data-only* files elsewhere
      (look at how assets/ and the yaml `bin` segment type are used)?
@@ -61,14 +66,17 @@ a check target that proves it in one command.
    SILENT (byte-identical). Then run the two regression gates below.
 4. Commit exactly this one file's config. STOP for review.
 
-### Phase 2 — Remaining data-only files (fonts, maps, screens)
-Same recipe, one commit per file or per obvious family (MAP_A*/B*).
+### Phase 2 — Remaining single-chunk data (fonts, maps, VAB, small TIM)
+Same recipe as Phase 1 (`HEAD00` pattern): KAIFONT, MAP_A*/B*, BS16VAB1,
+ST0B_00E, ST0B_01B. One commit per file or per obvious family.
 
-### Phase 3 — Code overlays (ST0B_*, ST17B, ST19B, ST1E_06, EXIT_*)
-These need real splat extraction (function splits, symbol addresses),
-imitating their sibling configs (`ST0B_00A` etc. if they exist, or the
-closest stage letter). Expect iteration. One overlay per commit, each
+### Phase 3 — Multi-chunk data archives (ST19B, ST17B, ST0B_00D, ST1E_06)
+Per-chunk yaml + `build.json` offsets (often second chunk at **`0x8800`**).
+Data subsegments only — no progbin/asm decomp. One archive per commit, each
 byte-verified.
+
+### Phase 3b — Novel / large data (GAUGE, EXIT_*, GAMEOVER)
+Types **9** and **10** chunks and 3+ chunk archives. Highest risk; do last.
 
 ### Phase 4 — Check target
 Add/extend a make target so `make CPP=cpp check` (or a new
