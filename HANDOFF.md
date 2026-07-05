@@ -13,8 +13,8 @@
 - **The build matches byte-for-byte** with 30 functions decompiled to real C.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 32 / 475** functions (2 upstream + 30 this session), ~0.5% of
-  instruction volume — small-function harvest phase. See `progress.md`.
+- **Matched: 46 / 475** functions, ~0.6% of instruction volume — small-
+  function harvest phase. See `progress.md`.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
 ## What was accomplished this session (chronological)
@@ -74,11 +74,14 @@ see `git log` on dev.
 1. **Continue small-function harvest**: `wc -l asm/rock_neo/nonmatchings/*/*.s
    | sort -n` — everything ≤25 lines is quick wins; many moji script handlers
    share MOJI_TASK vocabulary.
-2. **main.c small funcs** (func_80012FA4/80012FC8, ~15 lines) and the
-   already-written-but-disabled functions in game.c behind
-   `#ifndef ACCEPT_REORDERING_BULLSHIT` — the reorder pass likely makes them
-   viable now: enable one (flip its ifdef), build, check. If OK, upstream
-   pre-wrote several matches for free. Verify each individually.
+2. **main.c small funcs** (func_80012FA4/80012FC8 ~15 lines, vsync_cb 16)
+   and the moji 11–14 line script handlers (func_80054410, func_8005457C,
+   func_80056128, func_80057124, func_80058C08 — MOJI_TASK vocabulary).
+   NOTE: game.c's 4 ifdef-disabled functions are ALREADY enabled and
+   verified (`#define ACCEPT_REORDERING_BULLSHIT` at top of game.c);
+   stripping the dead INCLUDE_ASM branches there is optional cleanup.
+   All trivial 8-line (jr ra/nop) stubs are exhausted — everything
+   remaining requires actually reading the asm.
 3. **Medium functions (25–80 lines)**: consider installing m2c
    (github.com/matt-kempster/m2c) for draft C — `tools/m2ctx.py` already
    exists for generating its context. Drafts are never trusted, only iterated
