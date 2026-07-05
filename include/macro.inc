@@ -25,3 +25,9 @@
 .macro move a, b
     addu \a, \b, $zero
 .endm
+.macro nonmatching name, size
+.endm
+.macro enddlabel name
+.endm
+.macro alabel name
+.endm
