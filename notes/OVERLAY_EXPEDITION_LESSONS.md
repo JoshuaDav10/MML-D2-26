@@ -170,3 +170,36 @@ overlay sweep: 196/205
 ```
 
 <!-- Next sprint: append below this line -->
+
+---
+
+## Sprint: Phase 3 — Two-chunk TIM archives (2026-07-05)
+
+**What we did:** Added overlay configs for four dual-chunk TIM archives modeled on
+`SUB_WPN` layout (chunk0 @0 through `0x8800`, chunk1 header @`0x8800`, data
+@`0x9000`): ST19B, ST17B, ST0B_00D, ST1E_06. Eight yaml files + four
+`build.json`. Splat split + clean build on `overlay-expedition`.
+
+### Lessons
+
+1. **SUB_WPN two-chunk pattern generalizes** — `ovl0` end `[0x8800]`, `ovl1`
+   start/end at header/data boundaries; `build.json` second chunk offset
+   `34816` (`0x8800`). All four archives byte-match without a third yaml for
+   trailing padding/terminator bytes (copy-and-emplace preserves tail).
+
+2. **ST1E_06 staff roll TIMs** — slightly smaller payload (`0x8040` vs `0x8120`)
+   but same header layout; end `0x10120` for ovl1.
+
+3. **Overlay count now 200/205.** Remaining 5 are Phase 3b novel types
+   (GAUGE type 10, EXIT_* type 9, EXIT_SUP 4-chunk, GAMEOVER multi).
+
+### Verification
+
+```
+rm -rf build && make CPP=cpp
+cmp disks/us/CDDATA/DAT/{ST19B,ST17B,ST0B_00D,ST1E_06}.BIN build/*.BIN  # all silent
+make CPP=cpp check_rock_neo_only  # OK
+overlay sweep: 200/205
+```
+
+<!-- Next sprint: append below this line -->
