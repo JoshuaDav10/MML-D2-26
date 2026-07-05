@@ -5,8 +5,20 @@ extern u8 D_80098198;
 extern u8 D_80098199;
 
 extern u8 D_80098AB8[];
+extern s32 D_800988E8;    // lui-accessed (not sdata)
+extern s32 D_800ACDBC[];
+extern s32 D_800BC740;
+extern s32 D_800BC744;
+extern s32 D_800BC748;
+extern s32 D_800BC770;
+extern s32 D_800BC774;
+extern s32 D_800BC778;
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D854);
+void func_8001D854(u8 arg0) {
+    if (D_80098788 == 0) {
+        D_80098788 = arg0;
+    }
+}
 
 s32 func_8001D878(void) {
     return D_80098AB8[0] & 0x20;
@@ -44,7 +56,17 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DE84);
 
 void func_8001DEDC(void) {}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DEE4);
+void func_8001DEE4(void) {
+    s32 *p;
+    s32 i;
+
+    D_800988E8 = 0;
+    i = 0x1F;
+    p = &D_800ACDBC[0];
+    for (; i >= 0; i--) {
+        *p-- = 0;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DF10);
 
@@ -66,9 +88,17 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E550);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E6C0);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E7E4);
+void func_8001E7E4(s32 arg0, s32 arg1, s32 arg2) {
+    D_800BC740 = arg0 << 16;
+    D_800BC744 = arg1 << 16;
+    D_800BC748 = arg2 << 16;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E810);
+void func_8001E810(s32 arg0, s32 arg1, s32 arg2) {
+    D_800BC770 = arg0 << 16;
+    D_800BC774 = arg1 << 16;
+    D_800BC778 = arg2 << 16;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E83C);
 

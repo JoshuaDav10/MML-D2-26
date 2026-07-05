@@ -5,11 +5,14 @@
 
 typedef struct MOJI_TASK {
     u32 flags;    // 0x00 (MOJI_TASK0_ON etc.)
-    u8 x4[0x10 - 0x4];
+    u8 x4[0x8 - 0x4];
+    u16 x8;
+    u8 xA[0x10 - 0xA];
     u16 x10;
     s16 x12;
     u8* script;   // 0x14 — script/text stream pointer
-    u8 x18[0x3B - 0x18];
+    u8* stack[8]; // 0x18 — script call stack (func_80054AB4 pops via xBE)
+    u8 x38[0x3B - 0x38];
     u8 x3B;
     u8 x3C;
     s8 x3D;
@@ -18,10 +21,13 @@ typedef struct MOJI_TASK {
     s32 x40;
     u8 x44[0x6C - 0x44];
     u8* script2;  // 0x6C — second script stream pointer
-    s16 x70;
+    u8 x70;
+    u8 x71;
     s8 x72;
     u8 x73[0x78 - 0x73];
     s8 x78;
+    u8 x79[0xBE - 0x79];
+    u16 xBE;      // 0xBE — script stack pointer (index into stack[])
 } MOJI_TASK;
 
 unknown_t MojiTaskExec(unknown_t, unknown_t, unknown_t);

@@ -19,16 +19,29 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 64 / 475** functions — small-function harvest phase. See
-  `progress.md` (includes 7 upstream game.c functions found to be
-  compiled+matching all along but previously uncounted).
+- **Matched: 82 / 475** functions (~3.3% of instruction volume, 402 active
+  stubs left) — small-function harvest phase. See `progress.md`.
 - **NEW: the pipeline can now emit $gp-relative (sdata) access** via
   `tools/gprel.py` (between maspsx and patchasm). Before this, C code could
   never match any function touching an sdata global (GAS -G0 always emitted
   lui/$at). Read LESSONS.md §2 (rewritten) before declaring any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
-## What was accomplished in the LATE 2026-07-04 session (most recent)
+## What was accomplished in the NIGHT 2026-07-04 session (most recent)
+
+1. **18 more matches (82 total)** — all ≤14-instruction functions across
+   main/sound/cd/Code800133D8/scene/moji, hash-verified + mutation-tested.
+   Highlights: func_80012F78 (first newly-written gp-relative C),
+   the CD_CMD command-queue writer family (new struct in cd.c),
+   MOJI_TASK script call stack discovered (stack[8] @0x18, u16 sp @0xBE;
+   func_80054AB4 is the script "return" opcode).
+2. **New matching idioms** in LESSONS.md "night additions": scalar-pointer
+   vs array decl by use count, volatile for reload-after-store,
+   ternary-vs-if/else register choice, local init order, and the
+   brute-force-orderings-in-a-scratch-TU tactic (fast, decisive).
+3. gprel.py now drops ALL small `.extern`s (COMMON-leak proofing).
+
+## What was accomplished in the LATE 2026-07-04 session
 
 1. **Salvaged an uncommitted, unverified WIP batch** left in the tree (it did
    NOT build to a match — reminder: never leave unverified WIP uncommitted

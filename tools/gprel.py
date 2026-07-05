@@ -9,8 +9,8 @@ linker allocates at a bogus address, shifting all data after it.
 
 This pass:
   1. collects symbols from `.extern NAME, SIZE` with 0 < SIZE <= 8 and drops
-     those directives (prevents the COMMON allocation; the real definitions
-     live in the extracted .scommon/.sdata asm),
+     ALL small .extern directives, census-approved or not (prevents the
+     COMMON allocation; the real definitions live in the extracted asm),
   2. rewrites bare load/store operands on those symbols to explicit
      `%gp_rel(NAME)($gp)`, which GNU as assembles to a single gp-relative
      instruction (same as the original binary),
@@ -97,8 +97,12 @@ def main():
     out = []
     for line in lines:
         m = EXTERN_RE.match(line)
-        if m and m.group(1) in sdata_syms:
-            continue  # drop: avoid GAS creating a COMMON for it
+        if m and m.group(1) in small_externs:
+            # drop ALL small .extern directives (not just sdata ones): their
+            # only effects are the sdata hint (handled here via the census)
+            # and letting GAS emit a COMMON that the linker allocates at a
+            # bogus address, silently shifting the data segment
+            continue
         m = MEM_RE.match(line)
         if m:
             indent, op, reg, target = m.groups()

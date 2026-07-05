@@ -116,3 +116,41 @@ iteration teaches something; this file is how the project gets smarter.
   -c "F .text"` minus active INCLUDE_ASM stubs (count `.include nonmatchings`
   in preprocessed source). This caught 7 upstream game.c functions that were
   compiled+matching but never counted.
+
+## Session 2026-07-04 (night) additions — proven against the hash
+- **Pointer-global declaration depends on USE COUNT in the TU**: the
+  `extern T *foo[]; foo[0]` convention only matches functions that touch the
+  pointer once (Cd_read_sync2). When a function reads AND writes it
+  (read ptr, advance, store back), the array form makes cc1 CSE the array
+  base into a register (lui/addiu + lw 0(reg)) — mismatch. Declare a plain
+  scalar pointer (`extern CD_CMD *unknown_Cd_strucptr;`) to get bare
+  lw/sw per access (GAS lui/$at form, matching the original). The gp census
+  keeps scalar decls safe now; COMMON leaks are gone (gprel.py drops every
+  small .extern, not just census-approved ones).
+- **`volatile` for callback counters**: original vsync_cb stores the
+  incremented counter then RELOADS it for the return value. A plain extern
+  lets cc1 reuse the register (one lw short). `extern volatile s32 ...`
+  reproduces the reload. If a diff shows a "redundant" load after a store
+  of the same global, think volatile, not weird source.
+- **Ternary vs if/else register choice**: `x = cond ? a : b;` put the temp
+  in $a0; separate `if/else` with direct stores cross-jumped into the same
+  single-store shape but with $v0 (func_8001997C). If the value register is
+  mirrored on an if/else-shaped diff, flip between ternary and if/else.
+- **Local init order drives register assignment** (func_8001DEE4): `i` then
+  `p` initialized in that order gave i=$v1, p=$v0 matching the original;
+  the reverse order mirrored them. Cheap knob before deeper surgery.
+- **Statement order vs emission order — sched1/RA/sched2** (func_8005459C):
+  cc1 schedules on pseudos, allocates, then schedules again. The matching
+  source order (x10=x8; x12+=0xC; x3E=x70; script+=1) emits loads
+  x8,x70,script first and pushes x12's store into the delay slot — nothing
+  like the statement order. When 2-3 reorderings fail, brute-force ALL
+  orderings in a scratch TU through the real pipeline (cpp|cc1|maspsx) and
+  compare instruction streams — 4 variants per compile, seconds each,
+  exact-match test without touching the tree.
+- **MOJI_TASK is a script VM task**: 0x18 = `u8* stack[8]` call stack,
+  0xBE = u16 stack pointer (func_80054AB4 is the "return" opcode:
+  `m->script = m->stack[--m->xBE];` — the pre-decrement form is REQUIRED;
+  two statements would reload xBE through the aliasing store and add an lhu).
+- **CD_CMD queue**: unknown_Cd_strucptr points into a 0x10-stride command
+  queue; writers fill {cmd, arg0, arg1} and advance the pointer (cmds seen:
+  1, 4, 6). Cd_read_sync2's sentinel compare is the queue-drained check.

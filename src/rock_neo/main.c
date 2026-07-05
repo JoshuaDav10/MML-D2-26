@@ -4,6 +4,12 @@
 #include "rock_neo/cd.h"
 #include "rock_neo/moji.h"
 
+extern volatile s32 idk_framecounter_maybe; // 0x80098888, lui-accessed (not sdata);
+                                            // volatile: original reloads after store
+extern s32 D_80098158;             // sdata ($gp)
+extern s32 D_800979D8;             // sdata ($gp)
+void ChangeTh(u32);
+
 // clang-format off
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", main);
@@ -22,7 +28,10 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_800122D0);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012350);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", vsync_cb);
+s32 vsync_cb(void) {
+    idk_framecounter_maybe += 1;
+    return idk_framecounter_maybe;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012424);
 
@@ -46,7 +55,11 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012ECC);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012F24);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012F78);
+void func_80012F78(s32 arg0) {
+    D_80098158 = arg0;
+    D_800979D8 = 1;
+    ChangeTh(0xFF000000);
+}
 
 void func_80012FA4(s32 arg0) {
     u16 *p = (u16 *)(0x801F8100 + (arg0 << 7));

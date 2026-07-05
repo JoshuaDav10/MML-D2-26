@@ -45,3 +45,29 @@
   along but uncounted (func_80016BC0..func_80016E90 range); true total is
   64 matched, 420 active stubs. sha1 OK; mutation test done (broke
   func_8005457C → check failed → restored → OK).
+
+## 2026-07-04 (night — 18-function batch, 82 total)
+- Matched 18 more small functions (9-12 instructions each, ~189 instructions):
+  main vsync_cb + func_80012F78 (first NEW gp-relative C, two sdata stores);
+  sound func_8001997C + func_8001B314 (SpuSetKey); cd func_8001D414 +
+  Cd_read_comb + func_8001D468 (CD_CMD command-queue writers, new struct);
+  Code800133D8 func_80013F60/F8C (GAME_WORK duplicates of game.c pair);
+  scene func_8001D854, func_8001DEE4, func_8001E7E4, func_8001E810;
+  moji func_80054424 (u32 reader), func_8005459C, func_80054AB4
+  (script call-stack pop — MOJI_TASK.stack[8] at 0x18 + u16 xBE sp),
+  func_8005531C + func_80055660 (flag-clear opcodes).
+- MOJI_TASK grew: u16 x8, stack[8] @0x18, u8 x70/x71, u16 xBE @0xBE.
+- unknown_Cd_strucptr: array-decl convention only matches SINGLE-use
+  functions; multi-use needs plain scalar pointer decl (cc1 CSEs the array
+  base otherwise). Cd_read_sync2 re-verified with the scalar decl.
+- vsync_cb needed `volatile` on the frame counter (original reloads after
+  store; plain extern lets cc1 CSE the reload away).
+- gprel.py now drops ALL small `.extern` directives (COMMON-leak prevention
+  no longer depends on census membership).
+- Register-allocation lesson: statement order != emission order; cc1
+  sched1(pseudo) -> RA -> sched2 means the right source order can look
+  "shuffled" (func_8005459C matched with x10,x12,x3E,script order emitting
+  x8,x70,script loads first). Brute-forcing 4-8 orderings in a scratch TU
+  through the real pipeline is fast and decisive.
+- sha1 OK; mutation test (func_8001D414) done. 82 matched, 402 stubs left,
+  ~3.3% instruction volume.

@@ -1,6 +1,13 @@
 #include "common.h"
 
-extern u8 *unknown_Cd_strucptr[];
+typedef struct {
+    s32 cmd;   // 0x0 — command id (1, 4, 6 seen so far)
+    s32 arg0;  // 0x4
+    s32 arg1;  // 0x8
+    s32 xC;    // 0xC
+} CD_CMD;      // 0x10 — Cd command queue entry
+
+extern CD_CMD *unknown_Cd_strucptr;
 extern u8 D_800A3A40[];
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B3E4);
@@ -53,11 +60,28 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D324);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D394);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D414);
+void func_8001D414(s32 arg0, s32 arg1) {
+    CD_CMD *p = unknown_Cd_strucptr;
+    p->cmd = 4;
+    p->arg0 = arg0;
+    p->arg1 = arg1;
+    unknown_Cd_strucptr = p + 1;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", Cd_read_comb);
+void Cd_read_comb(s32 arg0) {
+    CD_CMD *p = unknown_Cd_strucptr;
+    p->cmd = 6;
+    p->arg0 = arg0;
+    unknown_Cd_strucptr = p + 1;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D468);
+void func_8001D468(s32 arg0, s32 arg1) {
+    CD_CMD *p = unknown_Cd_strucptr;
+    p->cmd = 1;
+    p->arg0 = arg0;
+    p->arg1 = arg1;
+    unknown_Cd_strucptr = p + 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D494);
 
@@ -72,5 +96,5 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D7AC);
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D7E4);
 
 s32 Cd_read_sync2(void) {
-    return unknown_Cd_strucptr[0] != D_800A3A40;
+    return unknown_Cd_strucptr != (CD_CMD *)D_800A3A40;
 }
