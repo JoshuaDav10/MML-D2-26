@@ -27,9 +27,19 @@ matching-decomp judgment required.**
 Priority order: Brief 1 > Brief 2 > Brief 4 > Brief 5 > Brief 3.
 (Brief 1 is a durability risk; the others are accelerators.)
 
+**Status (2026-07-05):** Brief 2 **DONE** (`overlay-expedition`, `cfd738a`).
+Brief 1 **PARTIAL** on `infra/submodule-patches` (`d952c39+`) — insurance
+patches + local `mml-local` submodule commits done; **blocked on `gh auth`**
+for fork/push + `.gitmodules` pin. See `notes/patches/README.md`.
+
 ---
 
 ## Brief 1 — Persist the uncommitted submodule patches (HIGHEST PRIORITY)
+
+> **2026-07-05 update:** Insurance patches committed on `infra/submodule-patches`.
+> Both submodules have clean `mml-local` branches (`maspx` `7511db8`,
+> `asm-differ` `11e6d8c`). Fork/push + `.gitmodules` pin **blocked** — run
+> `gh auth refresh -h github.com` then finish per `notes/patches/README.md`.
 
 ### Problem
 
@@ -98,6 +108,9 @@ verification outputs.
 ---
 
 ## Brief 2 — ST1A silent link failure + swallowed overlay errors
+
+**DONE** (2026-07-05, `overlay-expedition` `cfd738a`). See
+`notes/OVERLAY_EXPEDITION_LESSONS.md` sprint "ST1A silent link failure fix".
 
 Already fully briefed in **`notes/OVERLAY_ST1A_FIX.md`** (on both dev and
 overlay-expedition as of f1be8f3). Work it on `overlay-expedition`. Summary:

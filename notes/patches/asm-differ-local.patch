@@ -1,0 +1,15 @@
+diff --git a/diff.py b/diff.py
+index 230dbae..51eb17c 100755
+--- a/diff.py
++++ b/diff.py
+@@ -1009,8 +1009,8 @@ def eval_expr(expr: str) -> Any:
+ 
+ 
+ def eval_(node: ast.AST) -> Any:
+-    if isinstance(node, ast.Num):  # <number>
+-        return node.n
++    if isinstance(node, ast.Constant):  # <number>
++        return node.value
+     elif isinstance(node, ast.BinOp):  # <left> <operator> <right>
+         return operators[type(node.op)](eval_(node.left), eval_(node.right))
+     elif isinstance(node, ast.UnaryOp):  # <operator> <operand> e.g., -1
