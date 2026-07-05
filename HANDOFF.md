@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-05 overnight, 182 matched / 10.5%)
+# HANDOFF — MML Decomp session state (2026-07-05 day, 209 matched / 12.6%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,7 +19,7 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 182 / 475** functions (~10.5% of instruction volume). See
+- **Matched: 209 / 475** functions (~12.6% of instruction volume). See
   `progress.md`.
 - **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&
   rm -f build/rock_neo.elf` before `make`). This session found a prior
@@ -35,7 +35,35 @@
   any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
-## What was accomplished in the 2026-07-05 OVERNIGHT autonomous session (most recent)
+## What was accomplished in the 2026-07-05 DAY session (most recent)
+
+Batches 10-13, all clean-rebuilt + hash-gated + mutation-tested + pushed to
+dev (commits 615f06d..b5762e0). 22 new matches (187 → 209), ~12.6% volume.
+
+1. **Batch 10 (4)**: finished the overnight in-flight batch — scene
+   func_8001DE84 (NEW IDIOM: goto-shared return label defeats cc1's
+   setcc/sltu tail collapse) + func_8001F740, main func_8001319C
+   (left-assoc pointer arithmetic pins addu order), debug func_800629F0
+   (NEW IDIOM: neighbor-symbol STORES — `((u16*)&Scene_work)[-26]` — pin a
+   fn-table load AND defeat arg anchor-CSE).
+2. **Batch 11 (7)**: moji func_800594CC/54798/55344/55C1C, player
+   func_80041E90, scene func_8001E390/F580. PARKED func_80041EF4 with an
+   RTL-verified open problem: cc1 elides the original's andi 0xFFFF pair
+   (combine's nonzero_bits proves every source shape ≤0xFFFF).
+3. **Batch 12 (6)**: cd CdControl/CdControlB retry twins, moji
+   func_80057A24/58788 (magic-multiply slot index), sound func_8001A0A8,
+   scene func_8001E460. **CAUGHT A FALSE PASS**: cd.c had a stale
+   conflicting declaration; the TU failed to compile, the pipeline wrote a
+   PARTIAL .o, and check printed OK on the stale exe — a build-runner
+   subagent even reported it as a pass. Error-grep make output YOURSELF.
+4. **Batch 13 (5)**: player func_8003F224/40224 (goto-return trick
+   generalized; `and` operand order follows source order — new knob),
+   scene func_8001D8C0, moji func_80054ADC/55BB0 (D_8008AAC0 table pair).
+5. PARKED with findings this session: func_80041EF4 (andi elision),
+   func_80019918 (FC50 cross-jump family), func_8001A6DC + func_80013578
+   (register-birth / scheduling-slot genus).
+
+## What was accomplished in the 2026-07-05 OVERNIGHT autonomous session
 
 Batches 4-8b, all clean-rebuilt + hash-gated + mutation-tested + pushed to dev
 (commits 2791c0c..c3c6807). 46 new matches (136 → 182), crossing 10% volume.
@@ -94,22 +122,29 @@ Batches 4-8b, all clean-rebuilt + hash-gated + mutation-tested + pushed to dev
    patchasm + normalizing stream diff) — the tree got exactly one edit and
    matched on the first in-tree build.
 
-## Where to pick up next (overnight session's view)
+## Where to pick up next (day session's view)
 
-1. Smallest remaining stubs (insn counts): moji func_80057DF4 (23),
-   sub_scrn func_80060248 (23) + Sub_screen_cancel_check-family siblings,
-   debug func_800629F0 (24), main func_8001319C (24), moji func_80057D00
-   (24), sound func_800198C0/func_800199A4, player func_8003EE68,
-   scene func_8001DE84/func_8001F740/func_8001FCE4 (avoid the FCA4/FC50/
-   FDE4 jump-canonicalization shapes — see LESSONS).
-2. PARKED with findings: func_80042044 (player; reg-birth-order),
-   func_8001FC50/FCA4/FDE4 (scene; jump-canonicalization),
-   Sub_screen_rb_parts_calc (draft 6 insns short).
-3. The scratch-TU pipeline script is at the session scratchpad as tryfn.sh
-   (cpp|cc1|maspsx|gprel|patchasm|as + objdump); recreate from Makefile
-   line 266 if gone.
+1. Smallest remaining stubs are now ≥35 insns: get the list with the
+   preprocessor-based stub census (grep `.include` after cpp — a NAIVE
+   grep of INCLUDE_ASM overcounts ifdef'd-out lines):
+   `for f in src/rock_neo/*.c; do cpp -Iinclude <defines> $f | grep -o
+   'nonmatchings/...' ; done` then wc -l the .s files.
+2. PARKED with findings (don't re-grind blind): func_80042044 +
+   func_8001A6DC + func_80013578 (register-birth/scheduling genus),
+   func_8001FC50/FCA4/FDE4 + func_800199A4 + func_80019918
+   (jump-canonicalization family), func_80041EF4 (andi elision — RTL
+   verified), Sub_screen_rb_parts_calc (draft 6 insns short),
+   func_8001FCE4 (needs jump-table-in-rodata infrastructure).
+3. Scratch-TU tooling from this session (recreate if scratchpad is gone):
+   tryfn.sh (pipeline to .o + objdump) and bytecmp.sh (assembles a draft,
+   extracts the function words from objdump, byte-compares against the
+   splat .s comment words — flags relocs for eyeballing). bytecmp is the
+   workhorse: 0 hard mismatches + sane relocs ⇒ land it in the tree.
+   Both derive from Makefile line 266's pipeline.
 4. When a callee-saved register mirror resists the usual knobs, go straight
    to the -dl dump arithmetic (LESSONS.md) instead of blind permutation.
+5. Before defining a former stub, grep the TU for pre-existing guessed
+   declarations of it (batch 12's false pass came from one).
 
 ## What was accomplished in the 2026-07-05 Fable session (audit+harvest)
 
