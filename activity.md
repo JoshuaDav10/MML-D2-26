@@ -281,3 +281,16 @@
 - func_800600CC stays gated (renamed guard): compiles 0x174 vs 0x17C.
 - game.c already #defines the macro, so its drafts were live all along.
 - Mutation tests: 4 sampled functions all failed the hash check; restored, OK.
+
+## 2026-07-05 — Fable (overnight autonomous, batch 8)
+- func_800600CC matched (182 total, ~10.5% volume). Two fixes:
+  1. The function needs lui-form accesses to Moji_flag/Moji_flag3 while the
+     rest of the TU (and the gp census) uses %gp_rel — same TU, same symbol,
+     both forms, so the original source must use different expressions.
+     Raw-address derefs (*(u32 *)0x80098A58 / 0x80098B30) assemble to the
+     original's exact lui/lw bytes.
+  2. tools/maspx: bare-constant-address loads (lw $2,-2146858192) fell
+     through every load-delay branch and got no hazard nop; the r_source-is-
+     None branch now covers constants as well as symbols (ASPSX treated
+     both alike). Clean rebuild re-validated all prior matches.
+- Mutation test: Cd_read_comb arg perturbation failed the check; restored, OK.

@@ -6,9 +6,9 @@
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 181 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 182 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~3180 of ~31,300 mapped instructions (~10.2%)
+- Volume: ~3275 of ~31,300 mapped instructions (~10.5%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -49,8 +49,9 @@
     func_8005EC80, func_80060DB8, Sub_screen_cancel_check,
     Sub_screen_shift_check, Sub_screen_sort_attack/energy/range/rapid,
     Sub_screen_rb_parts_set (pre-existing ACCEPT_REORDERING_BULLSHIT
-    drafts un-gated; MojiTaskExec K&R decl fixes the -1 arg)
-    (func_800600CC still gated: compiles 2 insns short)
+    drafts un-gated; MojiTaskExec K&R decl fixes the -1 arg),
+    func_800600CC (routine_1 switch; raw-address Moji_flag derefs +
+    maspsx bare-constant-load nop fix)
   - sound: func_80019F94, func_8001B2F0, func_8001997C, func_8001B314,
     func_80019A70, func_80019AE0, func_80019AA4, func_800199F8,
     func_80019A34, func_8001A1FC, func_8001A238 (stride-8 search loops),
@@ -77,6 +78,11 @@
   - debug: func_800629E0
 
 ## Last verified build
+- 2026-07-05 (Fable overnight, batch 8) — clean rebuild hash OK after
+  func_800600CC + a tools/maspx patch (bare-CONSTANT-address loads now get
+  the same load-delay-nop rules as bare-symbol loads; the clean rebuild
+  re-validates all 181 prior matches against the tool change). Mutation
+  test (Cd_read_comb 205→206) FAILED the check as required; restored, OK.
 - 2026-07-05 (Fable overnight, batch 7) — clean rebuild hash OK after
   un-gating 9 sub_scrn ACCEPT_REORDERING_BULLSHIT drafts (only byte delta
   was MojiTaskExec's -1 arg truncated by the ANSI u8 prototype; fixed with

@@ -54,11 +54,6 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_8005FFBC);
 
 // clang-format on
 
-#ifndef FUNC_800600CC_STILL_MISMATCHES_2_INSNS_SHORT
-// clang-format off
-
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_800600CC);
-#else
 s32 func_800600CC(SUB_SCREEN_WORK* subp) {
     switch (subp->routine_1) {
     case 0: {
@@ -80,18 +75,22 @@ s32 func_800600CC(SUB_SCREEN_WORK* subp) {
         break;
     }
     case 2: {
-        if (((*(u32 *)Moji_flag) & 0x480000FF) == 0x48000002) {
+        /* raw-address derefs of Moji_flag (0x80098A58) / Moji_flag3
+           (0x80098B30): this function needs the 2-insn lui form while the
+           rest of the TU (and the gp census) uses %gp_rel — the constant
+           deref assembles to the same bytes as the original's lui/lw */
+        if (((*(u32 *)0x80098A58) & 0x480000FF) == 0x48000002) {
             Cd_read_comb(EXIT_SUB_BIN);
             subp->routine_1++;
             break;
         }
-        if (!((*(u32 *)Moji_flag) & 0x8000000)) {
-            if (!(Moji_flag3 & 0x10000)) {
-                if (Moji_flag3 & 0x80000) {
+        if (!((*(u32 *)0x80098A58) & 0x8000000)) {
+            if (!((*(u32 *)0x80098B30) & 0x10000)) {
+                if ((*(u32 *)0x80098B30) & 0x80000) {
                     func_80060248(subp);
                 }
             } else {
-                if (Moji_flag3 & 0x40000) {
+                if ((*(u32 *)0x80098B30) & 0x40000) {
                     func_80060248(subp);
                 }
             }
@@ -109,7 +108,6 @@ s32 func_800600CC(SUB_SCREEN_WORK* subp) {
     }
     return 0;
 }
-#endif
 
 // clang-format off
 

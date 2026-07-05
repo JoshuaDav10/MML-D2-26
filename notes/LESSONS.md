@@ -370,3 +370,15 @@ iteration teaches something; this file is how the project gets smarter.
   carried 10 draft bodies behind `#ifndef ACCEPT_REORDERING_BULLSHIT` from
   before tools/patchasm.py's reorder pass existed; 9 of 10 byte-matched
   once enabled. game.c defines the macro (its drafts were always live).
+- **gp-vs-lui disagreement can be PER-FUNCTION, not just per-TU**
+  (func_800600CC): sub_scrn.c's matched Sub_screen_rb_parts_set reads
+  Moji_flag via $gp, but func_800600CC in the SAME TU needs the 2-insn lui
+  form. Only different source expressions explain both: use a raw-address
+  deref (*(u32 *)0x80098A58) for the lui-form site — GAS expands the bare
+  constant to the identical lui/lw bytes, and gprel.py ignores it.
+- **maspsx: bare-constant-address loads need the same delay-nop rules as
+  bare-symbol loads**: cc1 emits `lw $2,-2146858192` for constant derefs;
+  stock maspsx only nop-checked the symbol form, so the hazard nop before a
+  dependent consumer was dropped (function assembled 1 insn short).
+  tools/maspx now routes r_source-is-None loads (symbol OR constant) through
+  the same branch.
