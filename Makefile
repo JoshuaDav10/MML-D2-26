@@ -292,5 +292,9 @@ check_rock_neo_only: build_rock_neo_only diff_rock_neo
 
 build_rock_neo_only: $(BUILD_DIR)/$(ROCK_NEO).exe
 
+install_hooks:
+	ln -sf ../../tools/git-hooks/pre-push .git/hooks/pre-push
+	@echo "Installed .git/hooks/pre-push -> tools/git-hooks/pre-push"
+
 .PHONY: all, build, clean, disk, extract_disk, split_all, make_sha1_files, check, tools, default, debug_log_%, dosplit_%, make_sha1_file, %_build_dirs, %_bin
-.PHONY: logs, diff_%, diff_main, diff_rock_neo, chunks, check_rock_neo_only, check_overlays, format, build_rock_neo_only
+.PHONY: logs, diff_%, diff_main, diff_rock_neo, chunks, check_rock_neo_only, check_overlays, format, build_rock_neo_only, install_hooks

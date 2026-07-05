@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Gate git push on rock_neo hash + overlay byte checks (no clean rebuild).
+set -euo pipefail
+
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+if [[ ! -f "$ROOT/.venv/bin/activate" ]]; then
+    echo "pre-push: missing venv at .venv/ — run: python3 -m venv .venv && pip install -r requirements.txt" >&2
+    exit 1
+fi
+
+# shellcheck disable=SC1091
+source "$ROOT/.venv/bin/activate"
+
+export CPP=cpp
+
+run_gate() {
+    local name="$1"
+    shift
+    echo "pre-push: running $name ..."
+    if ! "$@"; then
+        echo "pre-push: ABORT — gate failed: $name" >&2
+        echo "pre-push: This hook checks your current build/ tree; it does not rm -rf build." >&2
+        echo "pre-push: Rebuild and re-check, then push again. Example:" >&2
+        echo "  source .venv/bin/activate && make CPP=cpp build_rock_neo_only && make CPP=cpp check_rock_neo_only" >&2
+        echo "pre-push: For a from-scratch ritual: rm -rf build && make CPP=cpp && make CPP=cpp check" >&2
+        echo "pre-push: Escape hatch: git push --no-verify" >&2
+        exit 1
+    fi
+    echo "pre-push: $name OK"
+}
+
+run_gate "check_rock_neo_only" make CPP=cpp check_rock_neo_only
+run_gate "check_overlays" make CPP=cpp check_overlays
+
+echo "pre-push: all gates passed"

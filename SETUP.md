@@ -244,3 +244,12 @@ Version-drift fixes made while validating the asm-diff inner loop:
 
 First matched function: `func_800542FC` (moji.c) — `arg0[5]++` accessor,
 verified byte-for-byte (sha1 `ffc08fd2...` holds).
+
+## Pre-push verification hook
+
+After your first successful `make CPP=cpp`, install the local pre-push gate with
+`make install_hooks`. Before every `git push`, the hook runs
+`make CPP=cpp check_rock_neo_only` and `make CPP=cpp check_overlays` against
+your current `build/` tree (it does not `rm -rf build`). If either gate fails,
+the push is aborted with the gate name; rebuild and re-check, or use
+`git push --no-verify` to skip the hook when you intentionally push WIP.
