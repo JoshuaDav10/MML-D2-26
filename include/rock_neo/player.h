@@ -19,11 +19,16 @@ typedef struct PL_WORK {
     u16 xA;       // sub-state counter (low byte checked by func_80040140)
     u8 xC[0x6E - 0xC];
     u16 life;
-    u8 x70[0xBD - 0x70];
+    u8 x70[0xB4 - 0x70];
+    u16 xB4;      // cleared by func_80042044 when keys don't select the action
+    u8 xB6[0xBD - 0xB6];
     u8 xBD;
     u8 xBE[0x110 - 0xBE];
     s8 x110;
-    u8 x111[0x11C - 0x111];
+    u8 x111;
+    u8 x112;      // func_80040380 swaps into x113 and zeroes
+    u8 x113;
+    u8 x114[0x11C - 0x114];
     u16 x11C;     // key/input mask (func_80040B34 tests vs x13E)
     u16 x11E;     // key/input mask (func_800406A8 family tests vs x138)
     u8 x120[0x124 - 0x120];
@@ -37,7 +42,8 @@ typedef struct PL_WORK {
     u16 x138;
     u8 x13A[0x13E - 0x13A];
     u16 x13E;
-    u8 x140[0x170 - 0x140];
+    u16 x140;     // key/input mask (func_80040AEC tests vs x11C)
+    u8 x142[0x170 - 0x142];
     s8 weapon_right_no;
     u8 x171[0x449 - 0x171];
     u8 x449;

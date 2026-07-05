@@ -10,6 +10,7 @@ typedef struct {
 extern CD_CMD *unknown_Cd_strucptr;
 extern s32 D_800989C4;
 void CdSyncCallback(s32);
+s32 func_80012E98(s32);
 extern u8 D_800A3A40[];
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B3E4);
@@ -120,7 +121,11 @@ void func_8001D7AC(s32 idx) {
     func_8001D6D8(D_80082CD0[idx][0]);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D7E4);
+void func_8001D7E4(void) {
+    while (unknown_Cd_strucptr != (CD_CMD *)D_800A3A40) {
+        func_80012E98(1);
+    }
+}
 
 s32 Cd_read_sync2(void) {
     return unknown_Cd_strucptr != (CD_CMD *)D_800A3A40;

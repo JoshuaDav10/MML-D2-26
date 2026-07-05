@@ -100,7 +100,31 @@ void func_80019FB4(void) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", Sound_call);
+typedef struct {
+    s8 x0;    // cleared on enqueue
+    s8 x1;
+    s16 x2;   // sound code
+    s32 x4;
+    s32 x8;
+    s32 xC;
+    s32 x10;
+} SND_CMD; // 0x14 — sound command queue entry
+
+extern SND_CMD *D_80098938;
+extern SND_CMD D_800BE6D8; // queue-full sentinel slot
+
+void Sound_call(s32 code, s32 arg1, s32 arg2) {
+    SND_CMD *q;
+
+    if (D_80098938 != &D_800BE6D8) {
+        D_80098938->x0 = 0;
+        q = D_80098938;
+        q->x2 = code;
+        q->x4 = arg1;
+        q->x8 = arg2;
+        D_80098938 = q + 1;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", Sound_call2);
 

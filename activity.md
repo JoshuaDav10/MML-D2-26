@@ -235,3 +235,16 @@
   (((u8 **)D_801F8114)[(n<<5)+2]) gives distinct RTL — both loads stay in
   the $at symbol-indexed form and the reloc resolves to identical bytes.
 - Mutation tests: all three perturbations failed the hash check; restored, OK.
+
+## 2026-07-05 — Fable (overnight autonomous, batch 5)
+- 5 more matches (168 total, ~8.5% volume): player func_80040380/
+  func_80040710/func_80040AEC (PL_WORK xB4/x112/x113/x140 typed),
+  sound Sound_call (SND_CMD 0x14-stride queue writer, sentinel D_800BE6D8),
+  cd func_8001D7E4 (drain-wait loop; reuses CD_CMD/D_800A3A40 sentinel).
+- All five matched in the scratch-TU pipeline before touching the tree.
+- func_80042044 parked: 20-insn body matches except register allocation
+  (original: k in $v0, ret in $t0, x12A in $a3, m never copied). Proven so
+  far: callers pass a1 => signature is (pl, arg1, arg2) forwarded to
+  func_80042154 (this alone moves ret to $t0). Remaining delta: cc1 births
+  k's pseudo before a/b so it lands in $v0 — no C shape found yet.
+- Mutation tests: all five perturbations failed the hash check; restored, OK.

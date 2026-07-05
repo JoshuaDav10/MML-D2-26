@@ -6,9 +6,9 @@
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 163 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 168 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~2550 of ~31,300 mapped instructions (~8.1%)
+- Volume: ~2650 of ~31,300 mapped instructions (~8.5%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -39,12 +39,14 @@
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
     Cd_read_comb, func_8001D468 (CD_CMD queue writers), func_8001C7F0,
     func_8001D7AC, func_8001B858 (fn-table dispatch via D_80098A84->x8),
-    func_8001CB30 (CdReady/CdSync callback setup + func_8001D254 kick)
+    func_8001CB30 (CdReady/CdSync callback setup + func_8001D254 kick),
+    func_8001D7E4 (queue-drain wait loop via func_80012E98(1))
   - sub_scrn: Sub_screen_sort_sub, func_800605DC, Map_screen_init
   - sound: func_80019F94, func_8001B2F0, func_8001997C, func_8001B314,
     func_80019A70, func_80019AE0, func_80019AA4, func_800199F8,
     func_80019A34, func_8001A1FC, func_8001A238 (stride-8 search loops),
-    func_80019FB4 (Game_work[0x50] fn-table dispatch + D_80098958 |= 0x800)
+    func_80019FB4 (Game_work[0x50] fn-table dispatch + D_80098958 |= 0x800),
+    Sound_call (SND_CMD queue writer, 0x14 stride, D_800BE6D8 sentinel)
   - game: func_800155A4, func_80015734, func_80015840, func_80016528,
     func_80016BC0, func_80016BF4, func_80016D0C, func_80016D38,
     func_80016D64, func_80016DAC, func_80016E90
@@ -59,10 +61,20 @@
     func_80040B34 (key-vs-mask tests, PL_WORK typed), func_80042208,
     func_800405F4 (x11C vs x128|x12A), func_8003F498/F4E8/F538/F588
     (func_80041DDC(pl,0x33..0x36,0,1) sibling quad, xA byte guard),
-    func_800402C4 (x124/x134 vs x11C key test, PL_WORK fields typed)
+    func_800402C4 (x124/x134 vs x11C key test, PL_WORK fields typed),
+    func_80040380 (x112/x113 swap on key match), func_80040710 (x128 vs
+    x12A select, xA=0/0x100), func_80040AEC (Game_work x83==1 or x140 key)
   - debug: func_800629E0
 
 ## Last verified build
+- 2026-07-05 (Fable overnight, batch 5) — clean rebuild hash OK after
+  player func_80040380/func_80040710/func_80040AEC, sound Sound_call,
+  cd func_8001D7E4; all five per-function mutation tests FAILED the check
+  as required; restored, final clean rebuild OK. func_80042044 attempted,
+  NOT matched (register-allocation mismatch: original puts k in $v0/ret in
+  $t0 with b in $a3 and no m copy; every C shape tried yields an m copy or
+  k stealing $a0 — pass-through args (pl, arg1, arg2)->func_80042154 got
+  ret->$t0 but not the rest; see activity).
 - 2026-07-05 (Fable overnight, batch 4) — clean rebuild hash OK after
   func_80012E10/func_80012FEC/func_80019FB4; per-function mutation tests
   (E10 *p=2→3, FEC 0x7B4→0x7B8, FB4 0x800→0x400) each FAILED the check as
