@@ -270,8 +270,19 @@ $(BUILD_DIR)/$(ASSETS_DIR)/%.bin.o: $(ASSETS_DIR)/%.bin
 CHECK_FOLDER := hash/$(VERSION)
 ALL_HASHES := $(wildcard $(CHECK_FOLDER)/**.sha1)
 
+check_overlays:
+	@matched=0; fail=0; \
+	for f in disks/$(VERSION)/CDDATA/DAT/*.BIN; do \
+	  b=$$(basename $$f); \
+	  if [ ! -f $(BUILD_DIR)/$$b ]; then echo "MISSING: $$b"; fail=1; \
+	  elif ! cmp -s $$f $(BUILD_DIR)/$$b; then echo "MISMATCH: $$b"; fail=1; \
+	  else matched=$$((matched+1)); fi; \
+	done; \
+	if [ $$fail -ne 0 ] || [ $$matched -ne 205 ]; then exit 1; fi; \
+	echo "205/205 overlays OK"
+
 # for each sha1 file in hash/$(VERSION), whose filename is in the ALL_MODULE_NAMES list, check it
-check: diff_rock_neo $$(foreach module,$$(ALL_ARCHIVES),diff_$$(module))
+check: diff_rock_neo $$(foreach module,$$(ALL_ARCHIVES),diff_$$(module)) check_overlays
 	$(foreach module,$(ALL_MODULE_NAMES),$(shell if [ -f hash/$(VERSION)/$(module).BIN.sha1 ]; then sha1sum -c --quiet hash/$(VERSION)/$(module).BIN.sha1; fi))
 	@echo "OK"
 
@@ -282,4 +293,4 @@ check_rock_neo_only: build_rock_neo_only diff_rock_neo
 build_rock_neo_only: $(BUILD_DIR)/$(ROCK_NEO).exe
 
 .PHONY: all, build, clean, disk, extract_disk, split_all, make_sha1_files, check, tools, default, debug_log_%, dosplit_%, make_sha1_file, %_build_dirs, %_bin
-.PHONY: logs, diff_%, diff_main, diff_rock_neo, chunks, check_rock_neo_only, format, build_rock_neo_only
+.PHONY: logs, diff_%, diff_main, diff_rock_neo, chunks, check_rock_neo_only, check_overlays, format, build_rock_neo_only

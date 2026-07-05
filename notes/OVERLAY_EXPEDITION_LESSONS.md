@@ -243,3 +243,32 @@ overlay sweep: 205/205
 ```
 
 <!-- Next sprint: append below this line -->
+
+---
+
+## Sprint: Phase 4 — Check target + docs (2026-07-05)
+
+**What we did:** Added `check_overlays` Makefile target (cmp sweep of all 205
+CDDATA/DAT `.BIN` files); wired it into `make check`. Updated `CLAUDE.md`
+build/verify section (205/205, lessons log pointer).
+
+### Lessons
+
+1. **`check_overlays` is the one-liner gate** — prints `205/205 overlays OK`
+   or lists `MISSING`/`MISMATCH` names; exits non-zero on any failure.
+
+2. **`make check` now includes overlay cmp** before the existing per-module
+   sha1 loop; main exe still verified via `diff_rock_neo` + sha1.
+
+3. **Expedition complete on `overlay-expedition`** — all 205 archives have
+   configs and byte-match on clean rebuild.
+
+### Verification
+
+```
+make CPP=cpp check_overlays   # 205/205 overlays OK
+make CPP=cpp check_rock_neo_only  # OK
+make CPP=cpp check            # OK (includes check_overlays)
+```
+
+<!-- Next sprint: append below this line -->

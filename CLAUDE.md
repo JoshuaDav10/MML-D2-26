@@ -17,8 +17,11 @@ Goal: C source that recompiles to a byte-for-byte identical binary.
 
 ## Build
 - Activate venv first: `source .venv/bin/activate` (rabbitizer errors = venv not active)
-- Build: `make CPP=cpp`  (main exe matches; 186/205 overlay BINs also byte-match — 19 lack configs, see notes/OVERLAY_EXPEDITION.md)
+- Build: `make CPP=cpp`  (main exe + all 205 CDDATA/DAT overlay BINs byte-match)
 - Verify main exe: `make CPP=cpp check_rock_neo_only`  (prints OK on byte-for-byte match)
+- Verify all overlays: `make CPP=cpp check_overlays`  (prints `205/205 overlays OK`)
+- Full check: `make CPP=cpp check`  (main exe sha1 + overlay cmp sweep + per-module sha1)
+- Overlay expedition notes: `notes/OVERLAY_EXPEDITION_LESSONS.md` (config work on branch `overlay-expedition`)
 - Diff a function: `./diff.py <func>`  (plain mode: built exe vs original via mapfile; do NOT use `-o`/`-e`, no expected/ dir exists)
 - Force rebuild: `rm -rf build`  (NEVER `make clean` — it deletes asm/ and assets/)
 
