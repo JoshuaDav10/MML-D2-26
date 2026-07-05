@@ -1,5 +1,8 @@
 #include "common.h"
 
+extern u8 *unknown_Cd_strucptr[];
+extern u8 D_800A3A40[];
+
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B3E4);
 
 void func_8001B4C4(void) {}
@@ -68,4 +71,6 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D7AC);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D7E4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", Cd_read_sync2);
+s32 Cd_read_sync2(void) {
+    return unknown_Cd_strucptr[0] != D_800A3A40;
+}

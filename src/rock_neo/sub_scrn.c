@@ -315,7 +315,11 @@ void Sub_screen_sort_rapid(void) {
 #endif
 
 #ifndef ACCEPT_REORDERING_BULLSHIT
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_sort_sub);
+void Sub_screen_sort_sub(PL_WORK *pw, s32 arg1, s32 arg2) {
+    u8 tmp = pw->rb_parts_sort_data[arg1];
+    pw->rb_parts_sort_data[arg1] = pw->rb_parts_sort_data[arg2];
+    pw->rb_parts_sort_data[arg2] = tmp;
+}
 #else
 void Sub_screen_sort_sub(PL_WORK* pp, s32 d0, s32 d1) {
     u8 sort_buff;

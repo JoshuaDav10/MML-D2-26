@@ -1,4 +1,5 @@
 #include "common.h"
+#include "rock_neo/game.h"
 
 extern u8 D_80098AB8[];
 
@@ -14,7 +15,9 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D8C0);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D928);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D974);
+void func_8001D974(void) {
+    Game_work.x53++;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D990);
 
