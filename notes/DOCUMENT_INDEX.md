@@ -34,6 +34,12 @@ All paths below are relative to `notes/reference/` (symlink to `/home/X/Document
 | `mml_specific_docs/` | `README.md` | ChrisNonyminus/mml1 and DashEditor MML notes |
 | `MML_Decompilation_Project_Overview.md` | — | Prior workflow/methodology (**historical**; do not treat old progress numbers as current) |
 
+## Project-generated notes
+
+| Path | Description |
+|------|-------------|
+| `notes/LESSONS.md` | Accumulated compiler idioms & matching tactics, proven against the hash — read before matching |
+
 ## Usage
 
 1. Start sessions with this index, not the full corpus.
