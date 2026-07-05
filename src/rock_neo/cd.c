@@ -54,7 +54,7 @@ extern u8 D_8009896C;
 extern u8 D_80098A98[];
 void CdReadyCallback(s32);
 void func_8001CC08();
-void func_8001D254(s32, s32, u8*);
+void func_8001D254(u8, u8 *, u8 *);
 
 void func_8001CB30(void) {
     D_8009896C = 0;
@@ -75,9 +75,19 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001CF98);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D078);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D254);
+s32 CdSync(s32, u8 *);
+s32 CdControl(u8, u8 *, u8 *);
+s32 CdControlB(u8, u8 *, u8 *);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D2BC);
+void func_8001D254(u8 com, u8 *param, u8 *result) {
+    while (CdSync(1, result) == 0) {}
+    while (CdControl(com, param, result) == 0) {}
+}
+
+void func_8001D2BC(u8 com, u8 *param, u8 *result) {
+    while (CdSync(1, result) == 0) {}
+    while (CdControlB(com, param, result) == 0) {}
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D324);
 

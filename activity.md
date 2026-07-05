@@ -371,3 +371,26 @@
 - Verification: clean rebuild hash OK (after fixing an Sce_flag_on decl
   conflict with rock_neo.h's unknown_t prototypes — scratch TUs must
   mirror the real include chain); mutation test per touched TU.
+
+## 2026-07-05 — Fable (day session, batch 12)
+- 6 more matches (204 total, ~12.2% volume): sound func_8001A0A8, cd
+  func_8001D254 + func_8001D2BC (CdControl/CdControlB retry twins), moji
+  func_80057A24 + func_80058788, scene func_8001E460.
+- func_80058788 is the Moji task-slot bit clear: pointer-diff m - Moji_work
+  becomes the 0x1A1F58D1 magic-multiply division by 0xC4;
+  Moji_flag3 &= ~(0x20000 << n); compute-into-locals order (f before n)
+  pins the constant lui pair.
+- CAUGHT A FALSE PASS: cd.c had a pre-existing `void func_8001D254(s32,
+  s32, u8*)` declaration conflicting with the new definition; the TU failed
+  to compile, the pipeline still wrote a partial .o, and check printed OK
+  on the stale exe. The build-runner report even rationalized it as a pass.
+  Direct rebuild exposed it; decl unified to (u8, u8*, u8*) — caller bytes
+  unchanged (hash-verified). Reinforces: grep make output for errors
+  YOURSELF before trusting OK.
+- PARKED func_80013578 (Code800133D8): all 25 insns correct but one
+  scheduling slot off — the area_no/x82 sbs sink below the call arg's la;
+  ~10 shapes tried (store orders, volatile, fn-ptr local, K&R). The
+  cross-jumped direct-stores if/else (func_8001997C idiom) got the value
+  leg right; only the sb/la interleave differs.
+- Mutation tests: 4/4 (one per TU) failed the check while mutated;
+  restored; final clean rebuild 0 errors, OK, cmp byte-identical.

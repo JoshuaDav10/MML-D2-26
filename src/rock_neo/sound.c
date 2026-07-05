@@ -155,7 +155,22 @@ void Sound_call2(s32 code, s32 *args) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A0A8);
+extern s16 D_80098AF8[]; // seq table, stride 8: {s16 seq, s8 flag, u8 x3, u8 vol, ...}
+extern s8 D_80098AFA[];
+extern u8 D_80098AFC[];
+s16 SsIsEos(s16, s16);
+
+s32 func_8001A0A8(s32 n) {
+    s32 ret = 0;
+
+    if (D_80098AFA[n << 3] != -1) {
+        s16 seq = D_80098AF8[n << 2];
+        if (seq != -1) {
+            ret = SsIsEos(seq, D_80098AFC[n << 3]);
+        }
+    }
+    return ret;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A110);
 

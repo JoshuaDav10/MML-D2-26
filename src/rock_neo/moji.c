@@ -496,7 +496,12 @@ void func_800579D8(MOJI_TASK *m) {
     func_8005BF10(1, (Game_work.x7D - Game_work.x7C) * 10, m->script += 1);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057A24);
+s32 func_80057A24(MOJI_TASK *m) {
+    m->stack2[m->xC0++] = m->script2 + 1;
+    Sce_flag_on(D_80098830 | 0x500);
+    m->script2 = D_8008CBA4[D_80098830];
+    return 1;
+}
 
 void func_80057A94(MOJI_TASK *m) {
     m->stack[m->xBE++] = m->script + 1;
@@ -587,7 +592,19 @@ void func_80058740(MOJI_TASK *m) {
     m->script = base + *(u16*)(base + m->xC2 * 2);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058788);
+s32 func_80058788(MOJI_TASK *m) {
+    u32 f = m->flags | 0x400800; /* f-before-n order pins the lui pair order */
+    s32 n = m - Moji_work;
+    u8 c = m->x72 + 1;
+    u8 *s = m->script2 + 5;
+
+    m->xBC = 0;
+    m->flags = f;
+    m->x72 = c;
+    m->script2 = s;
+    Moji_flag3 &= ~(0x20000 << n);
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800587F8);
 

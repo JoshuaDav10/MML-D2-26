@@ -1,14 +1,14 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (313 still active
+- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (307 still active
   INCLUDE_ASM stubs; count verified by preprocessing src and counting
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 198 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 204 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~3660 of ~31,300 mapped instructions (~11.7%)
+- Volume: ~3820 of ~31,300 mapped instructions (~12.2%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -33,7 +33,9 @@
     func_800594CC (stack2 push + D_8008CCA4[D_800BE2F7[...]] jump),
     func_80054798 (x8/xA operand pair + x7E/x7F bytes), func_80055344
     (MojiTaskExec re-dispatch, x44-or-D_8008CACC base), func_80055C1C
-    (flag 0x10000 clear + func_80039E18 call; callee typed s32)
+    (flag 0x10000 clear + func_80039E18 call; callee typed s32),
+    func_80057A24 (stack2 push + Sce_flag_on(D_80098830|0x500)),
+    func_80058788 (slot-index magic-div, Moji_flag3 bit clear)
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8
   - scene: func_8001D928 (flag-array clear + Scene_work reset), func_8001D878, func_8001DEDC, func_8001F820, func_8001D974,
@@ -45,6 +47,7 @@
     if/else + ternary-chain split), func_8001DE84 (goto-shared return-0
     label defeats the setcc/sltu tail), func_8001F740 (stage_no dispatch),
     func_8001E390 (Sce_flag on/off sweep 0x2E0..0x2EB, u32 counter),
+    func_8001E460 (flag pair set/clear at n+0x7E0/n+0x7C0),
     func_8001F580 (Cd_read_comb kick; distinct u16 keep copy of u16 no)
     (func_8001FCA4, func_8001FC50, func_8001FDE4 attempted, NOT matched —
     same jump-canonicalization family; see activity 2026-07-05)
@@ -52,7 +55,9 @@
     Cd_read_comb, func_8001D468 (CD_CMD queue writers), func_8001C7F0,
     func_8001D7AC, func_8001B858 (fn-table dispatch via D_80098A84->x8),
     func_8001CB30 (CdReady/CdSync callback setup + func_8001D254 kick),
-    func_8001D7E4 (queue-drain wait loop via func_80012E98(1))
+    func_8001D7E4 (queue-drain wait loop via func_80012E98(1)),
+    func_8001D254 + func_8001D2BC (CdSync-then-CdControl/CdControlB retry
+    twins; u8 com param masked at use)
   - sub_scrn: Sub_screen_sort_sub, func_800605DC, Map_screen_init,
     func_8005EC34 (back-ground set + routine_0 table dispatch),
     func_8005EC80, func_80060DB8, Sub_screen_cancel_check,
@@ -68,7 +73,8 @@
     func_80019FB4 (Game_work[0x50] fn-table dispatch + D_80098958 |= 0x800),
     Sound_call + Sound_call2 (SND_CMD queue writers, 0x14 stride; call2
     needs in-place q++ to pin the store order), func_800198C0
-    (Sce-flag ternary into $a0 + descending D_8008222A fill loop)
+    (Sce-flag ternary into $a0 + descending D_8008222A fill loop),
+    func_8001A0A8 (SsIsEos poll over the 8-stride D_80098AF8 seq table)
     (func_800199A4 + func_80019918 attempted, NOT matched — FC50
     canonicalization family; func_8001A6DC attempted, NOT matched —
     register-birth: a shares n's $s0 instead of taking $s2)

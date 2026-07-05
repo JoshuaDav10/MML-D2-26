@@ -442,3 +442,16 @@ iteration teaches something; this file is how the project gets smarter.
   in-tree that's a compile error. The unknown_t (int) prototypes produce
   the same bytes; drop local decls that shadow rock_neo.h ones, and check
   rock_neo.h before declaring any Sce_/Game_/Moji_ function locally.
+- **A failed TU can still leave a fresh-looking .o**: the build pipes
+  cpp|cc1|maspsx|...|as, so when cc1 errors mid-TU, GAS still assembles the
+  truncated stream and writes a PARTIAL .o with a current mtime before make
+  aborts. Combined with a stale exe, `check_rock_neo_only` prints OK. After
+  any batch land, run the error grep on make output yourself AND check
+  `cmp` + artifact mtimes; don't let a subagent's "pass despite error"
+  reasoning stand (batch 12's cd.c decl conflict was reported as PASS).
+- **Check for pre-existing K&R-era declarations before defining a stub**:
+  earlier sessions declared unmatched callees with guessed signatures
+  (cd.c's `func_8001D254(s32, s32, u8*)`). The real definition's types
+  won the diff; updating the old declaration didn't change the matched
+  caller's bytes (constant args). grep the TU for the function name before
+  writing the definition.
