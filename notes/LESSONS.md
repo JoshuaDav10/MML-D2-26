@@ -7,6 +7,9 @@ iteration teaches something; this file is how the project gets smarter.
 ## How knowledge persists between sessions
 - `CLAUDE.md` — auto-loaded rules (build commands, gotchas, branch policy).
 - This file — compiler idioms and matching tactics, growing per session.
+- `notes/DOCUMENT_INDEX.md` — index to the external reference corpus
+  (MIPS R3000 manual, PSXSPX hardware spec, PSYQ SDK docs) at
+  `notes/reference/`. Index-driven lookup only; never whole-file pulls.
 - `include/rock_neo/*.h` — struct layouts are *executable knowledge*: once a
   field is typed (e.g. MOJI_TASK.script), every later function gets it free.
 - `progress.md` / `activity.md` — counters and per-session narrative.

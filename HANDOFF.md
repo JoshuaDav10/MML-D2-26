@@ -5,6 +5,12 @@
 > (auto-loaded) + `notes/LESSONS.md` are your complete context. The older
 > `FABLE_HANDOFF.md` / `MML_DECOMP_CHECKPOINT.md` are historical (Stage 0/1);
 > this file supersedes their "what to do next" sections.
+>
+> **Reference corpus**: `notes/DOCUMENT_INDEX.md` maps an external doc corpus
+> at `notes/reference/` (symlink): MIPS R3000 manual, nocash PSXSPX hardware
+> spec, PSYQ SDK docs, PSX assembly notes, MML-specific notes. Index-driven
+> lookup only — pull the file/line-range you need, never whole docs into
+> context. (Prior sessions missed this; don't repeat that.)
 
 ## State (all verified, none of this is aspirational)
 
@@ -22,7 +28,29 @@
   lui/$at). Read LESSONS.md §2 (rewritten) before declaring any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
-## What was accomplished this session (chronological)
+## What was accomplished in the LATE 2026-07-04 session (most recent)
+
+1. **Salvaged an uncommitted, unverified WIP batch** left in the tree (it did
+   NOT build to a match — reminder: never leave unverified WIP uncommitted
+   and unlabeled; stash or commit-to-a-branch with a WIP marker instead).
+2. **Discovered and fixed the sdata/gp-relative pipeline gap** — the single
+   most important structural fix since the patchasm reorder pass. The C
+   pipeline could never emit $gp-relative access (GAS -G0 expanded every
+   small-extern ref to lui/$at; cc1's `.extern sym,size` leaked COMMON
+   symbols that silently shifted the data segment). New `tools/gprel.py`
+   stage (maspsx → gprel → patchasm) fixes this via a census of `%gp_rel(`
+   in the extracted asm. Full mechanism: LESSONS.md §2 (rewritten — the old
+   §2 was aspirational and wrong).
+3. **11 new matches** (main func_80012FA4/FC8; moji func_80054410, 5457C,
+   54B88, 5563C, 56128, 57124, 58C08; scene func_8001DDC0 — first
+   gp-relative match; sound func_8001B2F0), hash-verified + mutation-tested.
+4. **Recount**: 7 upstream game.c functions were compiled+matching all along
+   but uncounted → true total 64 matched / 420 active stubs. Counting method
+   in LESSONS.md ("Counting matched functions").
+5. **Volume metric**: ~841 of ~31,300 instructions matched (~2.7% of the
+   main exe's mapped function volume; 64/475 = 13.5% by function count).
+
+## What was accomplished in the earlier 2026-07-04 session (chronological)
 
 1. **Diff loop works**: `./diff.py <func>` (root symlink → tools/asm-differ).
    Needed: watchdog+levenshtein (now in requirements.txt) and a **local patch
