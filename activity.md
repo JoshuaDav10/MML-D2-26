@@ -17,3 +17,5 @@
 - Matched 8 more (Cd_read_sync2, Sub_screen_sort_sub, func_8001D974,
   func_80019F94, 4 moji script ops); introduced MOJI_TASK struct and
   refactored the 13 earlier moji matches onto it; sha1 holds (32 total)
+- Enabled upstream's 4 disabled game.c functions (reorder fix made them
+  viable) + 10 empty player.c funcs: 46 total matched, sha1 holds

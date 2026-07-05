@@ -1,4 +1,5 @@
 #include "common.h"
+#define ACCEPT_REORDERING_BULLSHIT
 
 #include "rock_neo/cd.h"
 #include "rock_neo/game.h"
