@@ -280,3 +280,42 @@ iteration teaches something; this file is how the project gets smarter.
   equality leg correctly but breaks legs 1–2 (beq+j shape, value in $a0).
   ~12 forms tried, none combine both. Re-stubbed. If another ==-inside-chain
   function matches later, back-port the trick here.
+
+## Session 2026-07-05 (Fable, MojiTaskExec) additions — proven against the hash
+- **Callee-saved register MIRRORING can be an allocno-priority TIE — and the
+  tie-break is diagnosable, not guessable (MojiTaskExec).** cc1's global
+  allocator (gcc 2.7.2 global.c) orders pseudos by
+  `floor_log2(n_refs) * n_refs / live_length` (×10000, integer-truncated);
+  ties break toward the LOWER pseudo number (params first). MojiTaskExec's
+  `no` param (6 refs / 88) and the CSE'd 0x40000 mask constant (3 refs / 22)
+  tie EXACTLY (12·22 = 3·88), so `no` stole $s2 from the mask. Diagnose with
+  `cc1 ... -dl` and read `Register N used X times across Y insns` in the
+  .lreg dump (pipe the same cpp output the build uses). The fix that matched:
+  declare the byte-sized param as `u8` — its QImode entry copy adds one insn
+  to the param's live length (88→89), dropping its priority below the
+  constant's. Statement splits do NOT work for this (cse folds them before
+  flow counts); the perturbing insn must survive cse.
+- **`-dl`/`-dg` dumps are usable on cc1-27** and turn register-mirroring
+  from trial-and-error into arithmetic: .greg shows allocation order +
+  dispositions, .lreg shows per-pseudo refs/live-length and the full RTL.
+  Worth reaching for whenever two callee-saved regs are swapped and the
+  usual knobs (decl order, locals, ternary/if flips) don't move them.
+- **A u8 param that the asm masks with andi at USE sites (not at entry) is
+  legal**: `u8 op` arriving in $a2 stays raw; each body use re-masks
+  (two andi's here — cc1 did NOT CSE them across the sb to x3E). This
+  coexists with the earlier "raw compare ⇒ int param" rule: masked-at-use
+  compares ⇒ u8 param.
+- **Aliased-pointer table read before a store to the base struct**
+  (`s = script_base + *(u16*)(script_base + op*2); m->x44 = script_base;`):
+  compute the loaded value into a local BEFORE storing through m — cc1 won't
+  hoist the lhu above `m->x44 = ...` itself (may-alias), and the scheduler
+  then fills the lhu load-delay slot with the x44 store, matching the original.
+- **`f = *(u32*)Moji_flag | K1; ...stores...; *(u32*)Moji_flag = f | (K2 >> no);`**
+  reproduces "load+first-or early, shift+second-or late": splitting the OR
+  chain across statements pins which constant merges before the stores.
+  Writing it as one expression let cc1 reassociate (shift|K1 first) — mismatch.
+- **Chained store `m->script2 = m->x48 = s;`** stores x48 then script2 from
+  the same register with no reload (separate statements would reload via
+  the aliasing rule). Slot-4 fields written as `Moji_work[4].flags` etc.
+  reloc to the same bytes as the original's separate D_800BB9C8/D_800BBA8A
+  symbols (constant-index into the extern array).

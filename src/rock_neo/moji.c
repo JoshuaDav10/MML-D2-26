@@ -3,6 +3,7 @@
 #include "rock_neo/game.h"
 
 extern s32 D_80098AF4; // sdata ($gp)
+extern s32 D_80098824; // lui-accessed word, not in gp census
 s32 func_8005BF10(s32, s32, u8*);
 
 u8 Moji_flag[8]; // COMMON on purpose: splat carved 0x80098A58 out of the
@@ -11,10 +12,71 @@ u8 Moji_flag[8]; // COMMON on purpose: splat carved 0x80098A58 out of the
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053788);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", MojiTaskExec);
+s32 MojiTaskExec(s32 no, u8 *script_base, u8 op) {
+    MOJI_TASK *m;
+    u8 *s;
+    u32 f;
+    u32 mask; // NOTE: the u8 `op` param and this named mask local are
+              // register-allocation-load-bearing: `no` vs the 0x40000
+              // constant tie at priority 12/88 == 3/22 and the u8 param's
+              // entry copy breaks the tie the original way (s3/s2)
+
+    if ((*(u32 *)Moji_flag & 0x400000) || D_80098824) {
+        return 0;
+    }
+    m = &Moji_work[no];
+    mask = 0x40000;
+    if (m->flags & mask) {
+        func_8001D494(0, 1, 0);
+    }
+    if (no != 4) {
+        if (Moji_work[4].flags & mask) {
+            func_8001D494(0, 1, 0);
+        }
+        Moji_work[4].flags = 0;
+        Moji_work[4].xC2 = 0xFF;
+    }
+    m->flags = 0x80000000;
+    m->x3F = 1;
+    m->x3E = 0;
+    m->xC2 = op;
+    m->x4 = 0;
+    m->x8 = 0;
+    m->xA = 0;
+    m->xC = 0;
+    m->xE = 0;
+    m->x3C = m->x3E;
+    if (op != 0xFF) {
+        s = script_base + *(u16 *)(script_base + op * 2);
+        m->x44 = script_base;
+        m->script2 = m->x48 = s;
+    } else {
+        m->script2 = m->x48 = script_base;
+        m->x44 = 0;
+    }
+    m->x3A = 2;
+    m->x3D = 3;
+    m->x71 = 0;
+    m->x72 = 0;
+    m->x73 = 0;
+    m->x7D = 0;
+    m->x7E = 0;
+    m->x7F = 0;
+    m->x3B = 0;
+    m->x78 = 0x80;
+    m->x70 = m->x3E;
+    f = *(u32 *)Moji_flag | 0x80000000;
+    m->xC0 = 0;
+    m->xBE = 0;
+    m->x38 = 0;
+    m->xBC = 0;
+    m->script = m->script2;
+    *(u32 *)Moji_flag = f | (0x8000000 >> no);
+    return 1;
+}
 
 void MojiTaskExec2(s32 arg0, u8 arg1) {
-    MojiTaskExec(arg0, 0x80153000, arg1);
+    MojiTaskExec(arg0, (u8*)0x80153000, arg1);
 }
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", MojiTaskKill);

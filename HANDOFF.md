@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-05, Fable audit+harvest)
+# HANDOFF — MML Decomp session state (2026-07-05, MojiTaskExec matched)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,8 +19,8 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 135 / 475** functions (~5.8% of instruction volume, 349 active
-  stubs left) — small-function harvest phase. See `progress.md`.
+- **Matched: 136 / 475** functions (~6.3% of instruction volume, 348 active
+  stubs left). See `progress.md`.
 - **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&
   rm -f build/rock_neo.elf` before `make`). This session found a prior
   "match" (func_800605DC) that never actually compiled — the stale stub
@@ -35,50 +35,43 @@
   any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
-## NEXT BIG TARGET: MojiTaskExec (prep notes, 2026-07-05 Fable read-through)
+## What was accomplished in the 2026-07-05 Fable MojiTaskExec session (most recent)
 
-133-line asm at asm/rock_neo/nonmatchings/moji/MojiTaskExec.s — the script-VM
-task-slot initializer. Read once; highly tractable (mostly straight-line
-stores, two small branches). Key facts extracted:
+1. **MojiTaskExec MATCHED** (136 total, ~6.3% volume) — the 133-line
+   script-VM task-slot initializer, biggest single match yet. Clean rebuild
+   → hash OK → cmp byte-identical → mutation test (x3D 3→4 failed the check;
+   restored, OK). The prep notes from last session were accurate; final
+   signature is `s32 MojiTaskExec(s32 no, u8 *script_base, u8 op)` — note
+   op is **u8**, and that is register-allocation-load-bearing (below).
+2. **New matching technique — allocno-priority forensics via cc1 -dl/-dg**:
+   the last blocker was `no` vs the 0x40000 mask constant mirrored across
+   $s2/$s3. That's gcc 2.7 global.c priority `floor_log2(refs)*refs/live_len`
+   tying EXACTLY (12/88 == 3/22); ties go to the lower pseudo (params win).
+   The u8 op param's QImode entry copy adds 1 insn to no's live length and
+   breaks the tie the original way. Dumps + mechanism in LESSONS.md
+   "2026-07-05 (Fable, MojiTaskExec)". Statement-split perturbations do NOT
+   work (cse folds them before flow counts refs/lengths).
+3. **moji.h struct filled in**: u16 x4/x6/x8/xA/xC/xE row, u16 x38, u8 x3A,
+   x3E s8→u8, u8* x48, u8 x73, u8 x7D/x7E/x7F, x78 s8→u8 (asm stores +0x80
+   via addiu 0x80 — signed s8 would emit addiu -128, different bytes).
+   `extern MOJI_TASK Moji_work[]` (0x800BB6B8, stride 0xC4) now in moji.h;
+   slot 4 fields written as `Moji_work[4].flags`/`.xC2` reloc to the original
+   D_800BB9C8/D_800BBA8A bytes. All prior moji matches revalidated by the
+   clean-rebuild hash after the struct changes.
+4. Whole function drafted in the scratch-TU pipeline (cpp|cc1|maspsx|gprel|
+   patchasm + normalizing stream diff) — the tree got exactly one edit and
+   matched on the first in-tree build.
 
-- **Signature**: `s32 MojiTaskExec(s32 no, u8 *script_base, s32 op)` —
-  args land in s3/s1/s4. Returns 0 on the early-out path, 1 on success
-  (`addiu v0,1` at 0x53970 is the success return value, set mid-body).
-- **MOJI_TASK stride confirmed 0xC4**: index math is ((no*2+no)<<4+no)<<2
-  = no*196 = no*0xC4. `extern MOJI_TASK Moji_work[];` at 0x800BB6B8
-  (lui/addiu %lo(Moji_work) in the asm). Declare and index `&Moji_work[no]`.
-- **D_800BB9C8 == Moji_work[4].flags and D_800BBA8A == Moji_work[4].xC2**
-  (0x800BB6B8+4*0xC4=0x800BB9C8; +0xC2=0x800BBA8A). Write them as
-  `Moji_work[4].field` — relocs resolve to the same bytes (same trick as
-  the `&D_80098199 - 1` alias read). The `if (no != 4)` block force-kills
-  slot 4: checks its 0x40000 flag (calls func_8001D494(0,1,0) — same call
-  as the m->flags&0x40000 check above), zeroes its flags, sets xC2=0xFF.
-- **Early out**: `if ((*(u32*)Moji_flag & 0x400000) || D_80098824) return 0;`
-  (D_80098824: lui-accessed word — plain scalar extern, NOT in gp census).
-- **Init body** (order matters, use the asm): flags=0x80000000; x3F=1;
-  x3E=0; xC2=(u8)op; x4/x8/xA/xC/xE=0 (sh); x3C = x3E (lbu RELOAD after
-  the sb — write it as a field-to-field copy, aliasing gives the reload);
-  then op==0xFF? -> {x48=script2=script_base; x44=0} else {x44=script_base;
-  x48=script2=script_base+*(u16*)(script_base+(u8)op*2)} (the x44 offset
-  table from func_80058740!); x3A=2; x3D=3; x71/x72/x73/x7D/x7E/x7F/x3B=0;
-  x78=0x80; x70=x3E; xC0/xBE/x38/xBC=0 (sh); script=script2 (lw x6C early,
-  sw 0x14 late).
-- **Final flag update**: `*(u32*)Moji_flag |= 0x80000000 | (0x8000000 >> no)`
-  where the shift is `srav` — an ARITHMETIC shift, so the source operand is
-  SIGNED: `(s32)0x8000000 >> no` (plain s32 constant works).
-- **New MOJI_TASK fields to type first** (add to moji.h before starting):
-  u16 x4 region (x4/x8/xA/xC/xE stores as sh), u16 x38, u8 x3A, u8 x3C,
-  u8* x48, u8 x70/x71/x73 views, u8 x7D/x7E/x7F. Cross-check against the
-  already-typed fields — several (x3B, x3D, x3E, x3F, x72, x78, xBC, xBE,
-  xC0, xC2, x44, script/script2) are already in moji.h and hash-proven.
-- **Plan**: (1) extend moji.h fields; (2) draft in the scratch TU against
-  the full pipeline before touching the tree; (3) expect iteration on the
-  zeroing-store ORDER (many sb/sh to schedule) and on the op==0xFF branch
-  shape; (4) the two func_8001D494(0,1,0) call sites are identical — write
-  them identically. Budget: one focused session. Matching this pins the
-  handler calling convention for all ~50 remaining func_8005xxxx stubs.
+## Where to pick up next (this session's view)
 
-## What was accomplished in the 2026-07-05 Fable session (most recent)
+1. With MojiTaskExec + the call-stack push/pop family done, the moji
+   script-VM vocabulary is largely pinned — the remaining ~45 func_8005xxxx
+   opcode handlers should harvest fast; several are 23-40 line stubs.
+2. `wc -l asm/rock_neo/nonmatchings/*/*.s | sort -n` for the general queue.
+3. When a callee-saved register mirror resists the usual knobs, go straight
+   to the -dl dump arithmetic (LESSONS.md) instead of blind permutation.
+
+## What was accomplished in the 2026-07-05 Fable session (audit+harvest)
 
 1. **Audited the Opus session** (independent from-scratch `rm -rf build`
    rebuild → `cmp` byte-identical; fresh mutation tests; recount) — all of

@@ -1,22 +1,21 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (349 still active
+- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (348 still active
   INCLUDE_ASM stubs; count verified by preprocessing src and counting
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 135 (verified: 135 = 484 .text function symbols across
-  build/src/rock_neo/*.c.o minus 349 active INCLUDE_ASM stubs, with the
-  full-binary sha1 OK after a CLEAN rebuild — see the func_800605DC note
-  under "Last verified build")
-- Volume: ~1830 of ~31,300 mapped instructions (~5.8%)
+- rock_neo main: 136 (verified: full-binary sha1 OK after a CLEAN rebuild —
+  see the func_800605DC note under "Last verified build")
+- Volume: ~1957 of ~31,300 mapped instructions (~6.3%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
     func_80057124, func_80058C08, func_80054424, func_8005459C,
     func_80054AB4 + func_80054A84 (script/script2 stack pops),
-    func_8005531C, func_80055660, MojiTaskExec2, func_80057BFC,
+    func_8005531C, func_80055660, MojiTaskExec2, MojiTaskExec (task-slot
+    initializer, 127 insns — biggest match yet), func_80057BFC,
     func_80054BB4, func_80055CC4, func_80056148, func_80054B4C,
     func_80057708, func_80057A94 (script call-stack push + table jump),
     func_80057DB8, func_80058DB4, func_80057144, func_8005753C,
@@ -51,6 +50,12 @@
   - debug: func_800629E0
 
 ## Last verified build
+- 2026-07-05 (Fable, MojiTaskExec session) — MojiTaskExec (133-line asm)
+  matched: clean rebuild (`touch src/rock_neo/*.c && rm -f build/rock_neo.elf`)
+  → hash OK → `cmp` byte-identical; mutation test (x3D=3 → 4) FAILED the
+  check as required, restored, OK. Struct changes to moji.h (x4..xE u16
+  fields, x38/x3A, x3E s8→u8, x48 ptr, x73/x7D/x7E/x7F, x78 s8→u8) validated
+  against all previously matched moji functions by the same clean rebuild.
 - 2026-07-05 (Fable audit + harvest) — from-scratch rebuild (`rm -rf build`)
   byte-identical via `cmp`; then two 6-function batches, each clean-rebuilt,
   hash OK, mutation-tested (broke func_80058740/func_80012424/func_800133D8/

@@ -178,3 +178,22 @@
   revisiting after more == ternaries are seen elsewhere in the binary.
 - 135 matched / 349 stubs (~5.8% volume); every batch clean-rebuilt,
   hash-verified, byte-compared, mutation-tested.
+
+## 2026-07-05 — Fable (MojiTaskExec session)
+- **MojiTaskExec matched** (moji.c, 133-line asm / 127 insns — biggest single
+  match so far). Clean rebuild → hash OK → cmp byte-identical → mutation test
+  (x3D 3→4 broke the check; restored, OK). 136 matched (~6.3% volume).
+- The hard part was a callee-saved s2/s3 mirror between `no` and the CSE'd
+  0x40000 mask: an EXACT allocno-priority tie (12/88 == 3/22 in gcc 2.7's
+  floor_log2(refs)*refs/live_length formula), diagnosed via cc1 -dl/-dg
+  dumps rather than blind permutation. Declaring the `op` param u8 adds the
+  QImode entry copy that breaks the tie the original way. Full mechanism in
+  LESSONS.md "2026-07-05 (Fable, MojiTaskExec)".
+- moji.h struct growth: x4/x6/x8/xA/xC/xE u16 row, u16 x38, u8 x3A, x3E
+  s8→u8, u8* x48, u8 x73, u8 x7D/x7E/x7F, x78 s8→u8; prototype now
+  `s32 MojiTaskExec(s32, u8*, u8)`; new extern `MOJI_TASK Moji_work[]`
+  (0x800BB6B8, stride 0xC4) + `s32 D_80098824`. All prior moji matches
+  revalidated by the same clean-rebuild hash.
+- Whole function drafted and iterated in the scratch-TU pipeline
+  (cpp|cc1|maspsx|gprel|patchasm + a normalizing stream-diff script) before
+  touching the tree — tree got exactly one edit and matched first try.
