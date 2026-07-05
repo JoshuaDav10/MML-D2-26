@@ -3,7 +3,18 @@
 
 // clang-format off
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800133D8", func_800133D8);
+// game.c views Code800133D8_work through CODE_800133D8_WORK (s16 x0); here it
+// is zeroed as three consecutive words, so a local array view is used instead.
+extern s32 Code800133D8_work[3];
+void func_80012F78(void (*)());
+void func_80013420();
+
+void func_800133D8(void) {
+    Code800133D8_work[0] = 0;
+    Code800133D8_work[1] = 0;
+    Code800133D8_work[2] = 0;
+    func_80012F78(func_80013420);
+}
 
 void func_80013418(void) {}
 

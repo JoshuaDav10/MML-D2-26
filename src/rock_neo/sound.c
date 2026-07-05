@@ -25,7 +25,18 @@ void func_8001997C(void) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_800199A4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_800199F8);
+extern s16 D_800822A6;
+
+void func_800199F8(void) {
+    s16 *p;
+    s32 i;
+    s16 v = (Game_work[0x53] == 1) ? 0x17 : 0x108;
+    i = 5;
+    p = &D_800822A6;
+    for (; i >= 0; i--) {
+        *p-- = v;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019A34);
 

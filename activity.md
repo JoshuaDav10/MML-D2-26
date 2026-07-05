@@ -127,3 +127,27 @@
   (stage-band -> id via ternary CHAIN, value lands in $v0),
   sound func_80019AA4 (reusing the call-result variable for the if/else
   keeps the value in $v0). sha1 OK; mutation test on func_8001FB54.
+
+## 2026-07-05 (Opus session)
+- Matched 6 more (123 total, ~5.1%): Code800133D8 func_800133D8 (zeroes
+  Code800133D8_work as three words via a local `s32[3]` view — game.c keeps
+  the s16-x0 struct view of the same symbol), cd func_8001B858 (fn-table
+  dispatch `D_80087670[D_80098A84->x8]()`), moji func_80055C80
+  (`*D_8008D0D4[script2[1]] = script2[2]`), func_800576C4 (script2 call-stack
+  push, mirror of func_80057708 using stack2/xC0), func_80057B70, sound
+  func_800199F8 (6-halfword backfill).
+- **Found + fixed a stale-object fake match**: func_800605DC (claimed matched
+  last session) never actually compiled — its C had a `void` vs sub_scrn.h
+  `unknown_t` return-type conflict, but the stale INCLUDE_ASM stub object
+  stayed linked so the hash passed on the stub. A forced clean recompile this
+  session surfaced the error. Fixed the header prototype; now genuinely
+  verified. All counts here are post-clean-rebuild.
+- New idiom (func_80057B70): a called function's DECLARED RETURN TYPE affects
+  the CALLER's register allocation even when the result is unused. Declaring
+  `s32 func_80043294(...)` (its real type) keeps $v0 reserved across the call
+  so the trailing `m->script2 += 1` lands in $v1 and `return 1` fills the
+  load-delay slot — matches. Declared `void`, it collapsed to $v0 + an extra
+  nop (one instruction long).
+- func_800199F8: reconfirmed the init-order lesson (i before p → counter=$v1,
+  pointer=$v0).
+- sha1 OK (clean rebuild); mutation tests on func_800605DC + func_80057B70.

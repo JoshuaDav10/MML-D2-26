@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-05, overnight)
+# HANDOFF — MML Decomp session state (2026-07-05, Opus session)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,8 +19,14 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 117 / 475** functions (~4.8% of instruction volume, 367 active
+- **Matched: 123 / 475** functions (~5.1% of instruction volume, 361 active
   stubs left) — small-function harvest phase. See `progress.md`.
+- **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&
+  rm -f build/rock_neo.elf` before `make`). This session found a prior
+  "match" (func_800605DC) that never actually compiled — the stale stub
+  object stayed linked and the hash passed on it. Clean-rebuild + the
+  liveness mutation test are the only guards. See LESSONS.md 2026-07-05
+  (Opus) and progress.md "Last verified build".
 - **The pipeline can emit $gp-relative (sdata) access** via
   `tools/gprel.py` (between maspsx and patchasm); as of 2026-07-05 it also
   gp-rewrites refs to small `.comm` symbols (tentative definitions such as
@@ -29,7 +35,24 @@
   any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
-## What was accomplished in the OVERNIGHT 2026-07-05 session (most recent)
+## What was accomplished in the 2026-07-05 Opus session (most recent)
+
+1. **6 more matches (123 total)**, all clean-rebuild + hash verified:
+   Code800133D8 func_800133D8, cd func_8001B858 (fn-table dispatch),
+   moji func_80055C80 / func_800576C4 (script2 stack push) / func_80057B70,
+   sound func_800199F8. Next stubs start at 23 asm lines.
+2. **Caught + fixed a stale-object fake match**: func_800605DC (claimed last
+   session) never compiled (a `void` vs sub_scrn.h `unknown_t` conflict); the
+   stale stub object had kept the hash green. Forced clean recompile exposed
+   it; header prototype fixed; now genuinely verified. This is why the state
+   line above stresses clean rebuilds.
+3. **New idiom**: a callee's declared return type steers the CALLER's register
+   allocation even when the result is unused (func_80057B70 — declaring
+   func_80043294 `s32` reserves $v0 across the call). See LESSONS.md.
+4. **One symbol, two per-TU views**: Code800133D8_work is an s16-x0 struct in
+   game.c but a local `s32[3]` array in Code800133D8.c (three-word zero).
+
+## What was accomplished in the OVERNIGHT 2026-07-05 session
 
 1. **18 more matches (117 total)** in three hash-verified batches across
    moji/scene/cd/main/sound/sub_scrn. All ≤22-line stubs are now exhausted

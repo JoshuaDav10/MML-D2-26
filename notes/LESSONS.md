@@ -224,3 +224,34 @@ iteration teaches something; this file is how the project gets smarter.
 - **`m->x40 = g; f(0, m->x40, ...)`** (func_80057144): passing the field
   (not the local/global) as the argument reproduces the reload-after-store
   (aliasing forbids forwarding), matching lw x40 right after sw x40.
+
+## Session 2026-07-05 (Opus) additions — proven against the hash
+- **A called function's declared RETURN TYPE steers the caller's register
+  allocation** (func_80057B70): `func_80043294(...)` is called for effect
+  only, then `m->script2 += 1; return 1;`. Declared `void`, cc1 put script2
+  in $v0 and needed a load-delay nop before the increment (one insn too
+  long). Declared `s32` (its real type), $v0 stays reserved from the call
+  return, so script2 lands in $v1 and the `return 1` (`li $v0,1`) fills the
+  load-delay slot — exact match. When a leaf has a spurious nop after a
+  post-call reload, check whether the callee should be typed non-void.
+- **STALE-OBJECT FAKE MATCH — the failure mode the mutation test exists for**
+  (func_800605DC): `.c.o` are make *intermediate* files. Converting a
+  function from INCLUDE_ASM to C without `touch src/rock_neo/*.c && rm -f
+  build/rock_neo.elf` leaves the OLD stub object linked; the hash then passes
+  on the STUB, not your C. func_800605DC's C didn't even COMPILE (a `void` vs
+  header `unknown_t` type conflict) yet last session's hash was green. ALWAYS
+  clean-rebuild before claiming a match, and prefer the liveness mutation
+  test (break the C → hash MUST fail). If breaking the C doesn't break the
+  build, the C isn't in the binary. The objdump function count can't catch
+  this (stale .o still exports the symbol + the stub source line is gone).
+- **One symbol, two per-TU views**: Code800133D8_work is `CODE_800133D8_WORK`
+  (s16 x0) in game.c (writes `.x0 = 1` as sh) but zeroed as three words in
+  func_800133D8. Declaring `extern s32 Code800133D8_work[3];` locally in
+  Code800133D8.c gives the three independent `sw $0,sym / sym+4 / sym+8`
+  (constant-index global array → separate %hi/%lo per element, no base-reg
+  CSE). Don't widen the shared struct to force word stores — it breaks the
+  other TU's halfword access. Give each TU the view its codegen needs.
+- **Script2 call-stack push mirrors script1** (func_800576C4): the stack2
+  (0x4C) / xC0 (sp) / script2 (0x6C) trio behaves exactly like the
+  stack/xBE/script trio (func_80057708): `m->stack2[m->xC0++] = m->script2 +
+  1; m->script2 = D_8008CBA4[D_80098830]; return 1;`.

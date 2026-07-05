@@ -215,7 +215,14 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055BB0);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055C1C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055C80);
+extern u8 *D_8008D0D4[];
+
+s32 func_80055C80(MOJI_TASK *m) {
+    u8 *p = m->script2;
+    *D_8008D0D4[p[1]] = p[2];
+    m->script2 += 3;
+    return 1;
+}
 
 s32 func_80055CC4(MOJI_TASK *m) {
     u8 c = m->x72 + 1;
@@ -307,10 +314,14 @@ void func_8005753C(MOJI_TASK *m) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057574);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800576C4);
-
 extern u8 D_80098830;
 extern u8 *D_8008CBA4[];
+
+s32 func_800576C4(MOJI_TASK *m) {
+    m->stack2[m->xC0++] = m->script2 + 1;
+    m->script2 = D_8008CBA4[D_80098830];
+    return 1;
+}
 
 void func_80057708(MOJI_TASK *m) {
     m->stack[m->xBE++] = m->script + 1;
@@ -336,7 +347,16 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057AD0);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057B24);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057B70);
+// func_80043294 is called for effect only, but declaring it s32 (its real
+// return type) keeps $v0 reserved across the call so script2 lands in $v1
+// and the `return 1` fills the load-delay slot — matches the original.
+s32 func_80043294(s32, s32, s32);
+
+s32 func_80057B70(MOJI_TASK *m) {
+    func_80043294(D_80098AF4, 0, 0);
+    m->script2 += 1;
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057BB4);
 
