@@ -152,7 +152,22 @@ void func_8003FFA8(void) {}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003FFB0);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800400B8);
+s32 func_80040818(PL_WORK*);
+s32 func_80040710(PL_WORK*);
+void func_80040B68(PL_WORK*, s32);
+
+void func_800400B8(PL_WORK* pl) {
+    if (func_80040818(pl) == 0) {
+        if (*(s8*)&pl->x74 == 0 && *(u8*)&pl->xA == 1) {
+            if (func_80040710(pl) != 0) {
+                return;
+            }
+        }
+        if (*(s8*)&pl->x112 != 2) {
+            func_80040B68(pl, 2);
+        }
+    }
+}
 
 void func_80040130(void) {}
 
@@ -168,7 +183,6 @@ void func_80040170(void) {}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040178);
 
-void func_80040B68(PL_WORK *, s32);
 void func_800394AC(void);
 
 void func_80040224(PL_WORK *pl) {

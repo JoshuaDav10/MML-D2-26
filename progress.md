@@ -6,9 +6,9 @@
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 221 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 223 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~4310 of ~31,300 mapped instructions (~13.8%)
+- Volume: ~4370 of ~31,300 mapped instructions (~14.0%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -115,18 +115,25 @@
     func_80041E90 (x56 -=/+= x116 around func_8002FEA4, s16 params),
     func_8003F224 (x83-gated key test; goto-shared return-1 defeats the
     sltiu tail; field-first & order), func_80040224 (state reset unless
-    x83==1 or x140 key; x108 typed),
+    x83==1 or x140 key; x108 typed), func_800400B8 (40818-gated retry of
+    40710 else force state 2 via func_80040B68),
     func_8003FDA8 (xA<3 + x11C&x134 gate; preloaded x11C local hoists the
     lhu), func_80041A44 (state 0xB/0xC ladder; v assigned after the
     compares so it stays dead across them and lands in $v0)
     (func_80041EF4 attempted, NOT matched — cc1 elides the original's two
     andi 0xFFFF truncations; every source shape proves nonzero_bits ≤0xFFFF.
     See activity 2026-07-05 day session)
+  - game: func_800164B4 (x1 switch: case 0 advances by func_800665FC(1),
+    case 1 sets routine 3/x1=2; SWITCH keeps the ==0 leg un-inverted where
+    if/else emits bnez) — plus the 7 upstream game.c functions counted earlier
   - debug: func_800629E0, func_800629F0 (Debug_work joy latch + fn-table
     dispatch; stores through the NEIGHBOR symbol &Scene_work[-k] pin the
     table load AND defeat arg anchor-CSE)
 
 ## Last verified build
+- 2026-07-05 (Fable day session 2, batch 16) — clean rebuild 0 errors,
+  hash OK, cmp byte-identical after player func_800400B8 + game
+  func_800164B4; mutation test failed while mutated; restored OK.
 - 2026-07-05 (Fable day session 2, batch 15) — clean rebuild 0 errors,
   hash OK, cmp byte-identical after moji MojiTaskKill/func_80054804/
   func_800570B0, cd func_8001CC08, scene func_8001DFEC, main

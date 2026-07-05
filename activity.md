@@ -452,3 +452,18 @@
   forward decl), masked at use per the MojiTaskExec rule.
 - Mutation tests 2/2 failed while mutated; final rebuild 0 errors, OK,
   cmp byte-identical.
+
+## 2026-07-05 — Fable (day session 2, batch 16)
+- 2 more matches (223 total, ~14.0% volume): player func_800400B8, game
+  func_800164B4.
+- NEW IDIOM: a `switch` on a byte field keeps the ==0 leg's beqz
+  UN-INVERTED with the case body out of line (beqz/beq/j ladder); the
+  equivalent if/else-if emitted bnez with the body inline — first tool
+  that beats the jump-canonicalization on an equality leg. Try switch on
+  the parked func_8001FCA4 family next session.
+- Cursor's tools/bytecmp.sh (Brief 4) used for both — works as specified.
+- Also this session: audited+merged Cursor's Briefs 2/4/5 outputs onto dev
+  (from-scratch build: 205/205 overlays OK), added Briefs 6/7 to the
+  delegation queue. Brief 1 remains fork/push/repoint (gh auth now works).
+- Mutation test failed while mutated; restored, 0 errors, OK,
+  cmp byte-identical.

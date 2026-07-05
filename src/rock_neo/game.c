@@ -114,7 +114,21 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/game", func_80016160);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/game", func_80016434);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/game", func_800164B4);
+s32 func_800665FC(s32);
+void func_80015DB4(void);
+
+void func_800164B4(GAME_WORK* g) {
+    switch (g->x1) { /* switch (not if/else) keeps the ==0 leg un-inverted */
+    case 0:
+        *(u8*)&g->x1 += func_800665FC(1);
+        break;
+    case 1:
+        g->routine_0 = 3;
+        g->x1 = 2;
+        break;
+    }
+    func_80015DB4();
+}
 
 #ifndef ACCEPT_REORDERING_BULLSHIT
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/game", func_80016528);
