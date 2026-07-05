@@ -212,8 +212,8 @@ $(BUILD_DIR)/$(ROCK_NEO).elf: rock_neo_build_dirs $(call list_o_files,$(ROCK_NEO
 chunks: $(BUILD_DIR)/$(ROCK_NEO).exe
 	@echo "Building chunks..."
 	@echo $(ALL_ARCHIVES) > logs/chunks.log
-	$(shell python3 tools/generate_rock_neo_syms.py)
-	@$(foreach archive,$(ALL_ARCHIVES),$(shell $(BUILD_OVERLAY) $(archive)))
+	python3 tools/generate_rock_neo_syms.py
+	@for a in $(ALL_ARCHIVES); do $(BUILD_OVERLAY) $$a || exit 1; done
 
 
 UC = $(shell echo '$1' | tr '[:lower:]' '[:upper:]')

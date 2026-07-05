@@ -272,3 +272,39 @@ make CPP=cpp check            # OK (includes check_overlays)
 ```
 
 <!-- Next sprint: append below this line -->
+
+---
+
+## Sprint: ST1A silent link failure fix (2026-07-05)
+
+**What we did:** Per `notes/OVERLAY_ST1A_FIX.md` — `buildoverlay.py` now passes
+curated `syms.{VERSION}.{chunk}.txt` to `ld` (comment-stripped copy when
+present), checks all `os.system()` return codes, verifies `.elf.bin` exists
+before emplace, and uses system `cpp` for overlay C compiles. Makefile `chunks`
+target uses a real `for` loop instead of `$(shell …)`.
+
+### Lessons
+
+1. **ST1A false-pass root cause** — `eve19_*` symbols lived only in
+   `syms.us.ovl0__progbin_r3_st1a.bin.txt`; splat consumed them into
+   `generated.syms` so they never reached `undefined_syms_auto`, and ld never
+   saw them. Passing the curated syms file fixes the link; `eve19.c` INCLUDE_ASM
+   already provides the `.L*` jump-table labels.
+
+2. **Other progbin archives (ST0B/ST16/ST1D)** also have curated syms files with
+   `//` comments — strip at link time rather than passing raw to ld.
+
+3. **Failure propagation is mandatory** — without it, a failed chunk link still
+   copies the original disk BIN and `check_overlays` counts a false match.
+
+### Verification
+
+```
+rm -rf build && make CPP=cpp  # clean, no linker errors in log
+make CPP=cpp check_overlays   # 205/205 overlays OK
+make CPP=cpp check_rock_neo_only  # OK
+# mutation: .word 0xDEADBEEF in ST1A data → MISMATCH: ST1A.BIN, exit 1
+# failure: rename asm + rm .o → make CPP=cpp chunks exits 1
+```
+
+<!-- Next sprint: append below this line -->

@@ -25,7 +25,7 @@ VERSION = "us"
 CROSS = "mipsel-elf-"
 AS = f"{CROSS}as"
 LD = f"{CROSS}ld"
-CPP = f"{CROSS}cpp"
+CPP = os.environ.get("CPP", "cpp" if shutil.which("cpp") else f"{CROSS}cpp")
 OBJCOPY = f"{CROSS}objcopy"
 CC = "./bin/cc1-27"
 AS_FLAGS        = "-Iinclude -march=r3000 -mtune=r3000 -no-pad-sections -O1 -G0"
@@ -44,6 +44,33 @@ MASPSX = "python3 tools/maspx/maspsx.py --no-macro-inc --expand-div"
 PYPATCHASM = "tools/patchasm.py"
 
 build_log = open(f"logs/build_{sys.argv[1]}.log", "w")
+
+def run_cmd(cmd, what):
+    rc = os.system(cmd)
+    if rc != 0:
+        print(f"buildoverlay: failed ({what}): {cmd}", file=sys.stderr)
+        sys.exit(1)
+
+def curated_syms_path(parent_archive_file_name, chunk_file_name):
+    return f"{CONFIG_DIR}/overlay/splat.{VERSION}.{parent_archive_file_name}/syms.{VERSION}.{chunk_file_name}.txt"
+
+def curated_syms_ld_arg(parent_archive_file_name, chunk_file_name):
+    syms_path = curated_syms_path(parent_archive_file_name, chunk_file_name)
+    if not os.path.exists(syms_path):
+        return ""
+    lines = []
+    with open(syms_path, "r") as f:
+        for line in f:
+            line = line.split("//", 1)[0].strip()
+            if line:
+                lines.append(line)
+    if not lines:
+        return ""
+    ld_path = f"{BUILD_DIR}/{parent_archive_file_name}.{chunk_file_name}.syms.ld"
+    os.makedirs(os.path.dirname(ld_path), exist_ok=True)
+    with open(ld_path, "w") as f:
+        f.write("\n".join(lines) + "\n")
+    return f"-T {ld_path} "
 
 def list_src_files(parent_archive_file_name, chunk_file_name):
     files = []
@@ -70,7 +97,16 @@ def list_o_files(parent_archive_file_name, chunk_file_name):
     return files
 
 def link_overlay(parent_archive_file_name, chunk_file_name, elf):
-    os.system(f"{LD} -o {elf} -Map {BUILD_DIR}/{parent_archive_file_name}.{chunk_file_name}.map -T ./{parent_archive_file_name}.{chunk_file_name}.ld -T {CONFIG_DIR}/overlay/splat.{VERSION}.{parent_archive_file_name}/undefined_syms_auto.{VERSION}.{chunk_file_name}.txt -T {CONFIG_DIR}/overlay/splat.{VERSION}.{parent_archive_file_name}/undefined_funcs_auto.{VERSION}.{chunk_file_name}.txt -T {BUILD_DIR}/generated.rock_neo.syms.txt --no-check-sections -nostdlib -s")
+    syms_arg = curated_syms_ld_arg(parent_archive_file_name, chunk_file_name)
+    cmd = (
+        f"{LD} -o {elf} -Map {BUILD_DIR}/{parent_archive_file_name}.{chunk_file_name}.map "
+        f"-T ./{parent_archive_file_name}.{chunk_file_name}.ld "
+        f"-T {CONFIG_DIR}/overlay/splat.{VERSION}.{parent_archive_file_name}/undefined_syms_auto.{VERSION}.{chunk_file_name}.txt "
+        f"-T {CONFIG_DIR}/overlay/splat.{VERSION}.{parent_archive_file_name}/undefined_funcs_auto.{VERSION}.{chunk_file_name}.txt "
+        f"{syms_arg}"
+        f"-T {BUILD_DIR}/generated.rock_neo.syms.txt --no-check-sections -nostdlib -s"
+    )
+    run_cmd(cmd, f"ld {parent_archive_file_name}/{chunk_file_name}")
 
 # def generate_rock_neo_syms_txt():
 #     rock_neo_elf = f"{BUILD_DIR}/rock_neo.elf.unstripped"
@@ -99,15 +135,18 @@ def link_overlay(parent_archive_file_name, chunk_file_name, elf):
 # """)
 
 def assemble_s_file(s_file, o_file):
-    os.system(f"{AS} {AS_FLAGS} -o {o_file} {s_file}")
+    run_cmd(f"{AS} {AS_FLAGS} -o {o_file} {s_file}", f"as {s_file}")
     build_log.write(f"as {s_file} -> {o_file}\n")
 
 def compile_c_file(c_file, o_file):
-    os.system(f"{CPP} {CPP_FLAGS} {c_file} | {CC} {CC_FLAGS} | {MASPSX} | python3 {PYPATCHASM} | {AS} {AS_FLAGS} -o {o_file}")
+    run_cmd(
+        f"{CPP} {CPP_FLAGS} {c_file} | {CC} {CC_FLAGS} | {MASPSX} | python3 {PYPATCHASM} | {AS} {AS_FLAGS} -o {o_file}",
+        f"cc {c_file}",
+    )
     build_log.write(f"cc {c_file} -> {o_file}\n")
 
 def compile_asset_file(bin_file, o_file):
-    os.system(f"{LD} -r -b binary -o {o_file} {bin_file}")
+    run_cmd(f"{LD} -r -b binary -o {o_file} {bin_file}", f"bin {bin_file}")
     build_log.write(f"bin {bin_file} -> {o_file}\n")
 
 src_files_hash_cache = {}
@@ -153,7 +192,7 @@ def build_chunk(parent_archive_file_name, chunk_file_name):
 
 def binarize_chunk(parent_archive_file_name, chunk_file_name):
     elf = f"build/{parent_archive_file_name}.{chunk_file_name}.elf"
-    os.system(f"{OBJCOPY} -O binary {elf} {elf}.bin")
+    run_cmd(f"{OBJCOPY} -O binary {elf} {elf}.bin", f"objcopy {parent_archive_file_name}/{chunk_file_name}")
     build_log.write(f"objcopy {elf} -> {elf}.bin\n")
 
 def get_chunk_list(parent_archive_filename):
@@ -198,35 +237,34 @@ def get_next_offset(file, offset, chunk_size, unk, chunk_type):
         return align_up(offset, 0x800)
 def build_overlay(parent_archive_filename):
     chunk_file_names = get_chunk_list(parent_archive_filename)
+    configured_chunks = []
     need_to_rebuild = False
     for chunk_file_name, _, _, _, _ in chunk_file_names:
         if not os.path.exists(f"config/overlay/splat.{VERSION}.{parent_archive_filename}/{chunk_file_name}.yaml"):
             continue
+        configured_chunks.append(chunk_file_name)
         if build_chunk(parent_archive_filename, chunk_file_name):
             need_to_rebuild = True
             binarize_chunk(parent_archive_filename, chunk_file_name)
             build_hash_cache(parent_archive_filename, chunk_file_name)
     if need_to_rebuild:
+        for chunk_file_name in configured_chunks:
+            elf_bin = f"{BUILD_DIR}/{parent_archive_filename}.{chunk_file_name}.elf.bin"
+            if not os.path.exists(elf_bin):
+                print(
+                    f"buildoverlay: missing {elf_bin} for {parent_archive_filename}/{chunk_file_name}",
+                    file=sys.stderr,
+                )
+                sys.exit(1)
         # TEMP: instead of rebuilding entire bin files, let's just take the existing bin file and emplace the progbins into them (for now)
         shutil.copyfile(f"disks/{VERSION}/CDDATA/DAT/{parent_archive_filename}.BIN", f"{BUILD_DIR}/{parent_archive_filename}.BIN")
-        #f = open(f"{BUILD_DIR}/{parent_archive_filename}.BIN", "wb")
         archive_bytes = bytearray(open(f"{BUILD_DIR}/{parent_archive_filename}.BIN", "rb").read())
         for chunk_file_name, chunk_offset, chunk_type, chunk_size, unk in chunk_file_names:
             if not os.path.exists(f"config/overlay/splat.{VERSION}.{parent_archive_filename}/{chunk_file_name}.yaml"):
                 continue
-            with open(f"{BUILD_DIR}/{parent_archive_filename}.{chunk_file_name}.elf.bin", "rb") as chunk:
-                # f.write(chunk.read())
-                # # align next offset by 0x800
-                # if (chunk_type not in [1,9,10] or chunk_size > 0):
-                #     f.seek(get_next_offset(parent_archive_filename, f.tell(), chunk_size, unk, chunk_type), 0)
-                # else:
-                #     pass
-                archive_bytes[chunk_offset: chunk_offset + os.path.getsize(f"{BUILD_DIR}/{parent_archive_filename}.{chunk_file_name}.elf.bin")] = chunk.read()
-        # # add last chunk: an empty chunk with type 0xFFFFFFFF and every other value set to 0
-        # f.write(b"\xFF\xFF\xFF\xFF\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
-        # for _ in range(0, 0x800 - 0x10):
-        #     f.write(b"\x00")
-        # f.close()
+            elf_bin = f"{BUILD_DIR}/{parent_archive_filename}.{chunk_file_name}.elf.bin"
+            with open(elf_bin, "rb") as chunk:
+                archive_bytes[chunk_offset: chunk_offset + os.path.getsize(elf_bin)] = chunk.read()
         with open(f"{BUILD_DIR}/{parent_archive_filename}.BIN", "wb") as f:
             f.write(archive_bytes)
         build_log.write(f"build/{parent_archive_filename}.BIN\n")
