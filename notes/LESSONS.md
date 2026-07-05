@@ -255,3 +255,28 @@ iteration teaches something; this file is how the project gets smarter.
   (0x4C) / xC0 (sp) / script2 (0x6C) trio behaves exactly like the
   stack/xBE/script trio (func_80057708): `m->stack2[m->xC0++] = m->script2 +
   1; m->script2 = D_8008CBA4[D_80098830]; return 1;`.
+
+## Session 2026-07-05 (Fable, second) additions — proven against the hash
+- **Symbol-indexed loads need a SEPARATE offset variable** (func_8001A1FC /
+  func_8001A238): `for (i = 0; i < 5; i++, off += 8) if (tbl[off] == key)`
+  emits the original's per-iteration `lui $at / addu $at,off / lbu
+  %lo(sym)($at)` form (cc1 keeps the symbol+index operand). Deriving the
+  offset from the counter (`tbl[i * 8]`) makes cc1 strength-reduce to a
+  marching pointer (`la` once + `addu p,8`) — different bytes. Two induction
+  variables in the source = symbol-indexed; one = pointer-march.
+- **`((u8*)Game_work)[k] == key` gives a clean lbu with NO andi** when `key`
+  is declared `s32`. Declaring the param `u8` makes cc1 re-mask it
+  (`andi $4,$4,0xff`) even though callers already pass a byte. When the asm
+  compares a param raw, the param is int-typed in the source.
+- **Casting an s8-array symbol through (u8*) selects lbu** without disturbing
+  the same TU's lb accesses of other elements (sound.c reads Game_work[0x53]
+  as s8/lb but the 0x1BA table as u8/lbu). No second extern needed.
+- **OPEN PROBLEM — equality leg in a ternary chain (func_8001FCA4)**: cc1
+  tree-folds `(v == 5) ? A : B` and `(v != 5) ? B : A` to the same RTL, and
+  jump-opt then inverts the branch (bne→end with B in the delay slot). The
+  original has the UN-inverted form (beq→end with A in the delay, then
+  j→end with B in the delay). Chain-style ternaries produce legs 1–2
+  correctly (value in $v0, bnez/delay); statement-style if/else produces the
+  equality leg correctly but breaks legs 1–2 (beq+j shape, value in $a0).
+  ~12 forms tried, none combine both. Re-stubbed. If another ==-inside-chain
+  function matches later, back-port the trick here.

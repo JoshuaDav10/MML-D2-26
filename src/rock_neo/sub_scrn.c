@@ -462,7 +462,18 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_back_grou
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_sound_reinit);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Map_screen_init);
+extern s32 Map_screen_work; // sdata ($gp)
+extern u8 D_800987F4[4];    // word-cleared, then byte flag set (lui-accessed)
+
+void Map_screen_init(void) {
+    Map_screen_work = 0;
+    *(u32*)D_800987F4 = 0;
+    if (Game_work.x52 < 9) {
+        D_800987F4[0] = 0;
+    } else {
+        D_800987F4[0] = 1;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Map_screen_task);
 

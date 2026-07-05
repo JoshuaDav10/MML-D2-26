@@ -19,7 +19,8 @@ typedef struct MOJI_TASK {
     s8 x3E;
     s8 x3F;
     s32 x40;
-    u8 x44[0x4C - 0x44];
+    u8* x44;      // 0x44 — base of a u16 jump-offset table (func_80058740)
+    u8 x48[0x4C - 0x48];
     u8* stack2[8]; // 0x4C — script2 call stack (func_80054A84 pops via xC0)
     u8* script2;  // 0x6C — second script stream pointer
     u8 x70;
@@ -33,6 +34,7 @@ typedef struct MOJI_TASK {
     u16 xBC;      // 0xBC — cleared by opcode handlers (func_80054BB4 etc.)
     u16 xBE;      // 0xBE — script stack pointer (index into stack[])
     u16 xC0;      // 0xC0 — script2 stack pointer (index into stack2[])
+    u16 xC2;      // 0xC2 — index into the x44 u16 offset table (func_80058740)
 } MOJI_TASK;
 
 unknown_t MojiTaskExec(unknown_t, unknown_t, unknown_t);

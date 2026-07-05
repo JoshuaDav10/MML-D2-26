@@ -49,7 +49,18 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001C95C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001CAAC);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001CB30);
+extern u8 D_8009896C;
+extern u8 D_80098A98[];
+void CdReadyCallback(s32);
+void func_8001CC08();
+void func_8001D254(s32, s32, u8*);
+
+void func_8001CB30(void) {
+    D_8009896C = 0;
+    CdReadyCallback(0);
+    CdSyncCallback((s32)func_8001CC08);
+    func_8001D254(9, 0, D_80098A98);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001CB7C);
 

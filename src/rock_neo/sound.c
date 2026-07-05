@@ -38,7 +38,18 @@ void func_800199F8(void) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019A34);
+extern s16 D_800822B0;
+
+void func_80019A34(void) {
+    s16 *p;
+    s32 i;
+    s16 v = (Game_work[0x53] == 1) ? 0x17 : 0x108;
+    i = 4;
+    p = &D_800822B0;
+    for (; i >= 0; i--) {
+        *p-- = v;
+    }
+}
 
 void func_80019A70(void) {
     if (Sce_flag_test(0x1E1)) {
@@ -89,9 +100,27 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A0A8);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A110);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A1FC);
+// 5-entry table at Game_work+0x1BA, stride 8; the separate `off` variable
+// (not i*8) keeps the per-iteration lui/$at symbol-indexed lbu form
+s32 func_8001A1FC(s32 key) {
+    s32 i, off;
+    i = 0;
+    for (off = 0; i < 5; i++, off += 8) {
+        if (((u8*)Game_work)[0x1BA + off] == key) return i;
+    }
+    return -1;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A238);
+extern u8 D_80098AD0[];
+
+s32 func_8001A238(s32 key) {
+    s32 i, off;
+    i = 0;
+    for (off = 0; i < 5; i++, off += 8) {
+        if (D_80098AD0[off] == key) return i;
+    }
+    return -1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A274);
 

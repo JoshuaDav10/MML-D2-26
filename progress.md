@@ -1,16 +1,16 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (361 still active
+- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (349 still active
   INCLUDE_ASM stubs; count verified by preprocessing src and counting
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 123 (verified: 123 = 484 .text function symbols across
-  build/src/rock_neo/*.c.o minus 361 active INCLUDE_ASM stubs, with the
+- rock_neo main: 135 (verified: 135 = 484 .text function symbols across
+  build/src/rock_neo/*.c.o minus 349 active INCLUDE_ASM stubs, with the
   full-binary sha1 OK after a CLEAN rebuild — see the func_800605DC note
   under "Last verified build")
-- Volume: ~1590 of ~31,300 mapped instructions (~5.1%)
+- Volume: ~1830 of ~31,300 mapped instructions (~5.8%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -20,7 +20,9 @@
     func_80054BB4, func_80055CC4, func_80056148, func_80054B4C,
     func_80057708, func_80057A94 (script call-stack push + table jump),
     func_80057DB8, func_80058DB4, func_80057144, func_8005753C,
-    func_80055C80, func_800576C4 (script2 call-stack push), func_80057B70
+    func_80055C80, func_800576C4 (script2 call-stack push), func_80057B70,
+    func_800553A8, func_800553F0 (Sce_flag on/off from script operand),
+    func_800555F4, func_80057BB4, func_80058740 (x44 jump-offset table)
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8
   - scene: func_8001D878, func_8001DEDC, func_8001F820, func_8001D974,
@@ -28,23 +30,31 @@
     func_8001F1DC, func_8001F20C (SCENE_WORK typed), func_8001FB24,
     Sce_flag_test (the flag-bit reader; unused 8-byte frame local),
     func_8001D888 (Cd_read_sync2 drain loop), func_8001FB54, func_8001FB8C
+    (func_8001FCA4 attempted, NOT matched — see activity 2026-07-05)
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
     Cd_read_comb, func_8001D468 (CD_CMD queue writers), func_8001C7F0,
-    func_8001D7AC, func_8001B858 (fn-table dispatch via D_80098A84->x8)
-  - sub_scrn: Sub_screen_sort_sub, func_800605DC
+    func_8001D7AC, func_8001B858 (fn-table dispatch via D_80098A84->x8),
+    func_8001CB30 (CdReady/CdSync callback setup + func_8001D254 kick)
+  - sub_scrn: Sub_screen_sort_sub, func_800605DC, Map_screen_init
   - sound: func_80019F94, func_8001B2F0, func_8001997C, func_8001B314,
-    func_80019A70, func_80019AE0, func_80019AA4, func_800199F8
+    func_80019A70, func_80019AE0, func_80019AA4, func_800199F8,
+    func_80019A34, func_8001A1FC, func_8001A238 (stride-8 search loops)
   - game: func_800155A4, func_80015734, func_80015840, func_80016528,
     func_80016BC0, func_80016BF4, func_80016D0C, func_80016D38,
     func_80016D64, func_80016DAC, func_80016E90
   - main: func_800131FC, func_8001326C, func_80012FA4, func_80012FC8,
-    vsync_cb, func_80012F78, func_80012E98, func_80012298
+    vsync_cb, func_80012F78, func_80012E98, func_80012298, func_80012424
   - player: 10 empty funcs func_8003FFA8, func_80040130..func_800402BC,
     func_8003BE40, func_80040140, func_800406A8, func_800406DC,
-    func_80040B34 (key-vs-mask tests, PL_WORK typed), func_80042208
+    func_80040B34 (key-vs-mask tests, PL_WORK typed), func_80042208,
+    func_800405F4 (x11C vs x128|x12A)
   - debug: func_800629E0
 
 ## Last verified build
+- 2026-07-05 (Fable audit + harvest) — from-scratch rebuild (`rm -rf build`)
+  byte-identical via `cmp`; then two 6-function batches, each clean-rebuilt,
+  hash OK, mutation-tested (broke func_80058740/func_80012424/func_800133D8/
+  func_800199F8 across the session — each failed the check; restored, OK).
 - 2026-07-05 (Opus session) — `make CPP=cpp check_rock_neo_only` OK after a
   CLEAN rebuild (`touch src/rock_neo/*.c && rm -f build/rock_neo.elf`), which
   is what makes this count trustworthy. Mutation tests: func_800605DC and

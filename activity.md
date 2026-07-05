@@ -151,3 +151,30 @@
 - func_800199F8: reconfirmed the init-order lesson (i before p → counter=$v1,
   pointer=$v0).
 - sha1 OK (clean rebuild); mutation tests on func_800605DC + func_80057B70.
+
+## 2026-07-05 (Fable session: audit + 12 more)
+- Audited the Opus session first: from-scratch rebuild (rm -rf build) →
+  byte-identical cmp; independent mutation tests on func_800133D8 and
+  func_800199F8 (not the ones Opus self-tested); recount reconciled at 123.
+  Opus's stale-object diagnosis of func_800605DC confirmed from git history.
+- Batch 1 (6): player func_800405F4 (x11C vs x128|x12A key test — new PL_WORK
+  x128/x12A fields), sound func_80019A34 (5-halfword backfill @D_800822B0),
+  sound func_8001A1FC/func_8001A238 (stride-8 five-entry search loops),
+  moji func_800553A8/func_800553F0 (Sce_flag_on/off of a 16-bit script
+  operand via func_80054410).
+- Batch 2 (6): moji func_800555F4 (x10 += operand), func_80057BB4
+  (negated-zenny func_80043294 call), func_80058740 (script call-stack push
+  + jump via x44 u16 offset table — new MOJI_TASK x44/xC2 fields),
+  sub_scrn Map_screen_init, cd func_8001CB30 (callback setup),
+  main func_80012424 (joy-chord toggle of D_80097864).
+- **NOT matched: scene func_8001FCA4** (stage-band like FB54/FB8C but with an
+  ==5 leg). ~12 source forms tried: ternary chain (both == and != — cc1
+  canonicalizes them identically to the bne/87-delay mirror), flat and nested
+  if/else chains (leg 2 comes out beq+j instead of bnez+delay-85), &&-guard,
+  goto form, preset-r. Target needs chain-style legs 1-2 (value in $v0,
+  bnez→end with 85 in delay) but an UN-inverted beq→end (86 in delay) +
+  j→end (87 in delay) for the equality leg. Everything that fixes one leg
+  breaks the other. Re-stubbed; candidate for a stronger-model pass or for
+  revisiting after more == ternaries are seen elsewhere in the binary.
+- 135 matched / 349 stubs (~5.8% volume); every batch clean-rebuilt,
+  hash-verified, byte-compared, mutation-tested.

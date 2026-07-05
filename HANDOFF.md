@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-05, Opus session)
+# HANDOFF — MML Decomp session state (2026-07-05, Fable audit+harvest)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,7 +19,7 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 123 / 475** functions (~5.1% of instruction volume, 361 active
+- **Matched: 135 / 475** functions (~5.8% of instruction volume, 349 active
   stubs left) — small-function harvest phase. See `progress.md`.
 - **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&
   rm -f build/rock_neo.elf` before `make`). This session found a prior
@@ -35,7 +35,28 @@
   any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
-## What was accomplished in the 2026-07-05 Opus session (most recent)
+## What was accomplished in the 2026-07-05 Fable session (most recent)
+
+1. **Audited the Opus session** (independent from-scratch `rm -rf build`
+   rebuild → `cmp` byte-identical; fresh mutation tests; recount) — all of
+   Opus's claims held, including the func_800605DC stale-object diagnosis.
+2. **12 more matches (135 total)** in two clean-rebuilt batches:
+   player func_800405F4; sound func_80019A34/func_8001A1FC/func_8001A238;
+   moji func_800553A8/553F0/555F4/57BB4/58740; sub_scrn Map_screen_init;
+   cd func_8001CB30; main func_80012424.
+3. **One function re-stubbed as an open problem**: scene func_8001FCA4 — an
+   ==5 leg inside a ternary chain; cc1 canonicalizes ==/!= ternaries so the
+   un-inverted beq form of the original is unreachable from every form tried
+   (~12). Full notes in LESSONS.md "OPEN PROBLEM" and activity.md. Don't
+   re-grind it blind; revisit when another ==-in-chain function matches.
+4. **New idioms in LESSONS.md**: separate-offset-variable loops keep the
+   symbol-indexed lui/$at load form (vs strength-reduced pointer march);
+   `((u8*)sym)[k]` selects lbu per-site without a second extern; raw
+   (unmasked) param compares mean an int-typed param in the source.
+5. New typed fields: MOJI_TASK.x44 (u8* jump-offset table base) + xC2
+   (u16 index); PL_WORK.x128/x12A (key masks).
+
+## What was accomplished in the 2026-07-05 Opus session
 
 1. **6 more matches (123 total)**, all clean-rebuild + hash verified:
    Code800133D8 func_800133D8, cd func_8001B858 (fn-table dispatch),

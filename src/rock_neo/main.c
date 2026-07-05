@@ -41,7 +41,15 @@ s32 vsync_cb(void) {
     return idk_framecounter_maybe;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012424);
+extern u16 D_800C0C26; // joy pad word, lui-accessed
+extern u16 D_800C0D8E;
+extern s32 D_80097864; // sdata ($gp)
+
+void func_80012424(void) {
+    if ((D_800C0C26 & 0xF00) == 0xF00 && (D_800C0D8E & 0x2000)) {
+        D_80097864 ^= 1;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_8001246C);
 

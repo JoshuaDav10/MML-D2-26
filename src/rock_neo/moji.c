@@ -179,15 +179,26 @@ s32 func_8005531C(MOJI_TASK *m) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055344);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800553A8);
+s32 func_800553A8(MOJI_TASK *m) {
+    Sce_flag_on((u16)func_80054410(m->script2 + 1));
+    m->script2 += 3;
+    return 1;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800553F0);
+s32 func_800553F0(MOJI_TASK *m) {
+    Sce_flag_off((u16)func_80054410(m->script2 + 1));
+    m->script2 += 3;
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055438);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800554E4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800555F4);
+void func_800555F4(MOJI_TASK *m) {
+    m->x10 += func_80054410(m->script + 1);
+    m->script += 3;
+}
 
 s32 func_8005563C(MOJI_TASK *m) {
     m->flags |= 0x20000000;
@@ -358,7 +369,11 @@ s32 func_80057B70(MOJI_TASK *m) {
     return 1;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057BB4);
+s32 func_80057BB4(MOJI_TASK *m) {
+    func_80043294(-D_80098AF4, 0, 0);
+    m->script2 += 1;
+    return 1;
+}
 
 s32 func_80057BFC(MOJI_TASK *m) {
     return func_8005BF10(1, D_80098AF4, m->script += 1);
@@ -391,7 +406,12 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_8005851C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_8005861C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058740);
+void func_80058740(MOJI_TASK *m) {
+    u8 *base;
+    m->stack[m->xBE++] = m->script + 5;
+    base = m->x44;
+    m->script = base + *(u16*)(base + m->xC2 * 2);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058788);
 

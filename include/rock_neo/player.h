@@ -26,7 +26,10 @@ typedef struct PL_WORK {
     u8 x111[0x11C - 0x111];
     u16 x11C;     // key/input mask (func_80040B34 tests vs x13E)
     u16 x11E;     // key/input mask (func_800406A8 family tests vs x138)
-    u8 x120[0x138 - 0x120];
+    u8 x120[0x128 - 0x120];
+    u16 x128;     // key/input mask (func_800405F4 ORs with x12A, tests vs x11C)
+    u16 x12A;     // key/input mask
+    u8 x12C[0x138 - 0x12C];
     u16 x138;
     u8 x13A[0x13E - 0x13A];
     u16 x13E;
