@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-05, MojiTaskExec matched)
+# HANDOFF — MML Decomp session state (2026-07-05 overnight, 182 matched / 10.5%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,8 +19,8 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 136 / 475** functions (~6.3% of instruction volume, 348 active
-  stubs left). See `progress.md`.
+- **Matched: 182 / 475** functions (~10.5% of instruction volume). See
+  `progress.md`.
 - **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&
   rm -f build/rock_neo.elf` before `make`). This session found a prior
   "match" (func_800605DC) that never actually compiled — the stale stub
@@ -35,7 +35,39 @@
   any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
-## What was accomplished in the 2026-07-05 Fable MojiTaskExec session (most recent)
+## What was accomplished in the 2026-07-05 OVERNIGHT autonomous session (most recent)
+
+Batches 4-8b, all clean-rebuilt + hash-gated + mutation-tested + pushed to dev
+(commits 2791c0c..c3c6807). 46 new matches (136 → 182), crossing 10% volume.
+
+1. **Batch 4 (3)**: main func_80012E10/func_80012FEC, sound func_80019FB4.
+   New idiom: same symbol-indexed slot read twice → cc1 CSEs the address;
+   alias the second read through a NEIGHBOR symbol constant-index
+   (`((u8 **)D_801F8114)[(n << 5) + 2]`) — distinct RTL, identical relocs.
+2. **Batch 5 (5)**: player func_80040380/40710/40AEC, sound Sound_call,
+   cd func_8001D7E4. func_80042044 PARKED: register-birth-order mismatch
+   (k must land in $v0, ret in $t0; pass-through (pl,arg1,arg2) →
+   func_80042154 proven — gets ret→$t0 — but k still steals $a0).
+3. **Batch 6 (4)**: scene func_8001FD3C/FD90, sound Sound_call2 (q++ pins
+   tail store order — LESSONS), sub_scrn func_8005EC34. PARKED as a family:
+   func_8001FC50/FDE4 + already-known FCA4 (cc1 jump-canonicalization:
+   cross-jumped constant legs / inverted beq→store; no C shape found).
+4. **Batch 7 (9)**: un-gated the pre-patchasm ACCEPT_REORDERING_BULLSHIT
+   drafts in sub_scrn.c (sorts, cancel/shift checks, rb_parts_set, EC80,
+   60DB8). Only real fix: MojiTaskExec's -1 arg needs a K&R declaration
+   (ANSI u8 prototype truncated it at the call site).
+5. **Batch 8 (1)**: func_800600CC via raw-address Moji_flag derefs (gp-vs-
+   lui is per-FUNCTION here) + tools/maspx patch: bare-CONSTANT-address
+   loads now get load-delay nops like bare-symbol loads.
+6. **Batch 8b (consistency)**: the K&R decl conflicted with the ANSI
+   definition — moji.c had been failing to compile with the hash passing on
+   a stale object. Definition now K&R (byte-identical .text); from-scratch
+   `rm -rf build` rebuild: zero errors, hash OK. LESSON: grep make output
+   for errors before trusting the hash.
+   Sub_screen_rb_parts_calc's USE_OG_COMPILER draft tried: 6 insns short,
+   re-gated with note.
+
+## What was accomplished in the 2026-07-05 Fable MojiTaskExec session
 
 1. **MojiTaskExec MATCHED** (136 total, ~6.3% volume) — the 133-line
    script-VM task-slot initializer, biggest single match yet. Clean rebuild
@@ -62,13 +94,21 @@
    patchasm + normalizing stream diff) — the tree got exactly one edit and
    matched on the first in-tree build.
 
-## Where to pick up next (this session's view)
+## Where to pick up next (overnight session's view)
 
-1. With MojiTaskExec + the call-stack push/pop family done, the moji
-   script-VM vocabulary is largely pinned — the remaining ~45 func_8005xxxx
-   opcode handlers should harvest fast; several are 23-40 line stubs.
-2. `wc -l asm/rock_neo/nonmatchings/*/*.s | sort -n` for the general queue.
-3. When a callee-saved register mirror resists the usual knobs, go straight
+1. Smallest remaining stubs (insn counts): moji func_80057DF4 (23),
+   sub_scrn func_80060248 (23) + Sub_screen_cancel_check-family siblings,
+   debug func_800629F0 (24), main func_8001319C (24), moji func_80057D00
+   (24), sound func_800198C0/func_800199A4, player func_8003EE68,
+   scene func_8001DE84/func_8001F740/func_8001FCE4 (avoid the FCA4/FC50/
+   FDE4 jump-canonicalization shapes — see LESSONS).
+2. PARKED with findings: func_80042044 (player; reg-birth-order),
+   func_8001FC50/FCA4/FDE4 (scene; jump-canonicalization),
+   Sub_screen_rb_parts_calc (draft 6 insns short).
+3. The scratch-TU pipeline script is at the session scratchpad as tryfn.sh
+   (cpp|cc1|maspsx|gprel|patchasm|as + objdump); recreate from Makefile
+   line 266 if gone.
+4. When a callee-saved register mirror resists the usual knobs, go straight
    to the -dl dump arithmetic (LESSONS.md) instead of blind permutation.
 
 ## What was accomplished in the 2026-07-05 Fable session (audit+harvest)
