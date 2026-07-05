@@ -1,0 +1,84 @@
+diff --git a/maspsx/__init__.py b/maspsx/__init__.py
+index 5941fc6..3231b24 100644
+--- a/maspsx/__init__.py
++++ b/maspsx/__init__.py
+@@ -15,6 +15,16 @@ jump_mnemonics = [
+     "j",
+     "jal",
+ ]
++# Symbols whose bare-sym+reg accesses expand base-reg-first
++# (addu $at,reg,$at) in the original binary — main.c's D_801F81xx
++# family (func_80012F24/2E10/2FEC). Everything else expands $at-first.
++ASPSX_REGFIRST_SYM_PREFIXES = ("D_801F8",)
++
++
++def regfirst_quirk(operand):
++    return operand.startswith(ASPSX_REGFIRST_SYM_PREFIXES)
++
++
+ load_mnemonics = [
+     "lb",
+     "lbu",
+@@ -438,8 +448,11 @@ class MaspsxProcessor:
+                         res.append("nop  # DEBUG: next instruction is branch")
+                         self.skip_instructions = 1
+ 
+-            elif is_addend and r_source is None:
+-                # e.g. lb	$s0,D_800E52E0
++            elif r_source is None:
++                # e.g. lb	$s0,D_800E52E0  (symbol)
++                #      lw	$2,-2146858192  (bare constant address — GAS
++                #      expands lui+lw just like a symbol; ASPSX applied the
++                #      same load-delay nop rules, so treat both here)
+                 res.append(line)
+ 
+                 if not uses_at(next_instruction) and reg_in_line(
+@@ -484,9 +497,16 @@ class MaspsxProcessor:
+ 
+             elif is_addend and r_source:
+                 # e.g. lw	$2,test_sym($4)
++                # ASPSX operand-order quirk: bare symbols expand with the
++                # base register FIRST (addu $at,reg,$at — func_80012F24's
++                # D_801F8100($s0)); symbol+offset addends expand $at-first
++                # (addu $at,$at,reg — sound's Game_work+0x1BA($a1)).
+                 res.append(".set\tnoat")
+                 res.append(f"lui\t$at,%hi({operand})")
+-                res.append(f"addu\t$at,$at,{r_source}")
++                if regfirst_quirk(operand):
++                    res.append(f"addu\t$at,{r_source},$at")
++                else:
++                    res.append(f"addu\t$at,$at,{r_source}")
+                 res.append(f"{op}\t{r_dest},%lo({operand})($at)")
+                 res.append(".set\tat")
+ 
+@@ -549,6 +569,30 @@ class MaspsxProcessor:
+             else:
+                 res.append(line)
+ 
++        elif op in ("sb", "sh", "sw", "swl", "swr"):
++            # Stores need no load-delay handling, but bare-symbol+reg
++            # operands must expand base-reg-first (same ASPSX quirk as
++            # loads above); GAS would emit addu $at,$at,reg instead.
++            rest = " ".join(rest)
++            if match := re.match(r"(\$[a-z0-9]+),\s*([^(%][^(]*)\(([^)]+)\)", rest):
++                r_val = match.group(1)
++                operand = match.group(2)
++                r_base = match.group(3)
++                symbolic = not (
++                    re.match(r"^-?\d+$", operand)
++                    or re.match(r"^-?0x[A-Fa-f0-9]+$", operand)
++                )
++                if symbolic and regfirst_quirk(operand):
++                    res.append(".set\tnoat")
++                    res.append(f"lui\t$at,%hi({operand})")
++                    res.append(f"addu\t$at,{r_base},$at")
++                    res.append(f"{op}\t{r_val},%lo({operand})($at)")
++                    res.append(".set\tat")
++                else:
++                    res.append(line)
++            else:
++                res.append(line)
++
+         else:
+             if line == ".rdata":
+                 line = ".section .rodata"
