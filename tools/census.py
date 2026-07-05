@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-import glob
+import argparse
 import re
 import subprocess
 import sys
@@ -42,7 +42,7 @@ INSN_RE = re.compile(
 
 def cpp_stubs(c_path: Path) -> set[tuple[str, str]]:
     proc = subprocess.run(
-        ["cpp", *CPP_FLAGS, str(c_path)],
+        ["cpp", *CPP_FLAGS, str(c_path.relative_to(ROOT))],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -57,7 +57,21 @@ def insn_count(s_path: Path) -> int:
     return len(INSN_RE.findall(text))
 
 
-def main() -> int:
+def objdump_text_symbols(obj_path: Path) -> list[str]:
+    proc = subprocess.run(
+        ["mipsel-elf-objdump", "-t", str(obj_path)],
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    names: list[str] = []
+    for line in proc.stdout.splitlines():
+        if " F .text" in line:
+            names.append(line.split()[-1])
+    return names
+
+
+def stub_census() -> int:
     stubs: dict[str, tuple[str, int]] = {}
     for c_path in sorted((ROOT / "src" / "rock_neo").glob("*.c")):
         for folder, name in cpp_stubs(c_path):
@@ -77,6 +91,58 @@ def main() -> int:
     print()
     print(f"total: {len(rows)} active stubs, {total_insns} instruction lines")
     return 0
+
+
+def matched_census() -> int:
+    build = ROOT / "build" / "src" / "rock_neo"
+    if not build.is_dir():
+        print(
+            "census: build/src/rock_neo/ missing — run `make CPP=cpp` first",
+            file=sys.stderr,
+        )
+        return 1
+
+    total_obj = 0
+    total_stub = 0
+    total_matched = 0
+    print(f"{'TU':<22} {'in .o':>6} {'stubs':>6} {'matched':>8}")
+    for c_path in sorted((ROOT / "src" / "rock_neo").glob("*.c")):
+        obj_path = build / f"{c_path.name}.o"
+        if not obj_path.is_file():
+            print(f"census: missing {obj_path}", file=sys.stderr)
+            return 1
+        obj_syms = objdump_text_symbols(obj_path)
+        stub_names = {name for _folder, name in cpp_stubs(c_path)}
+        matched = len(set(obj_syms) - stub_names)
+        print(
+            f"{c_path.name:<22} {len(obj_syms):6d} {len(stub_names):6d} {matched:8d}"
+        )
+        total_obj += len(obj_syms)
+        total_stub += len(stub_names)
+        total_matched += matched
+
+    print()
+    print(
+        f"total: {total_obj} in object files, {total_stub} active stubs, "
+        f"{total_matched} matched (matched + stubs = {total_matched + total_stub})"
+    )
+    if total_obj != total_matched + total_stub:
+        print("census: arithmetic mismatch", file=sys.stderr)
+        return 1
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--matched",
+        action="store_true",
+        help="Per-TU matched count via objdump F .text minus cpp-active stubs",
+    )
+    args = parser.parse_args()
+    if args.matched:
+        return matched_census()
+    return stub_census()
 
 
 if __name__ == "__main__":

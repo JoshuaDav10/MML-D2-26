@@ -1,9 +1,10 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: 475 functions in asm/rock_neo/nonmatchings (302 still active
-  INCLUDE_ASM stubs; count verified by preprocessing src and counting
-  `.include nonmatchings` lines)
+- rock_neo main: **484** functions in linked object code (`tools/census.py
+  --matched`; see `notes/COUNTS.md`). **475** have splat asm under
+  `asm/rock_neo/nonmatchings/`; **261** active INCLUDE_ASM stubs (cpp census);
+  **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
 - rock_neo main: 223 (verified: full-binary sha1 OK after a CLEAN rebuild —
