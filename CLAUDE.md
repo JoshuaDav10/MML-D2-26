@@ -31,7 +31,9 @@ Goal: C source that recompiles to a byte-for-byte identical binary.
 - include/macro.inc has added no-op macros (nonmatching/enddlabel/alabel) for modern spimdisasm.
 
 ## Workflow rules
-- One function at a time. Real work on branches: `git switch -c match/<func>`.
+- ALL commits go to the `dev` working branch. NEVER commit to or merge into
+  `main` — only the user promotes confirmed work to main.
+- One function at a time.
 - Track mapped vs matched separately in progress.md. Mapping != matching.
 - A function is DONE only when `make CPP=cpp check_rock_neo_only` prints OK
   (full-binary sha1) — not when its diff "looks right".
