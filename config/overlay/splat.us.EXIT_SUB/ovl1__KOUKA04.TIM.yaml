@@ -1,0 +1,31 @@
+options:
+  platform: psx
+  basename: EXIT_SUB.ovl1__KOUKA04.TIM
+  base_path: ../../../
+  target_path: ./disks/us/CDDATA/DAT/EXIT_SUB.BIN
+  asm_path: asm/EXIT_SUB/ovl1__KOUKA04.TIM
+  asset_path: assets/EXIT_SUB/ovl1__KOUKA04.TIM
+  src_path: src/EXIT_SUB/ovl1__KOUKA04.TIM
+  compiler: GCC
+  extensions_path: tools/splat_ext
+  symbol_addrs_path: config/overlay/splat.us.EXIT_SUB/generated.syms.us.ovl1__KOUKA04.TIM.txt
+  undefined_funcs_auto_path: config/overlay/splat.us.EXIT_SUB/undefined_funcs_auto.us.ovl1__KOUKA04.TIM.txt
+  undefined_syms_auto_path: config/overlay/splat.us.EXIT_SUB/undefined_syms_auto.us.ovl1__KOUKA04.TIM.txt
+  find_file_boundaries: yes
+  use_legacy_include_asm: no
+  migrate_rodata_to_functions: no
+  auto_decompile_empty_functions: no
+segments:
+# ..\\OBJ\\COMM\\KOUKA04.TIM
+  - name: EXIT_SUB_KOUKA04_TIM_1_header
+    type: dashchunkheader
+    start: 0x00000800
+  - name: EXIT_SUB_KOUKA04_TIM_1
+    type: code
+    start: 0x00001000
+    vram: 0x80010000
+    
+    subalign: 4
+    subsegments:
+      - [0x1000, data, KOUKA04_0]
+  - [0x00005000]

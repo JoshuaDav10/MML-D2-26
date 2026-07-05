@@ -1,0 +1,31 @@
+options:
+  platform: psx
+  basename: EXIT_SUP.ovl10__common.vab
+  base_path: ../../../
+  target_path: ./disks/us/CDDATA/DAT/EXIT_SUP.BIN
+  asm_path: asm/EXIT_SUP/ovl10__common.vab
+  asset_path: assets/EXIT_SUP/ovl10__common.vab
+  src_path: src/EXIT_SUP/ovl10__common.vab
+  compiler: GCC
+  extensions_path: tools/splat_ext
+  symbol_addrs_path: config/overlay/splat.us.EXIT_SUP/generated.syms.us.ovl10__common.vab.txt
+  undefined_funcs_auto_path: config/overlay/splat.us.EXIT_SUP/undefined_funcs_auto.us.ovl10__common.vab.txt
+  undefined_syms_auto_path: config/overlay/splat.us.EXIT_SUP/undefined_syms_auto.us.ovl10__common.vab.txt
+  find_file_boundaries: yes
+  use_legacy_include_asm: no
+  migrate_rodata_to_functions: no
+  auto_decompile_empty_functions: no
+segments:
+# ..\\sound\\moto\\se\\vab\\common.vab
+  - name: EXIT_SUP_common_vab_10_header
+    type: dashchunkheader
+    start: 0x00025000
+  - name: EXIT_SUP_common_vab_10
+    type: code
+    start: 0x00025800
+    vram: 0x80010000
+    
+    subalign: 4
+    subsegments:
+      - [0x25800, data, common_0]
+  - [0x0004B000]

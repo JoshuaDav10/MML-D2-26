@@ -203,3 +203,43 @@ overlay sweep: 200/205
 ```
 
 <!-- Next sprint: append below this line -->
+
+---
+
+## Sprint: Phase 3b — Novel chunk types (2026-07-05)
+
+**What we did:** Added overlay configs for the final five archives: GAUGE (type 1
++ type 10 headers), EXIT_SUB / EXIT_MAP (type 9 header-only + type 1 TIMs),
+EXIT_SUP (mixed types 1/9/10 + VAB), GAMEOVER (TIM + two VABs + type-8 SEP).
+28 yaml files + five `build.json`. Splat split + clean build on
+`overlay-expedition`.
+
+### Lessons
+
+1. **Type 9 and 10 chunks are header-only (0x800 bytes)** when TIM dimension
+   fields compute to zero data size. Yaml is `dashchunkheader` only, end at
+   next chunk offset — no `code`/data subsegment.
+
+2. **Type 10 duplicates type-1 asset references** — GAUGE01u appears as full
+   type-1 chunk plus type-10 header stubs at `0x8800`; both must rebuild.
+
+3. **GAMEOVER is four rebuildable chunks**, not two — second VAB (`m_gover.vab`
+   @`0x24800`) and type-8 SEP (`m_gover.sep` @`0x4E800`) follow `e_gover.vab`;
+   terminator + padding pass through after last chunk.
+
+4. **Do not run `chunk2splatyaml.py` on the whole DAT folder** — it overwrites
+   existing `build.json` entries and yaml for all 205 archives. Generate configs
+   per-archive only.
+
+5. **Overlay count now 205/205** — full DAT sweep byte-identical.
+
+### Verification
+
+```
+rm -rf build && make CPP=cpp
+cmp disks/us/CDDATA/DAT/{GAUGE,GAMEOVER,EXIT_MAP,EXIT_SUB,EXIT_SUP}.BIN build/*.BIN  # all silent
+make CPP=cpp check_rock_neo_only  # OK
+overlay sweep: 205/205
+```
+
+<!-- Next sprint: append below this line -->
