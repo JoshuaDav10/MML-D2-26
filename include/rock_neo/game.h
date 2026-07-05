@@ -5,6 +5,11 @@
 
 void Game_logo_kill(unknown_t);
 
+typedef struct {
+    u8 pad[4];
+    u16 vals[6];
+} GW84_ENTRY; // 0x10 — Game_work.x84_tbl entry
+
 typedef struct GAME_WORK {
     s8 routine_0;
     s8 x1;
@@ -33,6 +38,7 @@ typedef struct GAME_WORK {
     s8 x81;
     u8 x82;
     s8 x83;
+    GW84_ENTRY x84_tbl[1]; // 0x84 — 0x10-stride entries indexed by D_800989D4 (count unknown)
 } GAME_WORK;
 
 typedef struct {

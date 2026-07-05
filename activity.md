@@ -308,3 +308,18 @@
   compiles 0x1AC vs 0x1C4 (6 insns short) — re-gated with a note.
 - Verified with a FULL from-scratch rebuild (`rm -rf build`): zero compile
   errors and hash OK.
+
+## 2026-07-05 — Fable (overnight autonomous, batch 9)
+- 5 more matches (187 total, ~10.8% volume): moji func_80057D00 (stack2
+  sibling of func_80057D60) + func_80057DF4, player func_8003EE68 (PL_WORK
+  x74/x75 typed), sound func_800198C0, sub_scrn func_80060248.
+- GAME_WORK extended: GW84_ENTRY x84_tbl[] at 0x84 (0x10-stride, u16
+  vals[6] at +4), indexed by gp-u8 D_800989D4.
+- func_80057DF4 needed two subtleties: u32 loop counter (sltiu) and the
+  `((GW84_ENTRY *)&Game_work.x84_tbl)[idx].vals[i]` cast form — direct
+  member indexing folds vals' +4 into the symbol addend (wrong bytes),
+  the cast keeps GW+0x84 as the base with +4 in the lhu.
+- func_800199A4 parked: FC50/FCA4 jump-canonicalization family (one
+  value-leg cross-jumped + final branch inverted, 2 insns short).
+- Mutation tests: all five perturbations failed the hash check; restored,
+  OK (final rebuild error-grep clean).

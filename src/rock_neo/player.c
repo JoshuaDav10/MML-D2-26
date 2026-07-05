@@ -56,7 +56,14 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003E860);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003EB08);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003EE68);
+void func_8003EE68(PL_WORK* pl) {
+    pl->x9 = 7;
+    pl->xA = 4;
+    pl->x75 = 1;
+    pl->x74 = 1;
+    Pl00_shot_enable_on(pl);
+    func_80041DDC(pl, 0x12, 0, 1);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003EEC0);
 

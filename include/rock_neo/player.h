@@ -19,7 +19,10 @@ typedef struct PL_WORK {
     u16 xA;       // sub-state counter (low byte checked by func_80040140)
     u8 xC[0x6E - 0xC];
     u16 life;
-    u8 x70[0xB4 - 0x70];
+    u8 x70[0x74 - 0x70];
+    u8 x74;       // set to 1 with x75 by func_8003EE68
+    u8 x75;
+    u8 x76[0xB4 - 0x76];
     u16 xB4;      // cleared by func_80042044 when keys don't select the action
     u8 xB6[0xBD - 0xB6];
     u8 xBD;

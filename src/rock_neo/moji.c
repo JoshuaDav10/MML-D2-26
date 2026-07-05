@@ -11,6 +11,7 @@ s32 func_8005DAEC(s32);
 s32 func_8005DA1C(s32);
 extern u8 *D_8008CE5C[];
 extern u8 *D_8008CE10[];
+extern u8 D_800989D4; // sdata ($gp)
 extern u8 *D_8008D0D4[];
 extern u8 *D_8008CCA4[];
 extern s8 D_800BE2F7[];
@@ -505,7 +506,11 @@ s32 func_80057BFC(MOJI_TASK *m) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057C2C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057D00);
+s32 func_80057D00(MOJI_TASK *m) {
+    m->stack2[m->xC0++] = m->script2 + 2;
+    m->script2 = D_8008CE10[D_800BE2F8[m->script2[1]]];
+    return 1;
+}
 
 void func_80057D60(MOJI_TASK *m) {
     m->stack[m->xBE++] = m->script + 2;
@@ -523,7 +528,18 @@ s32 func_80057DB8(MOJI_TASK *m) {
     return 1;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057DF4);
+s32 func_80057DF4(MOJI_TASK *m) {
+    u32 i; /* sltiu in the original */
+
+    for (i = 0; i < 3; i++) {
+        /* the cast keeps &x84_tbl (GW+0x84) as the materialized base with
+           vals' +4 in the lhu offset; direct .x84_tbl[..].vals[i] folds the
+           +4 into the symbol addend (different bytes) */
+        m->script2[i + 1] = ((GW84_ENTRY *)&Game_work.x84_tbl)[D_800989D4].vals[i];
+    }
+    m->script2 += 1;
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057E50);
 

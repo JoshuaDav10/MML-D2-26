@@ -13,7 +13,20 @@ extern void (*Unk_stage_func_tbl[])(s32);
 extern s32 D_80098958; // lui-accessed (not sdata)
 extern s8 Game_work[]; // this TU only reads byte x53; full type in game.h
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_800198C0);
+extern s16 D_8008222A;
+
+void func_800198C0(void) {
+    s32 a;
+    s32 i;
+    s16 *p;
+
+    a = (Sce_flag_test(6) == 0 || Sce_flag_test(0x2C) != 0) ? 7 : 2;
+    i = 5;
+    p = &D_8008222A;
+    do {
+        *p-- = a;
+    } while (--i >= 0);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019918);
 

@@ -111,7 +111,32 @@ s32 func_800600CC(SUB_SCREEN_WORK* subp) {
 
 // clang-format off
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_80060248);
+void func_80060248(SUB_SCREEN_WORK* s) {
+    /* byte-offset form: several of these slots fall inside pad arrays of
+       the current SUB_SCREEN_WORK typing */
+    u8 a = ((u8 *)s)[0x12];
+    u8 b = ((u8 *)s)[0x15];
+    u8 c = ((u8 *)s)[0x1A];
+    u8 d = ((u8 *)s)[0x1D];
+    u8 e = ((u8 *)s)[0x22];
+    u8 f = ((u8 *)s)[0x25];
+    u8 g = ((u8 *)s)[0x2A];
+    u8 h = ((u8 *)s)[0x2D];
+    u8 i = ((u8 *)s)[0x32];
+    u8 j = ((u8 *)s)[0x35];
+
+    ((u8 *)s)[0x6] = 3;
+    ((u8 *)s)[0x10] = a;
+    ((u8 *)s)[0x13] = b;
+    ((u8 *)s)[0x18] = c;
+    ((u8 *)s)[0x1B] = d;
+    ((u8 *)s)[0x20] = e;
+    ((u8 *)s)[0x23] = f;
+    ((u8 *)s)[0x28] = g;
+    ((u8 *)s)[0x2B] = h;
+    ((u8 *)s)[0x30] = i;
+    ((u8 *)s)[0x33] = j;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_800602A4);
 

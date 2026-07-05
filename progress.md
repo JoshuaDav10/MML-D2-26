@@ -6,9 +6,9 @@
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 182 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 187 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~3275 of ~31,300 mapped instructions (~10.5%)
+- Volume: ~3390 of ~31,300 mapped instructions (~10.8%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -27,7 +27,9 @@
     func_80058D64 (x10/x12 operand pair), func_80057AD0 (stack2 push),
     func_80057D60 + func_80059530 (stack pushes w/ double-table jumps),
     func_800560D0 (x78 compare-select), func_8005BC90 (x7C state seq),
-    func_800555F4, func_80057BB4, func_80058740 (x44 jump-offset table)
+    func_800555F4, func_80057BB4, func_80058740 (x44 jump-offset table),
+    func_80057D00 (stack2 push + double-table jump), func_80057DF4
+    (script2 patch from Game_work.x84_tbl[D_800989D4])
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8
   - scene: func_8001D928 (flag-array clear + Scene_work reset), func_8001D878, func_8001DEDC, func_8001F820, func_8001D974,
@@ -51,13 +53,16 @@
     Sub_screen_rb_parts_set (pre-existing ACCEPT_REORDERING_BULLSHIT
     drafts un-gated; MojiTaskExec K&R decl fixes the -1 arg),
     func_800600CC (routine_1 switch; raw-address Moji_flag derefs +
-    maspsx bare-constant-load nop fix)
+    maspsx bare-constant-load nop fix), func_80060248 (byte-shuffle
+    x1x/x2x/x3x slots via compute-into-locals)
   - sound: func_80019F94, func_8001B2F0, func_8001997C, func_8001B314,
     func_80019A70, func_80019AE0, func_80019AA4, func_800199F8,
     func_80019A34, func_8001A1FC, func_8001A238 (stride-8 search loops),
     func_80019FB4 (Game_work[0x50] fn-table dispatch + D_80098958 |= 0x800),
     Sound_call + Sound_call2 (SND_CMD queue writers, 0x14 stride; call2
-    needs in-place q++ to pin the store order)
+    needs in-place q++ to pin the store order), func_800198C0
+    (Sce-flag ternary into $a0 + descending D_8008222A fill loop)
+    (func_800199A4 attempted, NOT matched — FC50 canonicalization family)
   - game: func_800155A4, func_80015734, func_80015840, func_80016528,
     func_80016BC0, func_80016BF4, func_80016D0C, func_80016D38,
     func_80016D64, func_80016DAC, func_80016E90
@@ -73,11 +78,16 @@
     func_800405F4 (x11C vs x128|x12A), func_8003F498/F4E8/F538/F588
     (func_80041DDC(pl,0x33..0x36,0,1) sibling quad, xA byte guard),
     func_800402C4 (x124/x134 vs x11C key test, PL_WORK fields typed),
+    func_8003EE68 (state 7 setup, x74/x75 typed, shot enable + 41DDC),
     func_80040380 (x112/x113 swap on key match), func_80040710 (x128 vs
     x12A select, xA=0/0x100), func_80040AEC (Game_work x83==1 or x140 key)
   - debug: func_800629E0
 
 ## Last verified build
+- 2026-07-05 (Fable overnight, batch 9) — clean rebuild (error-grepped) hash
+  OK after moji func_80057D00/func_80057DF4, player func_8003EE68, sound
+  func_800198C0, sub_scrn func_80060248; all five mutation tests FAILED the
+  check as required; restored, final clean rebuild OK (0 compile errors).
 - 2026-07-05 (Fable overnight, batch 8) — clean rebuild hash OK after
   func_800600CC + a tools/maspx patch (bare-CONSTANT-address loads now get
   the same load-delay-nop rules as bare-symbol loads; the clean rebuild
