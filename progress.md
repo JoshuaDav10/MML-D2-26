@@ -6,9 +6,9 @@
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 160 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 163 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~2440 of ~31,300 mapped instructions (~7.8%)
+- Volume: ~2550 of ~31,300 mapped instructions (~8.1%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -43,14 +43,17 @@
   - sub_scrn: Sub_screen_sort_sub, func_800605DC, Map_screen_init
   - sound: func_80019F94, func_8001B2F0, func_8001997C, func_8001B314,
     func_80019A70, func_80019AE0, func_80019AA4, func_800199F8,
-    func_80019A34, func_8001A1FC, func_8001A238 (stride-8 search loops)
+    func_80019A34, func_8001A1FC, func_8001A238 (stride-8 search loops),
+    func_80019FB4 (Game_work[0x50] fn-table dispatch + D_80098958 |= 0x800)
   - game: func_800155A4, func_80015734, func_80015840, func_80016528,
     func_80016BC0, func_80016BF4, func_80016D0C, func_80016D38,
     func_80016D64, func_80016DAC, func_80016E90
   - main: func_800131FC, func_8001326C, func_80012FA4, func_80012FC8,
     vsync_cb, func_80012F78, func_80012E98, func_80012298, func_80012424,
     func_8001215C (OT/flag init), func_80012938 (OpenEvent setup),
-    func_80012ECC, func_80012F24 (thread close pair; D_801F81xx quirk)
+    func_80012ECC, func_80012F24 (thread close pair; D_801F81xx quirk),
+    func_80012E10 (OpenTh slot setup), func_80012FEC (PCopen/PCread
+    loader; neighbor-symbol constant-index defeats address CSE)
   - player: 10 empty funcs func_8003FFA8, func_80040130..func_800402BC,
     func_8003BE40, func_80040140, func_800406A8, func_800406DC,
     func_80040B34 (key-vs-mask tests, PL_WORK typed), func_80042208,
@@ -60,6 +63,10 @@
   - debug: func_800629E0
 
 ## Last verified build
+- 2026-07-05 (Fable overnight, batch 4) — clean rebuild hash OK after
+  func_80012E10/func_80012FEC/func_80019FB4; per-function mutation tests
+  (E10 *p=2→3, FEC 0x7B4→0x7B8, FB4 0x800→0x400) each FAILED the check as
+  required; restored, final clean rebuild OK.
 - 2026-07-05 (Fable, MojiTaskExec session) — MojiTaskExec (133-line asm)
   matched: clean rebuild (`touch src/rock_neo/*.c && rm -f build/rock_neo.elf`)
   → hash OK → `cmp` byte-identical; mutation test (x3D=3 → 4) FAILED the

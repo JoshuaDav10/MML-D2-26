@@ -14,6 +14,13 @@ void func_8007FF80(void);
 long func_8001246C();
 extern s32 D_800988D8; // sdata ($gp)
 extern u16 D_801F8100[];
+extern s32 D_801F8110[];
+extern s32 D_801F8114[];
+extern u8 *D_801F811C[];
+extern s32 D_801F8144[];
+long PCopen(char *, long, long);
+long PCread(long, u8 *, long);
+void func_8007699C(s32);
 extern s32 D_801F8108[];
 void CloseTh(s32);
 extern u16 *D_801F8300;
@@ -84,7 +91,15 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012BC4);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012C80);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012E10);
+void func_80012E10(s32 n, s32 fn) {
+    u16 *p;
+
+    func_8007FF70();
+    p = (u16 *)(0x801F8100 + (n << 7));
+    D_801F8108[n << 5] = OpenTh((long (*)())fn, D_801F8110[n << 5], D_801F8144[n << 5]);
+    func_8007FF80();
+    *p = 2;
+}
 
 s32 func_80012E98(s32 arg0) {
     u16 *p = D_801F8300;
@@ -125,7 +140,26 @@ void func_80012FC8(s32 arg0) {
     *p &= 0xFFBF;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012FEC);
+void func_80012FEC(s32 n, char *name) {
+    s32 fd;
+    u8 buf[0x10];
+    u8 *p;
+
+    fd = PCopen(name, 0, 0);
+    PCread(fd, buf, 0x10);
+    PCread(fd, (u8 *)(0x801F8114 + (n << 7)), 0x3C);
+    PCread(fd, D_801F811C[n << 5], 0x7B4);
+    /* same slot as D_801F811C[n << 5]; the distinct expression keeps cc1
+       from CSEing the address, so both loads stay in $at-indexed form and
+       the reloc resolves to identical bytes */
+    p = ((u8 **)D_801F8114)[(n << 5) + 2];
+    while (PCread(fd, p, 0x800) == 0x800) {
+        p += 0x800;
+    }
+    func_8007699C(fd);
+    FlushCache();
+    func_80012E10(n, D_801F8114[n << 5]);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_800130D0);
 

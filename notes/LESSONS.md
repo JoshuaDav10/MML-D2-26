@@ -338,3 +338,12 @@ iteration teaches something; this file is how the project gets smarter.
   `u16 **q = (u16 **)0x801F8300;` reproduces the lui/ori pair; an extern
   symbol declaration would assemble to %hi/%lo with a negative low offset
   (different bytes) when the low half >= 0x8000.
+- **Same symbol-indexed slot read TWICE → cc1 CSEs the address (wrong
+  bytes); alias the second read through a NEIGHBOR symbol** (func_80012FEC):
+  two `D_801F811C[n << 5]` reads made cc1 materialize sym+(n<<7) into a
+  register (lui/addiu/addu + two 0(reg) loads). The original keeps both in
+  $at symbol-indexed form. Fix: write the second as
+  `((u8 **)D_801F8114)[(n << 5) + 2]` — a different symbol+addend is
+  different RTL, so no CSE, and %hi/%lo(D_801F8114+8) relocates to the
+  same bytes as %lo(D_801F811C). volatile does NOT fix this (address CSE,
+  not load CSE).

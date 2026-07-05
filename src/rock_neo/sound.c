@@ -9,6 +9,8 @@ extern s16 D_80082274;
 extern s16 D_800822D6;
 extern s16 D_80082218;
 s32 Sce_flag_test(s32);
+extern void (*Unk_stage_func_tbl[])(s32);
+extern s32 D_80098958; // lui-accessed (not sdata)
 extern s8 Game_work[]; // this TU only reads byte x53; full type in game.h
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_800198C0);
@@ -90,7 +92,13 @@ void func_80019F94(s32 arg0) {
     D_800AD15C[0] = &D_800821F8[arg0];
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019FB4);
+void func_80019FB4(void) {
+    void (*fn)(s32) = Unk_stage_func_tbl[Game_work[0x50]];
+    D_80098958 |= 0x800;
+    if (fn != 0) {
+        fn(0);
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", Sound_call);
 

@@ -224,3 +224,14 @@
   table (ASPSX_REGFIRST_SYM_PREFIXES) + store expansion for quirk symbols.
   Clean rebuild validated the change against all 160 matched functions.
 - Mutation test: func_80012F24 store 0->1 FAILED the check; restored, OK.
+
+## 2026-07-05 — Fable (overnight autonomous, batch 4)
+- 3 more matches (163 total, ~8.1% volume): main func_80012E10 (OpenTh
+  thread-slot setup) + func_80012FEC (PCopen/PCread overlay loader),
+  sound func_80019FB4 (Game_work[0x50] dispatch).
+- New idiom proven: when the SAME symbol-indexed slot is read twice
+  (D_801F811C[n<<5]), cc1 CSEs the address into a register (wrong bytes).
+  Writing the second access as a constant-index off a NEIGHBOR symbol
+  (((u8 **)D_801F8114)[(n<<5)+2]) gives distinct RTL — both loads stay in
+  the $at symbol-indexed form and the reloc resolves to identical bytes.
+- Mutation tests: all three perturbations failed the hash check; restored, OK.
