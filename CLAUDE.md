@@ -3,6 +3,18 @@
 Matching decompilation of Mega Man Legends (PSX, US), binary ROCK_NEO.EXE.
 Goal: C source that recompiles to a byte-for-byte identical binary.
 
+## Session start — required reading
+1. `HANDOFF.md` — current state and where to pick up.
+2. `notes/LESSONS.md` — compiler idioms proven against the hash; read
+   BEFORE writing any C.
+3. `notes/DOCUMENT_INDEX.md` — index to the reference corpus at
+   `notes/reference/` (MIPS R3000 instruction manual, nocash PSXSPX
+   hardware spec, official PSYQ SDK docs, PSX asm notes, MML notes).
+   CONSULT IT whenever a question involves a MIPS instruction's exact
+   semantics, PSX hardware (GPU/GTE/SPU/DMA/CD), or a PSYQ SDK function —
+   don't guess from training data. Index-driven lookup only: pull the
+   specific file or line range you need, never whole docs into context.
+
 ## Build
 - Activate venv first: `source .venv/bin/activate` (rabbitizer errors = venv not active)
 - Build: `make CPP=cpp`  (main exe matches; ST** overlays don't link yet — expected, not a regression)
