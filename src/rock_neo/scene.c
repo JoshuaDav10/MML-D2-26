@@ -27,6 +27,7 @@ extern s16 D_80098208; // sdata ($gp), stored as a block of four
 extern s16 D_8009820A;
 extern s16 D_8009820C;
 extern s16 D_8009820E;
+extern s16 D_8009825A;
 
 void func_8001D854(u8 arg0) {
     if (D_80098788 == 0) {
@@ -350,7 +351,26 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FBC4);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FC50);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FCA4);
+void func_8001FCA4(void) {
+    s8 v = Game_work.x52;
+    s16 out;
+    switch (v) { /* irregular — switch keeps ==5 leg beqz+j shape; if/else inverts */
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        out = 0x85;
+        break;
+    case 5:
+        out = 0x86;
+        break;
+    default:
+        out = 0x87;
+        break;
+    }
+    D_8009825A = out;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FCE4);
 
