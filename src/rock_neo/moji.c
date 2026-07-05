@@ -17,29 +17,57 @@ void func_800542FC(s32 *arg0) {
     arg0[5]++;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054310);
+void func_80054310(s32 *arg0) {
+    arg0[5] += 2;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054324);
+void func_80054324(s32 *arg0) {
+    arg0[5] += 3;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054338);
+void func_80054338(s32 *arg0) {
+    arg0[5] += 4;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_8005434C);
+void func_8005434C(s32 *arg0) {
+    arg0[5] += 5;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054360);
+void func_80054360(s32 *arg0) {
+    arg0[5] += 6;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054374);
+void func_80054374(s32 *arg0) {
+    arg0[5] += 7;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054388);
+void func_80054388(s32 *arg0) {
+    arg0[5] += 9;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_8005439C);
+void func_8005439C(s32 *arg0) {
+    arg0[5] += 11;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800543B0);
+s32 func_800543B0(s32 *arg0) {
+    arg0[27] += 1;
+    return 1;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800543C8);
+s32 func_800543C8(s32 *arg0) {
+    arg0[27] += 2;
+    return 1;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800543E0);
+s32 func_800543E0(s32 *arg0) {
+    arg0[27] += 3;
+    return 1;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800543F8);
+s32 func_800543F8(s32 *arg0) {
+    arg0[27] += 5;
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054410);
 

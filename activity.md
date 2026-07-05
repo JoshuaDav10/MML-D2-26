@@ -12,3 +12,4 @@
   bodies past INCLUDE_ASM blocks — real C can now sit mid-file)
 - First matched function: func_800542FC (moji.c), sha1 holds
 - Branch: match/func_800542FC
+- Matched moji accessor family (12 funcs, func_80054310..func_800543F8), sha1 holds
