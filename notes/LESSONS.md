@@ -178,3 +178,49 @@ iteration teaches something; this file is how the project gets smarter.
   (script2 mirror of the script call stack); PL_WORK x9 (state id),
   u16 xA (sub-state), key masks x11C/x11E vs x138/x13E, x449; SCENE_WORK
   created (0x800C4C48, size 0xA8): x8/x9 bytes, x10/x18/x1C words, xA4 ptr.
+
+## Session 2026-07-05 (overnight) additions — proven against the hash
+- **`.comm` (tentative definition) blocks the gp rewrite — fixed in gprel.py**:
+  `u8 Moji_flag[8];` in moji.c emits `.comm Moji_flag,8`. That COMMON is
+  INTENTIONAL — splat carves such symbols out of the extracted data
+  (89260.scommon.s starts at 0x80098A60, right after Moji_flag's 8 bytes at
+  0x80098A58) and the linker's COMMON allocation lands it exactly there. But
+  gprel.py only census-checked `.extern` symbols, so bare refs to Moji_flag
+  in the defining TU stayed lui/$at (+1 insn per access). gprel.py now also
+  treats small `.comm` symbols as census candidates (keeps the directive,
+  rewrites the refs). Do NOT replace such a definition with an extern:
+  nothing else defines the symbol and the link fails.
+- **A 4-byte whole-data shift is not always a COMMON leak**: a C function
+  that compiles one instruction short shrinks .text by 4 and shifts every
+  data address after it — same symptom table entry, different cause. Check
+  the function's own diff (instruction count) before hunting extern decls.
+- **Compute-into-locals at the load site to keep values live across stores**
+  (func_80054BB4/55CC4): `u8 c = m->x72 + 1; u32 f = m->flags | K;
+  u8 *s = m->script2 + 3;` then plain stores afterwards reproduced
+  "all three loads up front, stores late, adds between" (three temps live
+  simultaneously, const in $a2). Writing `m->x72 = c + 1` at the store site
+  instead lets cc1 collapse each temp back into a sequential RMW — different
+  schedule, mismatched.
+- **Alias-forcing read via adjacent symbol** (func_8001DD88): the original
+  does sb D_80098199 THEN lh D_80098198 (the u8 pair read back as s16).
+  `*(s16*)&D_80098198` let cc1 hoist the lh above the sb (different symbols
+  = no alias). Writing the read as `*(s16*)(&D_80098199 - 1)` — the same
+  address, but through the symbol just stored — forces the order and
+  assembles to identical bytes (gas folds the -1 into the gp offset).
+  volatile did NOT fix this (cc1 2.7 still reordered).
+- **Ternary CHAIN puts the value in $v0** (func_8001FB54/FB8C):
+  `x = a<0 ? K1 : a<6 ? K2 : ...` produced the compact
+  bltz/slt/bnez-with-li-in-delay shape with the value in $v0. The if/else
+  ladder version put the value in $a0 with extra j's. (Complements the
+  night-session single-ternary lesson where the ternary got $a0 — chains
+  behave differently from single ternaries.)
+- **Reuse the call-result variable** (func_80019AA4): `v = f(x); if (v)
+  v = 0x2D; else v = 0xFFFF;` keeps everything in $v0 and puts the taken
+  branch's assignment in the delay slot. A separate result variable
+  allocated $v1/$a0 and flipped the branch sense.
+- **Parenthesization steers add order** (func_8005753C): `p + (p[1] + 2)`
+  adds the constant to the byte BEFORE adding the pointer; `p + p[1] + 2`
+  is the mirror. Bytes differ; match the original's addu order.
+- **`m->x40 = g; f(0, m->x40, ...)`** (func_80057144): passing the field
+  (not the local/global) as the argument reproduces the reload-after-store
+  (aliasing forbids forwarding), matching lw x40 right after sw x40.

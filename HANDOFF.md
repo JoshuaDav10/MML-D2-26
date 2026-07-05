@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-04, late evening)
+# HANDOFF — MML Decomp session state (2026-07-05, overnight)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,15 +19,39 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 99 / 475** functions (~4.0% of instruction volume, 385 active
+- **Matched: 117 / 475** functions (~4.8% of instruction volume, 367 active
   stubs left) — small-function harvest phase. See `progress.md`.
-- **NEW: the pipeline can now emit $gp-relative (sdata) access** via
-  `tools/gprel.py` (between maspsx and patchasm). Before this, C code could
-  never match any function touching an sdata global (GAS -G0 always emitted
-  lui/$at). Read LESSONS.md §2 (rewritten) before declaring any extern.
+- **The pipeline can emit $gp-relative (sdata) access** via
+  `tools/gprel.py` (between maspsx and patchasm); as of 2026-07-05 it also
+  gp-rewrites refs to small `.comm` symbols (tentative definitions such as
+  moji.c's `u8 Moji_flag[8];` — the COMMON is intentional, splat carves the
+  symbol out of the extracted data). Read LESSONS.md §2 before declaring
+  any extern.
 - Overlays (ST**) still don't link — expected, ignore those errors, later expedition.
 
-## What was accomplished in the LATE-NIGHT 2026-07-04 session (most recent)
+## What was accomplished in the OVERNIGHT 2026-07-05 session (most recent)
+
+1. **18 more matches (117 total)** in three hash-verified batches across
+   moji/scene/cd/main/sound/sub_scrn. All ≤22-line stubs are now exhausted
+   up through ~22 asm lines; next targets start at 23 lines
+   (`wc -l` the stub list per the inner loop below).
+2. **gprel.py `.comm` support** — moji.c's `u8 Moji_flag[8];` tentative
+   definition (COMMON on purpose; splat carved 0x80098A58 out of the data)
+   now gets its refs gp-rewritten like census-approved externs. Unblocked
+   func_80057DB8 and any future Moji_flag-touching moji function.
+3. **New idioms in LESSONS.md "2026-07-05 (overnight)"**: compute-into-locals
+   at the load site; alias-forcing read via `&D_80098199 - 1`; ternary
+   chains land in $v0 (unlike single ternaries); call-result variable reuse;
+   parenthesization steering addu order; and "a 4-byte data shift can be a
+   short FUNCTION, not a COMMON leak — check the function diff first".
+4. **The scratch-TU brute-force loop is now the workhorse**: pipe variants
+   through `cpp|cc1|maspsx` directly (see the perm scripts pattern in this
+   session's history / LESSONS night-additions). Most functions this session
+   were matched in the scratchpad BEFORE touching the tree.
+5. New typed fields: MOJI_TASK.xBC (u16, cleared by several opcode
+   handlers), MOJI_TASK.x7C (u8 index into the D_8008AB08 fn table).
+
+## What was accomplished in the LATE-NIGHT 2026-07-04 session
 
 1. **17 more matches (99 total)** across moji/player/scene/cd/main/sound.
    New typed knowledge: SCENE_WORK struct (include/rock_neo/scene.h),
