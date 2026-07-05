@@ -55,7 +55,16 @@ void func_80012298(void) {
     func_800121AC(D_800C0D68);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_800122D0);
+void func_80012350(s32, s32, s32);
+
+void func_800122D0(s32 p) {
+    func_80012350(p, 0x10, 0);
+    func_80012350(p, 0x40, 1);
+    func_80012350(p, 0x80, 2);
+    func_80012350(p, 0x20, 3);
+    func_80012350(p, 0x400, 4);
+    func_80012350(p, 0x800, 5);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012350);
 

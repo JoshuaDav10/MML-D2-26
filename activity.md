@@ -430,3 +430,25 @@
   the first branch (scheduler can't cross blocks on its own).
 - Mutation tests 2/2 (cd, player) failed the check while mutated;
   restored; final clean rebuild 0 errors, OK, cmp byte-identical.
+
+## 2026-07-05 — Fable (day session 2, batch 15)
+- 6 more matches (221 total, ~13.8% volume): moji MojiTaskKill +
+  func_80054804 + func_800570B0, cd func_8001CC08, scene func_8001DFEC,
+  main func_800122D0. All scratch-matched first.
+- CAUGHT ANOTHER FALSE PASS at land time: MojiTaskKill defined void but
+  moji.h declares s32 — moji.c failed to compile, stale objects kept the
+  hash green. The error-grep of make output caught it (the check alone
+  would not have). Definition flipped to s32, bytes identical.
+- func_8001DFEC: writing e as an INTEGER add ((u8*)(n*0x14 + (s32)st[1]))
+  keeps the scaled index in $rs of the addu AND forces the arg-copy shape
+  (pointer-typed adds canonicalize ptr-first and coalesce e into $a0,
+  going one insn short). Copy-statement-before-|= gives the right
+  schedule; the sll into a fresh reg needs k live past it (statement
+  order, not a cast trick).
+- func_800570B0 is func_80055344 with a Moji_flag[0]==s[1] gate: the
+  c1/c2/key/flag INIT ORDER (key fourth, flag fifth) is what lands
+  key=$a0/flag=$v1; other orders mirror them.
+- func_8001CC08: u8 param + K&R definition (cd.c's existing unprototyped
+  forward decl), masked at use per the MojiTaskExec rule.
+- Mutation tests 2/2 failed while mutated; final rebuild 0 errors, OK,
+  cmp byte-identical.

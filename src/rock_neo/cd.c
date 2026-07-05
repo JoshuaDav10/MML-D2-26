@@ -65,7 +65,21 @@ void func_8001CB30(void) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001CB7C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001CC08);
+extern u8 D_80098964;
+extern u8 D_800988C0;
+
+void func_8001CC08(r) /* K&R: the forward decl above is unprototyped */
+u8 r;
+{
+    CdSyncCallback(0);
+    if (r == 2) {
+        D_80098964 = 1;
+        D_800988C0 = 0;
+    } else {
+        D_8009896C |= 8;
+        D_800988C0 = 0x80;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001CC7C);
 

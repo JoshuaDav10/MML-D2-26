@@ -6,9 +6,9 @@
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 215 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 221 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~4130 of ~31,300 mapped instructions (~13.2%)
+- Volume: ~4310 of ~31,300 mapped instructions (~13.8%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -28,7 +28,10 @@
     func_80057D60 + func_80059530 (stack pushes w/ double-table jumps),
     func_800560D0 (x78 compare-select), func_8005BC90 (x7C state seq),
     func_800555F4, func_80057BB4, func_80058740 (x44 jump-offset table),
-    func_80058EA0 (58788 twin + D_80098851=0xFF),
+    func_80058EA0 (58788 twin + D_80098851=0xFF), MojiTaskKill (flags
+    sweep+accumulate over Moji_work[0..4], cond func_8001D494 kick),
+    func_80054804 (Moji_work[s[1]].flags gate), func_800570B0 (55344
+    sibling gated on Moji_flag[0]==s[1]; c1/c2-before-key/flag init order),
     func_80057D00 (stack2 push + double-table jump), func_80057DF4
     (script2 patch from Game_work.x84_tbl[D_800989D4]),
     func_800594CC (stack2 push + D_8008CCA4[D_800BE2F7[...]] jump),
@@ -54,7 +57,9 @@
     func_8001F580 (Cd_read_comb kick; distinct u16 keep copy of u16 no),
     func_8001E3F0 (Game_work.x60 += D_800891B4[n], clamp 0..0xFF),
     func_8001EB98 (save/restore Scene_work.x24[*p] around func_8001EAE8;
-    dead 8-byte frame local + t-reuse/in-place-shift for the v1 index)
+    dead 8-byte frame local + t-reuse/in-place-shift for the v1 index),
+    func_8001DFEC (slot register: D_800ACD40[k]=Scene_work.x24[k] +
+    D_800988E8 bit; integer-typed e addend keeps the scaled index in rs)
     (func_8001FCA4, func_8001FC50, func_8001FDE4 attempted, NOT matched —
     same jump-canonicalization family; see activity 2026-07-05)
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
@@ -87,7 +92,7 @@
   - game: func_800155A4, func_80015734, func_80015840, func_80016528,
     func_80016BC0, func_80016BF4, func_80016D0C, func_80016D38,
     func_80016D64, func_80016DAC, func_80016E90
-  - main: func_800131FC, func_8001326C, func_80012FA4, func_80012FC8,
+  - main: func_800122D0 (func_80012350 x6 sequence), func_800131FC, func_8001326C, func_80012FA4, func_80012FC8,
     vsync_cb, func_80012F78, func_80012E98, func_80012298, func_80012424,
     func_8001215C (OT/flag init), func_80012938 (OpenEvent setup),
     func_80012ECC, func_80012F24 (thread close pair; D_801F81xx quirk),
@@ -95,7 +100,9 @@
     loader; neighbor-symbol constant-index defeats address CSE),
     func_8001319C (0x801F8300 table clear loops; left-assoc pointer
     arithmetic pins the addu operand order),
-    func_8001D324 (u8 state change latch -> func_8001D2BC(0xE,...))
+    func_8001D324 (u8 state change latch -> func_8001D2BC(0xE,...)),
+    func_8001CC08 (CdSync callback: r==2 latches D_80098964, else
+    D_8009896C|=8; K&R def to match the unprototyped decl)
   - player: 10 empty funcs func_8003FFA8, func_80040130..func_800402BC,
     func_8003BE40, func_80040140, func_800406A8, func_800406DC,
     func_80040B34 (key-vs-mask tests, PL_WORK typed), func_80042208,
@@ -120,6 +127,12 @@
     table load AND defeat arg anchor-CSE)
 
 ## Last verified build
+- 2026-07-05 (Fable day session 2, batch 15) — clean rebuild 0 errors,
+  hash OK, cmp byte-identical after moji MojiTaskKill/func_80054804/
+  func_800570B0, cd func_8001CC08, scene func_8001DFEC, main
+  func_800122D0; 2/2 mutation tests failed while mutated; restored OK.
+  NOTE: first rebuild of this batch was a FALSE PASS (moji.c 'conflicting
+  types for MojiTaskKill' — moji.h says s32; error-grep caught it).
 - 2026-07-05 (Fable day session 2, batch 14) — clean rebuild 0 errors,
   hash OK, cmp byte-identical after moji func_80058EA0, scene
   func_8001E3F0/func_8001EB98, cd func_8001D324, player

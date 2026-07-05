@@ -101,7 +101,21 @@ void MojiTaskExec2(s32 arg0, u8 arg1) {
     MojiTaskExec(arg0, (u8*)0x80153000, arg1);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", MojiTaskKill);
+s32 MojiTaskKill(void) {
+    MOJI_TASK *m;
+    u32 acc = 0;
+
+    for (m = Moji_work; m < &Moji_work[5]; m++) {
+        u32 f = m->flags;
+        m->flags = 0;
+        m->xC2 = 0xFF;
+        acc |= f;
+    }
+    if (acc & 0x40000) {
+        func_8001D494(0, 1, 0);
+    }
+    *(u32 *)Moji_flag = 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053AA4);
 
@@ -212,7 +226,18 @@ s32 func_80054798(MOJI_TASK *m) {
     return 1;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80054804);
+s32 func_80054804(MOJI_TASK *m) {
+    u8 *s = m->script2;
+    u32 f;
+
+    m->flags |= 0x10000000;
+    f = Moji_work[s[1]].flags;
+    if ((s32)f >= 0 || (f & 0x20000)) {
+        m->script2 = s + 2;
+        return 1;
+    }
+    return 0;
+}
 
 s32 func_80054874(MOJI_TASK *m) {
     Sound_call((u16)func_80054410(m->script2 + 1), 0, 0);
@@ -463,7 +488,24 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80056820);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80056D10);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800570B0);
+s32 func_800570B0(MOJI_TASK *m) {
+    u8 *s = m->script2;
+    u8 c1 = s[2];
+    u8 c2 = s[3];
+    u8 key = s[1]; /* key/flag after c1/c2: init order pins key=$a0, flag=$v1 */
+    u8 flag = Moji_flag[0];
+
+    m->script2 = s + 4;
+    if (flag == key) {
+        u8 *base = m->x44;
+        if (base != 0) {
+            MojiTaskExec((s8)c1, base, c2);
+        } else {
+            MojiTaskExec((s8)c1, D_8008CACC[c2], 0xFF);
+        }
+    }
+    return 1;
+}
 
 s32 func_80057124(MOJI_TASK *m) {
     s32 zenny = Game_work.zennyCount;

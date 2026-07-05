@@ -158,7 +158,17 @@ void func_8001DEE4(void) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DF10);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DFEC);
+extern u8 *D_800ACD40[];
+u8 *func_8001EAE8(); /* unprototyped: func_8001EB98 must call it with no arg setup */
+
+void func_8001DFEC(u8 **st, s32 n) {
+    u8 *e = (u8 *)(n * 0x14 + (s32)st[1]); /* integer add keeps the scaled index in $rs */
+    s32 k = e[0];
+
+    func_8001EAE8(e);
+    D_800ACD40[k] = Scene_work.x24[k];
+    D_800988E8 |= 0x80000000 >> k;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E068);
 
@@ -227,8 +237,6 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E83C);
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E968);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001EAE8);
-
-u8 *func_8001EAE8();
 
 void func_8001EB98(u8 *p) {
     u8 pad[8]; /* dead frame space, present in the original */
