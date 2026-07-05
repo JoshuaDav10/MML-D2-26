@@ -408,3 +408,25 @@
   55BB0 reads m->x7C from the field (reload) — the asm tells you which.
 - Mutation tests 3/3 failed while mutated; final rebuild 0 errors, OK,
   cmp byte-identical.
+
+## 2026-07-05 — Fable (day session 2, batch 14)
+- 6 more matches (215 total, ~13.2% volume): moji func_80058EA0, scene
+  func_8001E3F0 + func_8001EB98, cd func_8001D324, player func_8003FDA8 +
+  func_80041A44. All scratch-matched via bytecmp.sh before touching the
+  tree; every diff word was a reloc before landing.
+- func_80058EA0 is func_80058788's twin + a D_80098851=0xFF gp-store; the
+  new store's STATEMENT POSITION had to be after the script2 store (before
+  the flags store it perturbs the whole schedule/allocation).
+- func_8001EB98: two new-knob composite — dead u8[8] frame local (frame
+  0x28 not 0x20) + one reused u32 temp with in-place reassign shift
+  (t = p[0]; t <<= 2) + cast byte-offset deref keeps the second
+  Scene_work.x24 access symbol-indexed in $v1. SCENE_WORK.x24 typed
+  (u8* slot array). GAME_WORK.x60 typed (u16, clamped accumulator).
+- func_80041A44: assigning the result var only AFTER the compare legs
+  (else-if ladder, early `return 0xB` literal) keeps it dead across the
+  lbu temps so it lands in $v0 and the delay-slot li's rematerialize it —
+  the v1+move shape from any live-across form is 2 insns long.
+- func_8003FDA8: preloading pl->x11C into a local hoists the lhu above
+  the first branch (scheduler can't cross blocks on its own).
+- Mutation tests 2/2 (cd, player) failed the check while mutated;
+  restored; final clean rebuild 0 errors, OK, cmp byte-identical.

@@ -29,7 +29,9 @@ typedef struct GAME_WORK {
     s8 x5A;       // gates func_8001DE84's Sce_flag_test check
 
     s8 x5B;
-    s8 x5C[0x68 - 0x5C];
+    s8 x5C[0x60 - 0x5C];
+    u16 x60;      // func_8001E3F0 accumulates D_800891B4[n], clamps to 0..0xFF
+    u8 x62[0x68 - 0x62];
     s16 x68, x6A, x6C;
     u8 x6E[0x70 - 0x6E];
     s16 x70, x72, x74, x76;

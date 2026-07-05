@@ -1,7 +1,9 @@
 #include "common.h"
 #include "rock_neo/player.h"
 #include "rock_neo/game.h"
+#include "rock_neo/sound.h"
 
+s32 func_800406A8(PL_WORK*);
 void func_8003BE6C(PL_WORK*, s32);
 s32 func_80041DDC(PL_WORK*, s32, s32, s32);
 void func_80040764(void);
@@ -130,7 +132,19 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F7F0);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F97C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003FDA8);
+void func_8003FDA8(PL_WORK* pl) {
+    u16 k = pl->x11C; /* preloaded so the lhu schedules above the first branch */
+    if (*(u8*)&pl->xA < 3) {
+        if ((k & pl->x134) == 0) {
+            pl->x44A[0] = 0;
+            Sound_call(0x8F, 0, 0);
+            if (func_800406A8(pl) == 0) {
+                pl->x9 = 0;
+                pl->xA = 0;
+            }
+        }
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003FE1C);
 
@@ -309,7 +323,17 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800414F0);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8004174C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041A44);
+s32 func_80041A44(PL_WORK* pl, s32 k) {
+    s32 v;
+    if (*(s8*)&pl->x74 != 0) v = 0xC;
+    else if (k & 0x41000000) v = 0xC;
+    else if (*(s16*)&pl->life <= 0) v = 0xC;
+    else if (pl->x9 == 0xB && *(u8*)&pl->xA < 2) return 0xB; /* v assigned only after the compares — keeps v dead there so it lands in $v0 */
+    else v = 0xB;
+    pl->x9 = v;
+    *(u8*)&pl->xA = 0;
+    return v;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041AB0);
 

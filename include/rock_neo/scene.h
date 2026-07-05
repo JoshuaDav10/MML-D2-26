@@ -14,7 +14,8 @@ typedef struct SCENE_WORK {
     u8 x14[0x18 - 0x14];
     s32 x18;
     s32 x1C;
-    u8 x20[0xA4 - 0x20];
+    u8 x20[0x24 - 0x20];
+    u8 *x24[(0xA4 - 0x24) / 4]; // per-index task/slot pointers (func_8001EB98 saves/restores one)
     u8 *xA4;       // func_8001F20C stores its arg0 pointer here
 } SCENE_WORK;      // 0x800C4C48, size 0xA8 per splat syms
 

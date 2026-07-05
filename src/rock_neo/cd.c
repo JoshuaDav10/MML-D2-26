@@ -89,7 +89,20 @@ void func_8001D2BC(u8 com, u8 *param, u8 *result) {
     while (CdControlB(com, param, result) == 0) {}
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D324);
+extern u8 D_800988EC;
+extern s32 D_80098828;
+
+void func_8001D324(u8 com) {
+    u8 old = D_800988EC;
+    D_80098828 = 0;
+    if (old != com) {
+        if ((old & 0x80) != (com & 0x80)) {
+            D_80098828 = 2;
+        }
+        D_800988EC = com;
+        func_8001D2BC(0xE, &D_800988EC, D_80098A98);
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D394);
 

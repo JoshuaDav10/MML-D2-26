@@ -176,7 +176,20 @@ void func_8001E390(s32 n) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E3F0);
+extern u16 D_800891B4[];
+void func_800179FC();
+
+void func_8001E3F0(s16 n) {
+    u16 *p = &Game_work.x60;
+    s16 v = *p + D_800891B4[n];
+    *p = v;
+    if (v < 0) {
+        *p = 0;
+    } else if (v >= 0x100) {
+        *p = 0xFF;
+    }
+    func_800179FC();
+}
 
 void func_8001E460(s32 n, s32 on, s32 b) {
     if (on != 0) {
@@ -215,7 +228,20 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E968);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001EAE8);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001EB98);
+u8 *func_8001EAE8();
+
+void func_8001EB98(u8 *p) {
+    u8 pad[8]; /* dead frame space, present in the original */
+    u8 *save = Scene_work.x24[p[0]];
+    u8 *q = func_8001EAE8();
+    u32 t;
+
+    t = q[6] & 0xDF;
+    q[6] = t;
+    t = p[0]; /* reload+shift stay in one register only via reassignment */
+    t <<= 2;
+    *(u8 **)((u8 *)Scene_work.x24 + t) = save;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001EC0C);
 

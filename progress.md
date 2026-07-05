@@ -6,9 +6,9 @@
   `.include nonmatchings` lines)
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 209 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 215 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~3950 of ~31,300 mapped instructions (~12.6%)
+- Volume: ~4130 of ~31,300 mapped instructions (~13.2%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -28,6 +28,7 @@
     func_80057D60 + func_80059530 (stack pushes w/ double-table jumps),
     func_800560D0 (x78 compare-select), func_8005BC90 (x7C state seq),
     func_800555F4, func_80057BB4, func_80058740 (x44 jump-offset table),
+    func_80058EA0 (58788 twin + D_80098851=0xFF),
     func_80057D00 (stack2 push + double-table jump), func_80057DF4
     (script2 patch from Game_work.x84_tbl[D_800989D4]),
     func_800594CC (stack2 push + D_8008CCA4[D_800BE2F7[...]] jump),
@@ -50,7 +51,10 @@
     func_8001E390 (Sce_flag on/off sweep 0x2E0..0x2EB, u32 counter),
     func_8001E460 (flag pair set/clear at n+0x7E0/n+0x7C0),
     func_8001D8C0 (Sce_flag clear-or-restore via func_800176DC),
-    func_8001F580 (Cd_read_comb kick; distinct u16 keep copy of u16 no)
+    func_8001F580 (Cd_read_comb kick; distinct u16 keep copy of u16 no),
+    func_8001E3F0 (Game_work.x60 += D_800891B4[n], clamp 0..0xFF),
+    func_8001EB98 (save/restore Scene_work.x24[*p] around func_8001EAE8;
+    dead 8-byte frame local + t-reuse/in-place-shift for the v1 index)
     (func_8001FCA4, func_8001FC50, func_8001FDE4 attempted, NOT matched —
     same jump-canonicalization family; see activity 2026-07-05)
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
@@ -90,7 +94,8 @@
     func_80012E10 (OpenTh slot setup), func_80012FEC (PCopen/PCread
     loader; neighbor-symbol constant-index defeats address CSE),
     func_8001319C (0x801F8300 table clear loops; left-assoc pointer
-    arithmetic pins the addu operand order)
+    arithmetic pins the addu operand order),
+    func_8001D324 (u8 state change latch -> func_8001D2BC(0xE,...))
   - player: 10 empty funcs func_8003FFA8, func_80040130..func_800402BC,
     func_8003BE40, func_80040140, func_800406A8, func_800406DC,
     func_80040B34 (key-vs-mask tests, PL_WORK typed), func_80042208,
@@ -103,7 +108,10 @@
     func_80041E90 (x56 -=/+= x116 around func_8002FEA4, s16 params),
     func_8003F224 (x83-gated key test; goto-shared return-1 defeats the
     sltiu tail; field-first & order), func_80040224 (state reset unless
-    x83==1 or x140 key; x108 typed)
+    x83==1 or x140 key; x108 typed),
+    func_8003FDA8 (xA<3 + x11C&x134 gate; preloaded x11C local hoists the
+    lhu), func_80041A44 (state 0xB/0xC ladder; v assigned after the
+    compares so it stays dead across them and lands in $v0)
     (func_80041EF4 attempted, NOT matched — cc1 elides the original's two
     andi 0xFFFF truncations; every source shape proves nonzero_bits ≤0xFFFF.
     See activity 2026-07-05 day session)
@@ -112,6 +120,11 @@
     table load AND defeat arg anchor-CSE)
 
 ## Last verified build
+- 2026-07-05 (Fable day session 2, batch 14) — clean rebuild 0 errors,
+  hash OK, cmp byte-identical after moji func_80058EA0, scene
+  func_8001E3F0/func_8001EB98, cd func_8001D324, player
+  func_8003FDA8/func_80041A44; 2/2 mutation tests failed while mutated;
+  restored OK + byte-identical.
 - 2026-07-05 (Fable day session, batch 13) — clean rebuild 0 errors, hash
   OK, cmp byte-identical after player func_8003F224/func_80040224, scene
   func_8001D8C0, moji func_80054ADC/func_80055BB0; 3/3 mutation tests
