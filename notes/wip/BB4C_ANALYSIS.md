@@ -162,6 +162,30 @@ FIRST (fewer decls, m2c's temp_s2/temp_s4 offsets map straight onto it), fall ba
 to the formal union if a width won't reproduce. Signedness that IS load-bearing:
 5618-as-remaining is SIGNED (slti, and the `if (<0) +=3` in state6 C51C-524).
 
+## ⚠⚠ FIRST CODING TASK — resolve the width contradictions (2026-07-06 Opus)
+Before any translation compiles meaningfully, decide the C shape for the three
+offsets that are accessed at TWO widths (same address, byte AND word):
+  0x14 (D_800C5618): sb flag (type7 setup C1C4/C1FC) | sw ptr (type8 C230) |
+                     lw word (state4 tile-count-y C470) | lw SIGNED (state6
+                     remaining, slti C4C0) | lbu u8 flag (state8/9 C604/C648)
+  0x18 (D_800C561C): sb flag (type8 C288) | sw ptr (type5) | lw word x-origin
+                     (state2 C370) | lw src ptr (state6 C4D8)
+  0x1C (D_800C5620): lbu/sb u8 ==1 GATE (C10C/C09C/C48C) | lw WORD y-origin
+                     (state2 C390)
+A plain scalar/flat-struct field CANNOT emit both lbu and lw — so this region
+is a genuine per-command-type UNION. Options, try in order:
+  (A) one struct with the region typed s32 + read the byte sites via `(u8)x`
+      / write via a `u8`-typed member alias — risk: cc1 may not reproduce sb.
+  (B) formal `union { struct dma; struct tile; struct sound; struct tex; }`
+      after the 2-word common head — most faithful, most decls.
+  (C) separate globals where each is single-width, and the CROSS-width site
+      uses an explicit cast `*(s32*)&D_800C5620` — matches the "globals +
+      pointer view" addressing crux; likely the real source form.
+Recommend starting with (C): declare the block as individual globals at their
+natural single width (5620=u8 gate, 5618/561C per their dominant use), and at
+the 2 or 3 cross-width read sites write the pointer-cast the asm implies. This
+also lines up with the absolute-vs-base addressing crux below.
+
 ## JUMP TABLES (read 2026-07-06; carve as one contiguous block 0x244..0x2AC)
 jtbl_80010244 (outer, D_800989C4, sltiu 0x5): 0=.L8001BB9C 1=.L8001BBD0
   2=.L8001BC04 3=.L8001BC6C 4=.L8001C7BC + one .word 0 pad.
