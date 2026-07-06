@@ -174,9 +174,12 @@ agent on the `overlay-expedition` branch.
    VERIFIED field widths in notes/wip/BB4C_ANALYSIS.md; multi-session, tables
    carve like scene's. Command entry = all s32 words + data[0x100]; RECT all
    s16; the work struct @D_800C5604 is a common header + PER-COMMAND-TYPE UNION
-   from +0x14 on — SAME address is byte in type-7, word in type-8. NEXT:
-   enumerate every read of +0x14/+0x18 across inner states 6/8/9 to fix each
-   union arm, then define the struct and translate the m2c draft),
+   from +0x14 on — SAME address is byte in type-7, word in type-8. Union arms
+   NOW FULLY ENUMERATED per inner state (see "UNION ARM ENUMERATION" in the
+   analysis doc): 5618 is word/signed-word/u8 across states 4/6/8; 5620 is the
+   u8 gate but read wide in state 2. Recommended C: flat s32 CD_WORK struct with
+   (u8)/(u8*) casts at the byte sites, formal union as fallback. NEXT: declare
+   CMD_ENT + CD_WORK in cd.h, translate the m2c draft, bytecmp-iterate),
    func_80041EF4
    (andi elision — RTL
    verified), Sub_screen_rb_parts_calc (draft 6 insns short).

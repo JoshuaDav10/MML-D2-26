@@ -4,8 +4,10 @@ Status: **draft + full structure mapped + field widths VERIFIED; not yet
 matched.** m2c draft in `notes/wip/bb4c_m2c_draft.c`; combined asm+tables in
 `notes/wip/bb4c_combined.s`. Signature: `void func_8001BB4C(void)`. Frame 0x38,
 saves $ra + $s0..$s6. 2026-07-06: all load/store widths cross-checked from asm
-(see "VERIFIED FIELD WIDTHS"); the central open question is the per-command-type
-UNION in the work struct (+0x14 onward) — enumerate union arms next.
+(see "VERIFIED FIELD WIDTHS"). 2026-07-06 (2): union arms fully enumerated per
+inner state (see "UNION ARM ENUMERATION") — recommended C is a flat s32 work
+struct with (u8)/(u8*) casts at the byte sites; formal union as fallback. NEXT:
+declare CMD_ENT + CD_WORK in cd.h, translate the m2c draft, bytecmp-iterate.
 
 ## Why it's a multi-session job
 Three nested jump-table switches, two complex work structs to type exactly,
@@ -113,6 +115,52 @@ Base regs held across the whole inner loop (all callee-saved):
   D_80098AD0[] (lbu/sb — u8 per type), D_80098AD1[] (sb — u8),
   D_80098AD4[] (sw — s32/ptr per type). Game_work @ 0x1B8+type*8:
   0x1B8 s16 (lh/sh, a SsVab handle), 0x1BA s8 (sb), 0x1BC (sb). 0x1DA u8 (lbu).
+
+## UNION ARM ENUMERATION (2026-07-06 Opus) — every read of the work area,
+## by inner-loop state. Offsets are relative to base D_800C5604.
+## Access via: $s3=base, $s2=base+8, $s4=base+0x1C. Width = the actual insn.
+
+COMMON HEADER (same meaning across states):
+  +0x00 (5604) u32   rem byte-count. states 1/8/9 unsigned-compare >=0x800.
+  +0x04 (5608) s32   countdown. state1 dec (C334); state6 via -0x18($s4) (C49C).
+
+UNION region — offset : {state, width, role} (⚠ = same offset, differing width):
+  +0x08 (560C):
+     state1  0x8($s3)  lw   dest ptr (copy loop C308-328)
+     state4  0x0($s2)  lw   x base coord (C424)
+     state6 -0x14($s4) lw   vab index (Game_work 0x1B8+idx*8; SsVab args, C53C..)
+  +0x0C (5610):
+     state4  0x4($s2)  lw   y base coord (C43C)
+  +0x10 (5614):
+     type7-setup sw    (C1BC) value word;  state8/9 0x10($s3) lw ptr (C614/C630)
+     state4  0x8($s2)  lw   tile-count-x (C45C);  state6 -0xC($s4) lw SsVab param (C538)
+  ⚠+0x14 (5618):
+     type7-setup  sb   0/1 flag (C1C4/C1FC)
+     type8-setup  sw   0x8013B000 ptr (C230)
+     state4  0xC($s2)  lw   tile-count-y (C470)
+     state6 -0x8($s4)  lw + slti 0x800  => SIGNED s32 remaining-bytes (C4B8/C4C0)
+     state8/9 0x14($s3) lbu => u8 flag (C604/C648)
+  ⚠+0x18 (561C):
+     type8-setup  sb   flag (C288);  type5-setup sw ptr (temp_s2->unk10)
+     state2  lw D_800C561C  word x-origin (C370)
+     state6 -0x4($s4)  lw   src ptr (C4D8/C4E8)
+  ⚠+0x1C (5620 = $s4+0):
+     gate: lbu/sb u8 (C10C, C48C, 0x14($s2) sb C09C) — the ==1 test
+     state2  lw D_800C5620  word y-origin (C390)   <-- read wide here
+  +0x20 (5624) u32  state2 tile-count-x (>>5, C3B8)
+  +0x24 (5628) u32  state2 tile-count-y (>>5, C3E0)
+  +0x30 (5634) s32  state2/4 tile-x counter (lw/sw)
+  +0x34 (5638) s32  state2/4 tile-y counter (lw/sw)
+
+CONCLUSION: the work area is a per-command-type UNION over a 2-word common head
+(rem@0x00, countdown@0x04). Each command type's switch-3 setup writes its arm and
+the matching inner state reads it back at the same offsets/widths. The wide-vs-byte
+reads at 5618/5620 mean the winning C is EITHER a `union { struct dma; struct tile;
+struct sound; struct texload; }` with per-arm member types, OR one flat s32 struct
+with `(u8)`/`(u8*)` casts at the byte sites (lbu 5618/5620) — try the flat+cast form
+FIRST (fewer decls, m2c's temp_s2/temp_s4 offsets map straight onto it), fall back
+to the formal union if a width won't reproduce. Signedness that IS load-bearing:
+5618-as-remaining is SIGNED (slti, and the `if (<0) +=3` in state6 C51C-524).
 
 ## Struct layouts (derived from the asm; VERIFY signedness per field)
 ### Command entry @ D_800B5DB0, stride 0x800 (indexed by D_800987A8)
