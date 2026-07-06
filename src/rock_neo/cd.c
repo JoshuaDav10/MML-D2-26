@@ -73,6 +73,10 @@ void func_8001CAAC(void) {
 
 extern u8 D_8009896C;
 extern u8 D_80098A98[];
+extern u16 D_800AD142[];
+extern u8 D_800988D0;
+extern u8 D_80098AB8;
+void func_8001D394(u8);
 void CdReadyCallback(s32);
 void func_8001CC08();
 void func_8001D254(u8, u8 *, u8 *);
@@ -84,7 +88,22 @@ void func_8001CB30(void) {
     func_8001D254(9, 0, D_80098A98);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001CB7C);
+/* CD retry/re-arm: pulse func_8001D394 0x7F..1, flag D_800AD142 |= 0x8000
+   (array decl -> single materialized address for the read+write), re-arm
+   the ready/sync callbacks and re-issue command 9. */
+void func_8001CB7C(void) {
+    s32 i;
+    for (i = 0x7F; i > 0; i--) {
+        func_8001D394(i);
+    }
+    D_8009896C = 0;
+    D_800AD142[0] |= 0x8000;
+    CdReadyCallback(0);
+    CdSyncCallback((s32)func_8001CC08);
+    func_8001D254(9, 0, D_80098A98);
+    D_800988D0 = 0;
+    D_80098AB8 = 0;
+}
 
 extern u8 D_80098964;
 extern u8 D_800988C0;

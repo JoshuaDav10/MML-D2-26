@@ -600,3 +600,32 @@ iteration teaches something; this file is how the project gets smarter.
   SWAPPED from mine (original: counter=$v1, ptr=$v0; init counter first),
   and the arg*12 index (sll1/addu/sll2) is emitted in a different order.
   Retry with counter declared/initialized before the pointer.
+
+## Session 2026-07-06 (Fable, cd siblings CB7C/CF98) — proven against the hash
+- **func_8001CB7C MATCHED**: CD retry re-arm. Two knobs: (1) the flag
+  D_800AD142 is read+written (`|= 0x8000`) — declare it `extern u16
+  D_800AD142[]` and use `D_800AD142[0] |= 0x8000` so cc1 materializes the
+  address ONCE (lui+addiu, then lhu/sh 0(reg)); a plain scalar `u16` emits
+  two lui/%lo and mismatches. (2) put `D_8009896C = 0;` BEFORE the `|=` in
+  source — the sb schedules between the lhu and sh, matching. The
+  CdReadyCallback(0) arg (a0=0) auto-fills the loop-exit bgtz delay slot.
+- **CdIntToPos is the PSYQ two-arg `CdIntToPos(int i, CdlLOC *loc)`** — NOT
+  a one-arg function. In func_8001CF98 the `lui/addiu a1,&D_80098814`
+  BEFORE the CdIntToPos call is its SECOND argument (the CdlLOC out-param),
+  not a dead/hoisted store. Declare `void CdIntToPos(s32, u8 *)`. General
+  lesson: an arg-register load that lives across a `jal` with no other use
+  is almost always that call's argument — check the PSYQ signature before
+  calling it a scheduling artifact.
+- **PARKED — func_8001CF98 (BB4C callee, ~56 insns)**: structure fully
+  understood — byte-clear loop over [D_80098B38..B41] (counter=$v1 init
+  first, ptr=$v0), then D_80082CD0[arg] (the [][3] s32 table, arg*12 index
+  kept in callee-saved $s0), CdIntToPos([arg][0], &D_80098814),
+  D_8009881C=[arg][1], CdReadyCallback(&func_8001D078), func_8001D2BC(6,
+  &D_80098814, &D_80098A98). D_80098814 must be `extern u8` + `&D_80098814`
+  (scalar) so its address REMATERIALIZES at both call sites; an array decl
+  CSEs it into callee-saved $s1 (wrong frame). REMAINING BUG: cc1 emits the
+  `D_8009881C = D_80082CD0[arg][1]` load+store TWICE — once hoisted before
+  CdIntToPos, once after (3 extra insns, duplicate epilogue). The original
+  loads [arg][1] ONCE after the call. Needs -dj/-dc CSE-dump analysis to
+  find the source form that stops the duplication. Signature is confirmed
+  `void func_8001CF98(s32)` — BB4C is NOT blocked by this.

@@ -534,3 +534,16 @@
   findings in LESSONS (CB7C: cross-block delay-slot fill + address-CSE for
   D_800AD142; CF98: counter/ptr register order + arg*12 index order).
   These are the next targets before BB4C itself.
+
+## 2026-07-06 — Fable (overnight: CB7C matched, CF98 parked, BB4C started)
+- 1 match (232 total): cd func_8001CB7C (CD retry re-arm). D_800AD142
+  array-decl for the single-materialized-address RMW; D_8009896C=0 before
+  the |= for the schedule. Clean rebuild 0 errors, hash OK, cmp identical;
+  mutation test failed while mutated; restored OK.
+- func_8001CF98 PARKED after full structural analysis: KEY find is
+  CdIntToPos is the PSYQ 2-arg CdIntToPos(int, CdlLOC*) — the &D_80098814
+  before the call is its CdlLOC out-param. Remaining: cc1 double-emits the
+  [arg][1] load/store around CdIntToPos (needs CSE-dump). Signature known
+  (void(s32)), so BB4C proceeds.
+- Both remaining BB4C callees now either matched (CB7C) or signature-known
+  (CF98 = void(s32)). Starting func_8001BB4C (~845 insns).
