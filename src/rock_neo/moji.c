@@ -21,6 +21,10 @@ s32 func_80039E18(void); // s32 (not void) is load-bearing in func_80055C1C:
                          // and lets `return 1` fill the load-delay slot
 extern u8 D_800BE2F8[];
 extern u8 D_8009899C; // sdata ($gp)
+// byte-view of Player_work (0x800B51B0, size 0x5F4); func_80056610 indexes the
+// u8 remap table at Player_work+0x454. Member access forces per-site
+// %hi/%lo(Player_work+0x454) rather than a hoisted base pointer.
+extern struct { u8 _p454[0x454]; u8 remap[0x1A0]; } Player_work;
 extern u16 D_80098912[];
 s32 func_8005ACA8(MOJI_TASK*);
 
@@ -518,7 +522,21 @@ void func_80056558(MOJI_TASK *m) {
     m->script += 3;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80056610);
+void func_80056610(MOJI_TASK *m) {
+    u8 *base = m->x44;
+
+    if (base != 0) {
+        MojiTaskExec(m->script[1], base,
+                     (u8)(m->script[2] +
+                          Player_work.remap[(s8)m->x71 + D_8009899C] - 1));
+    } else {
+        MojiTaskExec(m->script[1],
+                     D_8008CACC[m->script[2] +
+                                Player_work.remap[(s8)m->x71 + D_8009899C] - 1],
+                     0xFF);
+    }
+    m->script += 3;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800566CC);
 
