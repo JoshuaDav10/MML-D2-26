@@ -3,13 +3,13 @@
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
 - rock_neo main: **484** functions in linked object code (`tools/census.py
   --matched`; see `notes/COUNTS.md`). **475** have splat asm under
-  `asm/rock_neo/nonmatchings/`; **260** active INCLUDE_ASM stubs (cpp census);
+  `asm/rock_neo/nonmatchings/`; **258** active INCLUDE_ASM stubs (cpp census);
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 224 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 226 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~4388 of ~31,300 mapped instructions (~14.0%)
+- Volume: ~4430 of ~31,300 mapped instructions (~14.2%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -63,8 +63,9 @@
     D_800988E8 bit; integer-typed e addend keeps the scaled index in rs)
     func_8001FCA4 (switch on Game_work.x52 keeps the ==5 beq un-inverted;
     closed the jump-canonicalization open problem — Cursor + Fable)
-    (func_8001FC50, func_8001FDE4 attempted, NOT matched — same
-    jump-canonicalization family, retry with switch; see LESSONS 2026-07-06)
+    func_8001FC50 + func_8001FDE4 (switch family completed: case tree via
+    explicit case 0; fallthrough-into-default for the shared 0x81 leg —
+    the whole scene jump-canonicalization family is now closed)
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
     Cd_read_comb, func_8001D468 (CD_CMD queue writers), func_8001C7F0,
     func_8001D7AC, func_8001B858 (fn-table dispatch via D_80098A84->x8),
@@ -134,6 +135,10 @@
     table load AND defeat arg anchor-CSE)
 
 ## Last verified build
+- 2026-07-06 (Fable, batch 17) — clean rebuild 0 errors, hash OK, cmp
+  byte-identical after scene func_8001FC50 + func_8001FDE4 (switch trick
+  closes the scene jump-canonicalization family); 2/2 mutation tests
+  failed while mutated; restored, 0 errors, OK.
 - 2026-07-06 (Fable, FCA4 audit) — clean rebuild 0 errors, hash OK,
   cmp byte-identical after auditing Cursor's scene func_8001FCA4 switch
   match (branch match/fca4-switch, ff-merged to dev); mutation test

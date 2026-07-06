@@ -165,10 +165,10 @@ agent on the `overlay-expedition` branch.
    'nonmatchings/...' ; done` then wc -l the .s files.
 2. PARKED with findings (don't re-grind blind): func_80042044 +
    func_8001A6DC + func_80013578 (register-birth/scheduling genus),
-   func_8001FC50/FDE4 + func_800199A4 + func_80019918
-   (jump-canonicalization family — FCA4 CRACKED 2026-07-06 via `switch`,
-   see LESSONS.md; retry the siblings with switch), func_80041EF4 (andi
-   elision — RTL
+   func_800199A4 + func_80019918 (jump-canonicalization family — the
+   scene side FCA4/FC50/FDE4 all CRACKED 2026-07-06 via `switch`, see
+   LESSONS.md; retry these sound siblings with switch), func_80041EF4
+   (andi elision — RTL
    verified), Sub_screen_rb_parts_calc (draft 6 insns short),
    func_8001FCE4 (needs jump-table-in-rodata infrastructure).
 3. Scratch-TU tooling from this session (recreate if scratchpad is gone):

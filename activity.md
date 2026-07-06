@@ -481,3 +481,14 @@
 - Spot-checked Briefs 6/7 on dev: census.py --matched reproduces
   484 = 224 matched + 260 stubs; xref.py regenerates notes/XREF.md clean
   (stub count refreshed 261→260 in this commit).
+
+## 2026-07-06 — Fable (batch 17: switch family cleanup)
+- 2 more matches (226 total, ~14.2% volume): scene func_8001FC50 +
+  func_8001FDE4 — the rest of the scene jump-canonicalization family,
+  both via the switch idiom. FC50 needed two refinements (explicit case 0
+  to force the case tree; fallthrough-into-default for the shared 0x81
+  leg); FDE4 matched on the first switch draft. Both matched in the
+  scratch TU (bytecmp) before touching the tree; first in-tree build OK.
+- 2/2 mutation tests failed while mutated; restored, 0 errors, hash OK,
+  cmp byte-identical. Remaining parked in the family: sound-side
+  func_800199A4/func_80019918 (retry with switch next).

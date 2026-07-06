@@ -482,3 +482,19 @@ iteration teaches something; this file is how the project gets smarter.
   the third value; assign to a local and store once after the switch.
   Try `switch` FIRST on any parked jump-canonicalization sibling
   (func_8001FC50, func_8001FDE4, func_800199A4, func_80019918).
+- **Switch case-TREE vs range-collapse is steerable by an explicit case**
+  (func_8001FC50): `switch` with only cases 1..3 range-collapses to
+  slti/blez (one bounds check). Adding an explicit `case 0:` that shares
+  the default body forces the balanced case tree — beqz(==0), bltz(<0),
+  slti 4 — matching the original's three separate exits.
+- **Fallthrough-into-default keeps a shared constant leg un-inverted**
+  (func_8001FC50): the inner `if (call() == 0) { out = 0x82; break; }`
+  followed by FALLTHROUGH into `default: out = 0x81;` emits
+  bnez→(default li in the branch delay slot, retargeted to the store) +
+  li/j for the else — the original's exact shape. Writing the same logic
+  as `out = call() ? 0x81 : 0x82;` inside the case gets inverted+inlined.
+- **A switch may store through a LOCAL then one store after** (all three
+  FCxx/FDE4 matches): assign the s16 local in each case, single
+  `D_xxx = out;` after the switch. FDE4 shows duplicate constant case
+  bodies (4→0xC4, 0xB→0xC4) do NOT get cross-jumped when written as
+  separate cases — write them separately if the original has two li's.

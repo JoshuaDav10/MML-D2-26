@@ -28,6 +28,10 @@ extern s16 D_8009820A;
 extern s16 D_8009820C;
 extern s16 D_8009820E;
 extern s16 D_8009825A;
+extern s16 D_8009824C;
+extern s16 D_800982FA;
+extern s16 D_800982FC;
+extern s16 D_800982FE;
 
 void func_8001D854(u8 arg0) {
     if (D_80098788 == 0) {
@@ -349,7 +353,25 @@ void func_8001FB8C(void) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FBC4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FC50);
+void func_8001FC50(void) {
+    s8 v = Game_work.x52;
+    s16 out;
+    switch (v) { /* switch keeps the case tree + un-cross-jumped 0x81 legs */
+    case 1:
+    case 2:
+    case 3:
+        if (Sce_flag_test(0x30) == 0) {
+            out = 0x82;
+            break;
+        }
+        /* fallthrough */
+    case 0:
+    default:
+        out = 0x81;
+        break;
+    }
+    D_8009824C = out;
+}
 
 void func_8001FCA4(void) {
     s8 v = Game_work.x52;
@@ -398,4 +420,26 @@ void func_8001FD90(void) {
     D_8009828E = (x < 0) ? 0xA1 : (x < 2) ? 0x9F : (x < 5) ? 0xA0 : 0xA1;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FDE4);
+void func_8001FDE4(void) {
+    s8 v = Game_work.x52;
+    s16 out;
+    switch (v) {
+    case 0:
+    case 1:
+    case 2:
+    case 3:
+        out = 0xC3;
+        break;
+    case 4:
+        out = 0xC4;
+        break;
+    case 0xB:
+        out = 0xC4;
+        break;
+    default:
+        return;
+    }
+    D_800982FE = out;
+    D_800982FC = out;
+    D_800982FA = out;
+}
