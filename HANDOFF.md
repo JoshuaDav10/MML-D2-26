@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-06, 232 matched / 14.5%)
+# HANDOFF — MML Decomp session state (2026-07-06 PM, 244 matched / ~15%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,9 +19,9 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 232** (~14.5% of instruction volume; 252 active stubs,
-  484 total per `tools/census.py --matched` — authoritative). See
-  `progress.md`.
+- **Matched: 244** (~15% of instruction volume; 240 active stubs,
+  484 total per `tools/census.py --matched` — authoritative). moji.c is
+  92/145 matched (53 stubs left). See `progress.md`.
 - **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&
   rm -f build/rock_neo.elf` before `make`). This session found a prior
   "match" (func_800605DC) that never actually compiled — the stale stub
@@ -38,7 +38,34 @@
   build byte-identical; 19 lack configs entirely. The old "ST** don't
   link" note was stale. Plan: `notes/OVERLAY_EXPEDITION.md` (delegable).
 
-## What was accomplished in the 2026-07-05 DAY session (most recent)
+## What was accomplished in the 2026-07-06 PM session (most recent)
+
+Resumed from a mid-flight context transfer (3 workstreams). Landed **11 moji.c
+script-opcode matches**, all clean-rebuilt + full-binary sha1 OK + committed to
+dev (232→244 counting the prior session's func_80054A04): func_8005497C,
+func_800564C8, func_80056558, func_80056610, func_800566CC, func_80055438,
+func_80057184, func_80055A78, func_80055B14, func_8005721C, func_800545C8.
+
+- **Reusable CALL-opcode template** drove most of them: `base = m->x44; if
+  (base) MojiTaskExec(no, base, op); else MojiTaskExec(no, D_8008CACC[idx],
+  0xFF); script += 3`. Variants remap the op index through a table (`D_800BE2F8`
+  or a u8 array inside `Player_work` at +0x450/+0x454) and fold an op bias (−1)
+  into the null-arm table base (`D_8008CAC8` = `D_8008CACC−4`).
+- **Idioms pinned** (also in activity.md / LESSONS-worthy): `(s8)m->x71` forces
+  the signed `lb`; a remap table *inside* `Player_work` needs Game_work-style
+  struct-member access to emit per-site `%hi/%lo(Player_work+off)` instead of a
+  hoisted base pointer; `m->x48 = m->script2 = …` store order (script2 first)
+  is load-bearing (func_80055438); explicit `& 0xFFFF` into an `int` (not a
+  `u16` var) pins the mask at the store not the call (func_80055B14); if/else
+  arm order decides fall-through vs branched block (func_800545C8 `(s16)x4<=0`).
+- **PARKED near-match: func_80056778** — cc1 hoists the join-block flags const
+  `lui 0x402000` into the `bnez` delay slot where the original keeps a `nop`.
+  Same delay-slot/const-hoist genus as the giants; left INCLUDE_ASM. Draft +
+  diagnosis in the git history of this session (not committed to the tree).
+- **Both background giants advanced and salvaged into `notes/wip/`** (main tree
+  byte-identical, moji.c untouched by them): see the giant-status section below.
+
+## What was accomplished in the 2026-07-05 DAY session
 
 Batches 10-13, all clean-rebuilt + hash-gated + mutation-tested + pushed to
 dev (commits 615f06d..b5762e0). 22 new matches (187 → 209), ~12.6% volume.
@@ -156,8 +183,35 @@ phased plan, hard rules, and an unfakeable verification protocol:
 **`notes/OVERLAY_EXPEDITION.md`** — written for delegation to a weaker
 agent on the `overlay-expedition` branch.
 
+## Giant-function status (two multi-session decomps in flight)
+
+- **func_8001BB4C (cd.c, 845 insns)** — the CD loader. Structure fully solved:
+  805–806/809 words, all control flow / CD_WORK union / three-pointer addressing
+  correct. Blocked at **461 hard mismatches**, now a focused register/scheduling
+  finish (was: extra $s7 hoist, FIXED via struct-member Game_work access →
+  510→461). Scratch draft: `notes/wip/bb4c_draft_v2.c`; forensics:
+  `notes/wip/BB4C_ANALYSIS.md`. First hard mismatch is a branch displacement
+  from a small instruction-count deficit; verify with
+  `CPP=cpp tools/bytecmp.sh func_8001BB4C notes/wip/bb4c_draft_v2.c`. Do NOT land
+  into cd.c until 0 hard mismatches + clean rebuild. **A background agent was
+  crunching this at PM-session end — check for a newer bb4c_draft_v2.c / worktree
+  branch before restarting.**
+- **func_80053B40 (moji.c, 522 insns)** — text/font renderer. Body logic
+  verified byte-exact (the /0x15 glyph-cell divide-magic + *0xC UV block).
+  Blocked on **callee-saved allocation**: cc1's `loop.c move_movables` ranks the
+  `0x1F800070` scratchpad address (4 in-loop uses) above the `0x40000000`
+  constant (2 uses) and steals its saved-reg slot; the original keeps
+  `0x1F800070` inline (`lui/ori` at all 4 sites). Next-session plan (make the 3
+  Map_prim_ptr accesses non-CSE-mergeable / -dg ranking-demotion) is in
+  `notes/wip/53B40_ANALYSIS.md`; scratch draft `notes/wip/53b40_draft.c`. moji.h
+  already exposes xB8/xBA for it. Land via the foreground (moji.c ownership).
+
 ## Where to pick up next (day session's view)
 
+0. **Continue the moji CALL-opcode harvest** — the template above cracks these
+   fast. Remaining sibling stubs in the +0x56xxx / +0x57xxx range that call
+   MojiTaskExec or advance script/script2. Read the just-matched func_800564C8/
+   56558/56610/566CC/55438/55A78/57184 as templates before drafting.
 1. Smallest remaining stubs are now ≥35 insns: get the list with the
    preprocessor-based stub census (grep `.include` after cpp — a NAIVE
    grep of INCLUDE_ASM overcounts ifdef'd-out lines):

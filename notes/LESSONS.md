@@ -652,3 +652,48 @@ iteration teaches something; this file is how the project gets smarter.
   across-call index CSE); in-body assignment keeps the address a live CSE
   next to its sibling accesses. Distinct from the value-CSE (use a local to
   merge duplicate loads). The two knobs are independent and were both needed.
+
+## Session 2026-07-06 (Fable, PM — moji CALL-opcode harvest) — proven against the hash
+- **The moji script CALL-opcode family** (func_800564C8, 56558, 56610, 566CC,
+  57184, 5497C, and cousins) all share one shape; use the matched ones as
+  templates:
+  ```c
+  u8 *base = m->x44;
+  if (base != 0) MojiTaskExec(m->script[1], base, (u8)(OP_EXPR));
+  else           MojiTaskExec(m->script[1], D_8008CACC[IDX_EXPR], 0xFF);
+  m->script += 3;
+  ```
+  Variants only change OP_EXPR / IDX_EXPR: a raw `script[2]`, or the index
+  remapped through a byte table (`D_800BE2F8[...]`, `Player_work.remap[...]`).
+  When the base!=0 arm biases the op by a constant `-k`, the null arm folds it
+  into the table symbol: `D_8008CACC[x - 1]` compiles to base `D_8008CAC8`
+  (= CACC − 4). Write the `-k` in BOTH arms; cc1 does the fold.
+- **`(s8)m->x71` (and `m->x72` used as an index) forces the signed `lb`.** The
+  field is declared u8/s8; whether cc1 emits `lb` vs `lbu` follows the cast at
+  the USE site. For the *increment* of the same s8 field, the proven idiom is
+  `u8 c = m->x72 + 1; …; m->x72 = c;` which emits `lbu` — so one function can
+  read the same field both ways (signed index, unsigned increment).
+- **Remap table INSIDE a big struct** (e.g. `Player_work + 0x454`, which is
+  within Player_work's 0x5F4 span so the reloc is `Player_work+0x454`): declare
+  a byte-view struct with an array field at that offset and index the MEMBER
+  (`Player_work.remap454[i]`). This emits per-site `%hi/%lo(Player_work+0x454)`
+  + index, exactly like the Game_work.s[idx] BB4C fix. Casting a pointer
+  (`((u8*)&Player_work)[0x454+i]`) instead makes cc1 materialize the base with
+  a runtime `lui/addiu` (one extra insn) — non-matching.
+- **Where a `& 0xFFFF` mask lands is controlled by the C type**: a value saved
+  in a callee-saved reg across a call and passed to an int/unknown_t param —
+  `s32 v = f() & 0xFFFF; g(v, …);` masks at the STORE (andi then plain move at
+  the call, matching func_80055B14). `u16 v = f(); g(v, …);` defers the mask to
+  the CALL site (plain move at store, andi at call). Pick the form that matches.
+- **if/else arm order = branch layout**: `if (X > 0) A; else B;` makes A the
+  fall-through (cc1 emits the inverse test to skip A). If the asm branches TO
+  the ">0" block and falls through to the other, invert the source to
+  `if (X <= 0) B; else A;`. Cost func_800545C8 one iteration.
+- **Store order of chained assignment matters**: `m->a = m->b = X;` stores b
+  first (inner), then a. func_80055438 needed script2 stored before x48, so
+  write `m->x48 = m->script2 = X;` (script2 is the inner/first store).
+- **PARKED genus — join-block constant hoisted into a conditional-branch delay
+  slot** (func_80056778): a loop/branch-invariant `lui` (here the `0x402000`
+  flags constant, used only after the merge) gets pulled by cc1 into the `bnez`
+  delay slot; the original keeps a `nop` there. Reordering the tail statements
+  did not stop it. Same family as the giants' constant-hoist allocation puzzle.
