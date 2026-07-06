@@ -506,3 +506,18 @@
 - This unblocks the 28 parked jump-table functions (31 tables), including
   the scene F8DC/F9AC siblings and — eventually — cd/func_8001BB4C
   (~845 insns, 3 tables), the binary's biggest function.
+
+## 2026-07-06 — Fable (multi-table proof: scene F8DC + F9AC)
+- 2 more matches (229 total, ~14.4% volume): scene func_8001F8DC +
+  func_8001F9AC. MULTI-TABLE carve proven: all three scene jump tables
+  (jtbl_800108C0/800108F0/80010920) now emitted by scene.c.o(.rodata),
+  contiguous at 0x800108C0 in function order, whole binary byte-identical.
+- Key discovery: case-0 flag test written as `|| ternary` (not if/else)
+  keeps the result pseudo in $v0. if/else makes cc1 precompute the
+  else-value and invert the branch, extending the pseudo's live range
+  across a Sce_flag_test $v0 return → .greg `conflicts: 2` → forced to
+  $v1, mirroring every value store. Found via cc1 -dg greg dump.
+- Verified: clean rebuild 0 errors, hash OK, cmp byte-identical; mutation
+  tests on a case VALUE (F8DC code) and a case-to-body REMAP (F9AC table)
+  both failed while mutated; restored, OK. Multi-table constraint confirmed
+  (contiguous matched tables per TU) and written to LESSONS.

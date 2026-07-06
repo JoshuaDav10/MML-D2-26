@@ -540,3 +540,35 @@ iteration teaches something; this file is how the project gets smarter.
   0x1120 (splat's leading-dot syntax does this without extracting). A
   fresh clone that runs extraction gets it from the yaml; THIS checkout
   was hand-edited to match without re-running splat.
+
+## Session 2026-07-06 (Fable, multi-table proof: scene F8DC/F9AC) — proven against the hash
+- **MULTI-TABLE carve works: 3 jump tables from ONE TU, contiguous.**
+  scene.c's func_8001F8DC/F9AC/FCE4 each emit a jump table; all three now
+  come from scene.c.o(.rodata) at 0x800108C0 (size 0x80 = 0x30+0x30+0x20,
+  in FUNCTION order = ascending table address). 800.rodata.s truncated at
+  0x10C0; scene.c.o(.rodata) fills 0x10C0-0x113F; 1140.rodata.s from 0x1140.
+  Constraint CONFIRMED: the TU's matched table functions must be
+  address-contiguous in rodata (no unmatched asm table interleaved), because
+  a TU's .rodata is one contiguous linker chunk. You cannot land just F8DC
+  while F9AC's table stays in asm between F8DC's and FCE4's.
+- **Case-0 `||` ternary beats the else-precompute (func_8001F9AC — the real
+  unlock).** `if (test()!=0) out=A; else out=B;` inside a case makes cc1
+  PRECOMPUTE `out=B` before the branch and invert it (jump.c). That extends
+  `out`'s live range across the branch insn where the Sce_flag_test result
+  is live in $v0, so `out` gets `conflicts: 2` in the .greg dump and is
+  denied $v0 — it lands in $v1 and EVERY value store in the function
+  mirrors ($v1 not $v0). Rewriting as `out = (test()==0 || test()!=0) ?
+  A : B;` keeps `out` in $v0 (no premature def, no cross-branch liveness),
+  fixing the whole function. Diagnosis path: `cc1 ... -dg` → read
+  `;; N conflicts: ... 2 ...` (2 = $v0) in gccdump.greg; a value pseudo
+  that conflicts with $v0 is being held live across a call-return branch.
+- **F8DC case 0 uses the goto-shared-store idiom** (LESSONS func_8001DE84):
+  two flag-test exits both `goto d0_3C;` where d0_3C does the single
+  `D_800981D0 = 0x3C; return;` — the 0x3C loads land in the branch delay
+  slots, one shared store. The 0x3D path is its own store+return.
+- **gp_rel store shows as a bytecmp "hard mismatch" but is a FALSE POSITIVE**
+  (offset unresolved in the scratch TU: `xx0982A7` expected vs `000082A7`
+  actual — only the %gp_rel offset differs, base `82A7`/`83A7` matches).
+  Confirmed harmless: it resolves at link (FCE4/F8DC/F9AC all matched
+  in-tree with exactly these bytecmp flags). When the ONLY remaining
+  bytecmp mismatches are gp_rel stores, land it.

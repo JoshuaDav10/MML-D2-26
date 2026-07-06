@@ -28,11 +28,12 @@ segments:
     subalign: 4
     subsegments:
       - [0x800, rodata]
-      # 0x1120-0x113F = jtbl_80010920, emitted by scene.c's func_8001FCE4
-      # switch (cc1 .rdata) — linked from scene.c.o(.rodata), not extracted.
-      # NOTE: the checked-out rock_neo.ld was hand-edited to match (splat is
-      # not re-run in this repo); verify the generated ld if re-extracting.
-      - [0x1120, .rodata, scene]
+      # 0x10C0-0x113F = jtbl_800108C0/800108F0/80010920, emitted by scene.c's
+      # func_8001F8DC/F9AC/FCE4 switches (cc1 .rdata) — linked from
+      # scene.c.o(.rodata) in function order, not extracted. NOTE: the
+      # checked-out rock_neo.ld was hand-edited to match (splat is not re-run
+      # here); verify the generated ld if re-extracting.
+      - [0x10C0, .rodata, scene]
       - [0x1140, rodata]
       - [0xFE8, asm]
       - [0x2E24, asm, psxsdk2E24]

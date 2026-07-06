@@ -3,13 +3,13 @@
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
 - rock_neo main: **484** functions in linked object code (`tools/census.py
   --matched`; see `notes/COUNTS.md`). **475** have splat asm under
-  `asm/rock_neo/nonmatchings/`; **257** active INCLUDE_ASM stubs (cpp census);
+  `asm/rock_neo/nonmatchings/`; **255** active INCLUDE_ASM stubs (cpp census);
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 227 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 229 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~4452 of ~31,300 mapped instructions (~14.2%)
+- Volume: ~4504 of ~31,300 mapped instructions (~14.4%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -66,8 +66,10 @@
     func_8001FC50 + func_8001FDE4 (switch family completed: case tree via
     explicit case 0; fallthrough-into-default for the shared 0x81 leg —
     the whole scene jump-canonicalization family is now closed),
-    func_8001FCE4 (FIRST JUMP-TABLE FUNCTION — cc1-emitted rodata table
-    placed at 0x80010920 via the 800/1140 rodata split; see LESSONS)
+    func_8001FCE4 (FIRST JUMP-TABLE FUNCTION — cc1-emitted rodata table),
+    func_8001F8DC + func_8001F9AC (MULTI-TABLE proof: all 3 scene jump
+    tables now emitted by scene.c.o(.rodata), contiguous at 0x800108C0;
+    F9AC's case-0 || ternary keeps the value pseudo in $v0 — see LESSONS)
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
     Cd_read_comb, func_8001D468 (CD_CMD queue writers), func_8001C7F0,
     func_8001D7AC, func_8001B858 (fn-table dispatch via D_80098A84->x8),
@@ -137,6 +139,11 @@
     table load AND defeat arg anchor-CSE)
 
 ## Last verified build
+- 2026-07-06 (Fable, multi-table proof) — clean rebuild 0 errors, hash OK,
+  cmp byte-identical after scene func_8001F8DC + func_8001F9AC; all three
+  scene jump tables now from scene.c.o(.rodata) at 0x800108C0 (size 0x80,
+  function order). Mutation tests (F8DC case value; F9AC case→body table
+  remap) both failed while mutated; restored, OK.
 - 2026-07-06 (Fable, jump-table infra) — clean rebuild 0 errors, hash OK,
   cmp byte-identical after scene func_8001FCE4 with its cc1-emitted jump
   table (rodata carve 0x1120/0x1140 + ld placement); 2/2 mutation tests

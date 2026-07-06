@@ -33,6 +33,9 @@ extern s16 D_800982FA;
 extern s16 D_800982FC;
 extern s16 D_800982FE;
 extern s16 D_80098276;
+extern s16 D_800981D0;
+extern s16 D_800981D2;
+extern s16 D_800981E2;
 
 void func_8001D854(u8 arg0) {
     if (D_80098788 == 0) {
@@ -318,9 +321,89 @@ void func_8001F820(void) {}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F828);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F8DC);
+/* Jump-table function (jtbl_800108C0). Case 0's flag test written as a
+   || ternary: an if/else there makes cc1 precompute the else-value before
+   the branch, which lengthens `out`'s live range across a Sce_flag_test
+   $v0 return, forcing `out` into $v1 (wrong). The ternary keeps `out` in
+   $v0 and the ==-leg un-inverted. See LESSONS 2026-07-06. */
+void func_8001F8DC(void) {
+    s8 v = Game_work.x52;
+    s16 out;
+    switch (v) {
+    case 0:
+        if (Sce_flag_test(6) == 0) goto d0_3C;
+        if (Sce_flag_test(0x59) != 0) goto d0_3C;
+        D_800981D0 = 0x3D;
+        return;
+    d0_3C:
+        D_800981D0 = 0x3C;
+        return;
+    case 1:
+        D_800981D0 = 0x3C;
+        out = 0x3F;
+        break;
+    case 2:
+    case 3:
+        D_800981D0 = 0x3C;
+        out = 0x40;
+        break;
+    case 4:
+    case 5:
+        D_800981D0 = 0x3C;
+        out = 0x41;
+        break;
+    case 0xB:
+        D_800981D0 = 0x3C;
+        out = 0x43;
+        break;
+    default:
+        D_800981D0 = 0x3C;
+        out = 0x42;
+        break;
+    }
+    D_800981D2 = out;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F9AC);
+/* Jump-table function (jtbl_800108F0). Case 0 uses the || ternary trick
+   (see func_8001F8DC) so `out` stays in $v0 across the whole function. */
+void func_8001F9AC(void) {
+    s8 v;
+    s16 out;
+    if (Sce_flag_test(0x204) != 0 && Sce_flag_test(0x206) == 0) {
+        out = 0x4F;
+    } else if (Sce_flag_test(0x212) != 0 && Sce_flag_test(0x213) == 0) {
+        out = 0x4E;
+    } else if (Sce_flag_test(0x200) != 0) {
+        out = 0x4C;
+    } else {
+        v = Game_work.x52;
+        switch (v) {
+        case 0:
+            out = (Sce_flag_test(2) == 0 || Sce_flag_test(1) != 0) ? 0x4A : 0x4B;
+            break;
+        case 1:
+            out = 0x4D;
+            break;
+        case 2:
+        case 3:
+        case 4:
+        case 5:
+            out = 0x50;
+            break;
+        case 6:
+        case 7:
+            out = 0x51;
+            break;
+        case 0xB:
+            out = 0x53;
+            break;
+        default:
+            out = 0x52;
+            break;
+        }
+    }
+    D_800981E2 = out;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FA94);
 

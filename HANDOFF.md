@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-06, 224 matched / 14.0%)
+# HANDOFF — MML Decomp session state (2026-07-06, 229 matched / 14.4%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,7 +19,7 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 224** (~14.0% of instruction volume; 260 active stubs,
+- **Matched: 229** (~14.4% of instruction volume; 255 active stubs,
   484 total per `tools/census.py --matched` / `notes/COUNTS.md`). See
   `progress.md`.
 - **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&
@@ -170,11 +170,13 @@ agent on the `overlay-expedition` branch.
    LESSONS.md; retry these sound siblings with switch), func_80041EF4
    (andi elision — RTL
    verified), Sub_screen_rb_parts_calc (draft 6 insns short).
-   func_8001FCE4 MATCHED 2026-07-06 — jump-table-in-rodata infrastructure
-   now EXISTS (carve recipe in LESSONS.md; splat yamls carry the
-   [0x1120, .rodata, scene] subsegment; asm/ + rock_neo.ld edits are
-   LOCAL-ONLY, gitignored). 27 more table functions (30 tables) are now
-   reachable, including cd/func_8001BB4C (~845 insns, 3 tables) later.
+   JUMP-TABLE INFRA COMPLETE + multi-table proven 2026-07-06: scene
+   func_8001FCE4/F8DC/F9AC all matched; all 3 scene tables emitted by
+   scene.c.o(.rodata) at 0x800108C0 (function order, contiguous). Carve
+   recipe + multi-table CONTIGUITY constraint + the case-0 || ternary
+   register trick are in LESSONS.md. splat yamls carry [0x10C0, .rodata,
+   scene]; asm/ + rock_neo.ld edits are LOCAL-ONLY (gitignored). 25 more
+   table functions reachable, incl. cd/func_8001BB4C (~845 insns, 3 tables).
 3. Scratch-TU tooling from this session (recreate if scratchpad is gone):
    tryfn.sh (pipeline to .o + objdump) and bytecmp.sh (assembles a draft,
    extracts the function words from objdump, byte-compares against the
