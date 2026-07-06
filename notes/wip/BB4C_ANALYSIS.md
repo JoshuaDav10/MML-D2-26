@@ -1,13 +1,89 @@
 # func_8001BB4C — analysis & matching plan (the 845-insn CD loader state machine)
 
-Status: **draft + full structure mapped + field widths VERIFIED; not yet
-matched.** m2c draft in `notes/wip/bb4c_m2c_draft.c`; combined asm+tables in
-`notes/wip/bb4c_combined.s`. Signature: `void func_8001BB4C(void)`. Frame 0x38,
-saves $ra + $s0..$s6. 2026-07-06: all load/store widths cross-checked from asm
-(see "VERIFIED FIELD WIDTHS"). 2026-07-06 (2): union arms fully enumerated per
-inner state (see "UNION ARM ENUMERATION") — recommended C is a flat s32 work
-struct with (u8)/(u8*) casts at the byte sites; formal union as fallback. NEXT:
-declare CMD_ENT + CD_WORK in cd.h, translate the m2c draft, bytecmp-iterate.
+Status: **STRUCTURE MATCHED, register allocation NOT converged; not yet
+matched.** Signature: `void func_8001BB4C(void)`. Frame 0x38, saves $ra +
+$s0..$s6 (7 callee-saved). Full compilable draft: `notes/wip/bb4c_draft_v2.c`
+(419 lines, self-contained scratch TU). Verify with:
+`source .venv/bin/activate && CPP=cpp tools/bytecmp.sh func_8001BB4C notes/wip/bb4c_draft_v2.c`
+Current: **7/7 saved regs NOW CORRECT; 461 hard mismatches (was 510).** Tree
+byte-identical (cd.c still INCLUDE_ASM). Do NOT land until 0 hard mismatches +
+clean-rebuild OK.
+
+### 2026-07-06 (Opus, MAIN thread) — advanced the near-match; START HERE
+The prior agent's "cbase/1 not held" diagnosis was STALE. Verified via cc1 -dg
+dump of bb4c_draft_v2.c: cbase(&D_800B5DB0)→$s5 and 1→$s6 ARE held correctly.
+The REAL blocker was an EXTRA 8th saved reg: cc1 hoisted `&Game_work+0x1B8`
+into $s7 (reg 245 in the greg) because the `((s16*)&Game_work)[...]` macro form
+makes a hoistable base pseudo. FIX APPLIED (already in bb4c_draft_v2.c): declare
+Game_work as a struct with the per-type slot array at 0x1B8 and access by member
+(`Game_work.s[idx].v/.b/.w`) — this forces per-site absolute %hi/%lo, no hoist.
+Result: $s7 gone, hard regs now exactly 16-22 ($s0-$s6, 7 regs), 510→461.
+  ⚠ TREE-SAFE NOTE: the scratch draft defines `struct GAMEWORK` locally. For the
+  final cd.c, do NOT edit the shared game.h — reproduce the same member-access
+  codegen via a local typedef + `(*(struct GAMEWORK*)&Game_work).s[idx].v` and
+  confirm it still emits per-site absolute (bytecmp) before landing.
+REMAINING (the 461): now mostly (a) preamble SETUP ORDER — original emits
+  s6=1, s5=&D_800B5DB0, s3=&D_800C5604, s2=s3+8, s4=s3+0x1C (s5 BEFORE s3);
+  the draft hoists cbase LAST (s6,s3,s2,s4,s5). Introduce an explicit
+  `CMD_ENT *cbase = D_800B5DB0;` set in the right source position so cc1 orders
+  it between s6 and s3; and (b) branch-displacement + register-number cascades
+  that should collapse once the preamble order + any remaining insn-count diff
+  is fixed. Re-run `CPP=cpp tools/bytecmp.sh func_8001BB4C notes/wip/bb4c_draft_v2.c`
+  and diff from index ~95 (loop preamble .L8001BCE4) onward.
+
+## 2026-07-06 (Opus, worktree agent) — SESSION SUMMARY: what's SOLVED vs LEFT
+The whole control-flow + field-layout structure is CORRECT and verified
+block-by-block. Spot-checked state 1 (DMA copy, C2AC): my output matches the
+original instruction-for-instruction, MODULO REGISTER NUMBERS. So the remaining
+~510 "hard mismatches" are almost ENTIRELY register-number diffs (right opcode,
+right offset, wrong $reg) cascading from register allocation.
+
+REGISTER ROLES (original): $s0=e (cmd entry), $s1=&D_8009BE48 (RECT, set LAZILY
+in type1/type4-else/state2/state4), $s2=p2 (&work+8), $s3=w (&D_800C5604),
+$s4=q4 (&work+0x1C), $s5=&D_800B5DB0 (cmd array base), $s6=1 (the constant).
+
+WHAT'S SOLVED (in bb4c_draft_v2.c — reuse these):
+ - Three switches as real switches (outer D_800989C4 fallthrough 0-4; inner
+   while(1) switch D_800989C8 0-9; innermost switch type 0-10). jtbl carve NOT
+   yet done (tables still in 800.rodata.s; carve after code matches).
+ - `type==-1` -> `D_800989C4 = 4; return;` (shares C7AC epilogue).
+ - CMD_ENT: all s32 x0..x28 + data at 0x100, stride 0x800; e = &D_800B5DB0[idx].
+ - WORK block CD_WORK @ D_800C5604 + THREE pointer views held across the loop:
+   `w=&D_800C5604` ($s3), `p2=&w->x8` ($s2), `q4=&w->x1C` ($s4). Set up right
+   before while(1). Setup/type0-1-3-5/state4 use p2 (base+8; p2[-1]=x4,
+   p2[10]=x30, p2[11]=x34); state6 uses q4 NEGATIVE (q4[-6]=x4,q4[-5]=x8,
+   q4[-3]=x10,q4[-2]=x14,q4[-1]=x18,q4[0]=gate); state1/8/9 use w by name.
+ - ADDRESSING CRUX resolved: state2 AND type7/type8 access the work block by
+   ABSOLUTE NAME (extern D_800C5614/5618/561C/5620/5634/5638), NOT the pointers.
+   Declare union offsets by BYTE nature (5618/561C s8, 5620 u8) + cast (s32*) at
+   word sites -> reproduces both sb and lw/sw. This ALSO flipped p2/w priority so
+   w->$s3, p2->$s2 (moving type7/8 off `w->` shed refs from w).
+ - Game_work WITHOUT hoisting +0x1B8 base: symbol-indexed idiom
+   `((s16*)&Game_work)[0xDC + idx*4]` (see GW_VAB/GW_1BA/GW_1BC/GW_1DA macros).
+ - D_80098AD0/AD1/AD4 = one 8-byte AD_ENT{u8 x0;u8 x1;u8 pad[2];s32 x4;}[type].
+
+THE REMAINING BLOCKER (next session START HERE): cbase ($s5) and the const 1
+   ($s6) are NOT held in callee-saved regs — cc1 rematerializes `&D_800B5DB0`
+   (lui/addiu) and folds `one=1` to `li` at each site, so the real pipeline uses
+   only $s0..$s4 (5 saved) vs the original's 7. Tried: cbase as var AND direct
+   `&D_800B5DB0[idx]` array indexing; `s32 one=1;` — none held. NEXT MOVES:
+   (a) -dl/-dg the draft, read .lreg for the base/const pseudos.
+   (b) $s6=1 is used as sllv operand (MIPS sllv needs a REG, cannot fold to imm),
+       sb value, and beq/bne compare — route the `1<<n` shift through a NAMED var
+       used FIRST in a sllv so the pseudo survives cprop and pins to $s6.
+   (c) For $s5: find the construct that keeps &D_800B5DB0 live (single advanced
+       pointer / aliased so cprop can't fold). The disposition already puts
+       e/$s0, r/$s1, w/$s3, p2/$s2, q4/$s4 right, so fixing $s5/$s6 should
+       cascade-fix most register diffs.
+   Then: jtbl carve (jtbl_80010244/25C/284 contiguous 0x244..0x2AC in
+   800.rodata.s -> cd.c.o(.rodata), mirror scene recipe), clean rebuild +
+   mutation test, land in src/rock_neo/cd.c @ line 41.
+
+## (historical) prior status — full structure map, field widths, union below
+Was: **draft + full structure mapped + field widths VERIFIED.** m2c draft in
+`notes/wip/bb4c_m2c_draft.c`; combined asm+tables in `notes/wip/bb4c_combined.s`.
+2026-07-06: all load/store widths cross-checked (see "VERIFIED FIELD WIDTHS").
+Union arms fully enumerated per inner state (see "UNION ARM ENUMERATION").
 
 ## Why it's a multi-session job
 Three nested jump-table switches, two complex work structs to type exactly,
