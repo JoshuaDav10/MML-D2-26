@@ -193,9 +193,10 @@ agent on the `overlay-expedition` branch.
   `notes/wip/BB4C_ANALYSIS.md`. First hard mismatch is a branch displacement
   from a small instruction-count deficit; verify with
   `CPP=cpp tools/bytecmp.sh func_8001BB4C notes/wip/bb4c_draft_v2.c`. Do NOT land
-  into cd.c until 0 hard mismatches + clean rebuild. **A background agent was
-  crunching this at PM-session end — check for a newer bb4c_draft_v2.c / worktree
-  branch before restarting.**
+  into cd.c until 0 hard mismatches + clean rebuild. **No live agent — the
+  461-mismatch draft in notes/wip/bb4c_draft_v2.c is the current baseline; this
+  is the single best target for a fresh Fable session (structure done, only a
+  register/scheduling finish remains).**
 - **func_80053B40 (moji.c, 522 insns)** — text/font renderer. Body logic
   verified byte-exact (the /0x15 glyph-cell divide-magic + *0xC UV block).
   Blocked on **callee-saved allocation**: cc1's `loop.c move_movables` ranks the

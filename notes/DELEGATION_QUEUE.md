@@ -5,6 +5,52 @@ parallel with the main-thread matching decomp because they pass the
 delegability test: **mechanical work with a binary pass/fail oracle, no
 matching-decomp judgment required.**
 
+## FRESH FULL-USAGE SESSION PLAN (added 2026-07-06 PM) — read first
+
+When you start a session with a full usage budget, spend it like this. The
+governing constraint: **one C file = one editor.** moji.c is a single TU, so two
+agents can NOT harvest it in parallel without colliding — split work by FILE,
+not by function within a file.
+
+**Tier 1 — dedicated Fable agents on the two giants (highest value, needs the
+strong model, genuinely parallel because different files):**
+1. `func_8001BB4C` (cd.c, 845 insns) — FINISH it. Baseline is
+   `notes/wip/bb4c_draft_v2.c` at 461 hard mismatches; structure is fully
+   solved. This is a register/scheduling grind, not an unknown. Own cd.c +
+   notes/wip/bb4c_draft_v2.c + BB4C_ANALYSIS.md ONLY. Iterate with
+   `CPP=cpp tools/bytecmp.sh func_8001BB4C notes/wip/bb4c_draft_v2.c`; land into
+   cd.c only at 0 hard mismatches + clean rebuild.
+2. `func_80053B40` (moji.c, 522 insns) — solve the `loop.c move_movables`
+   use-count hoist (0x1F800070 vs 0x40000000); plan is in 53B40_ANALYSIS.md.
+   ⚠ This one lives in moji.c, so it CONFLICTS with a moji harvest thread. Run
+   it in an ISOLATED WORKTREE against the scratch draft `notes/wip/53b40_draft.c`
+   and have the FOREGROUND do the final port into moji.c. Do not let this agent
+   and a harvest agent both edit src/rock_neo/moji.c.
+
+**Tier 2 — harvest, one agent per file (Opus/cheaper; the fast, proven work):**
+- moji.c: 53 stubs left, many are the CALL-opcode family — use the template +
+  idioms in LESSONS.md (2026-07-06 PM section) + the just-matched siblings.
+  Smallest first: func_80053788/53AA4/54700/548C4/557B8/57924/58C28/58CC8/
+  58DEC/5A598 are all ~40-48 insns. KEEP THIS IN THE FOREGROUND if the 53B40
+  agent is running (same file).
+- scene.c / sound.c / sub_scrn.c / player.c: each still has stubs; give a
+  DIFFERENT file to each additional harvest agent so they never collide.
+
+**Tier 3 — mechanical, delegate freely to Haiku (function-mapper / build-runner
+in .claude/agents/):** stub creation in address order, sanity builds, hash
+checks, diff runs. Return summaries only, never full logs.
+
+**Do NOT delegate:** matching judgment (reading diffs / writing the C), and the
+giants' scheduling puzzles (Fable only). `func_80056778` is PARKED — same
+delay-slot const-hoist genus as the giants; batch it with Tier-1 scheduling
+work, don't hand it to a harvest agent.
+
+**Coordination:** verify the branch before every commit; a stale agent worktree
+does not mean a live agent — check `git worktree list` and salvage any
+unmerged draft/notes into the main checkout with a path-scoped
+`git checkout <branch> -- notes/wip/<file>` (do NOT pull their moji.c/cd.c,
+which are based off an old HEAD and would revert landed matches).
+
 ## Rules common to EVERY brief below
 
 - Branch per task off `dev`, named `infra/<slug>` (the ST1A fix stays on
