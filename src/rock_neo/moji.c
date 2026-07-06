@@ -371,7 +371,24 @@ s32 func_800553F0(MOJI_TASK *m) {
     return 1;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055438);
+s32 func_80055438(MOJI_TASK *m) {
+    u8 b;
+    u8 *base;
+
+    if (Sce_flag_test((u16)func_80054410(m->script2 + 1))) {
+        b = m->script2[3];
+    } else {
+        b = m->script2[4];
+    }
+    if (b == 0xFF) {
+        m->script2 += 5;
+    } else {
+        m->xC2 = b;
+        base = m->x44;
+        m->x48 = m->script2 = base + ((u16 *)base)[b];
+    }
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800554E4);
 
