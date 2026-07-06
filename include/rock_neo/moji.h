@@ -38,7 +38,9 @@ typedef struct MOJI_TASK {
     u8 x7D;
     u8 x7E;
     u8 x7F;
-    u8 x80[0xBC - 0x80];
+    u8 x80[0xB8 - 0x80];
+    u16 xB8;      // 0xB8 — TPage/draw-mode word (func_80053B40; src D_800C0C26)
+    u16 xBA;      // 0xBA — second draw-mode word (func_80053B40; src D_800C0C2A)
     u16 xBC;      // 0xBC — cleared by opcode handlers (func_80054BB4 etc.)
     u16 xBE;      // 0xBE — script stack pointer (index into stack[])
     u16 xC0;      // 0xC0 — script2 stack pointer (index into stack2[])
