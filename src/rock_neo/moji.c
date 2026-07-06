@@ -610,7 +610,24 @@ void func_80057144(MOJI_TASK *m) {
     func_8005BF10(0, m->x40, m->script += 1);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057184);
+s32 func_80057184(MOJI_TASK *m) {
+    u8 *s = m->script2;
+    u8 idx = s[1];
+    u8 b2 = s[2];
+    u8 b3 = s[3];
+    u8 b4 = s[4];
+
+    m->script2 = s + 5;
+    if (*D_8008D0D4[idx] == b2) {
+        u8 *base = m->x44;
+        if (base != 0) {
+            MojiTaskExec((s8)b3, base, b4);
+        } else {
+            MojiTaskExec((s8)b3, D_8008CACC[b4], 0xFF);
+        }
+    }
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_8005721C);
 
