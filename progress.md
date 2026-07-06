@@ -7,8 +7,9 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 231 (verified: full-binary sha1 OK after a CLEAN rebuild —
-  see the func_800605DC note under "Last verified build")
+- rock_neo main: 232 (verified: full-binary sha1 OK after a CLEAN rebuild —
+  see the func_800605DC note under "Last verified build"; census.py --matched
+  is authoritative: 232 matched / 252 active stubs / 484 total)
 - Volume: ~4568 of ~31,300 mapped instructions (~14.5%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
@@ -79,7 +80,10 @@
     twins; u8 com param masked at use),
     func_8001CAAC (CD queue dequeue/shift-down; field-by-field copy keeps
     the two-IV cursor), func_8001CB7C (CD retry re-arm; D_800AD142[] array
-    decl for single-materialized-address RMW) — both BB4C callees
+    decl for single-materialized-address RMW),
+    func_8001CF98 (CD arm: byte-clear loop + D_80082CD0[arg] table; local `v`
+    ASSIGNED IN BODY to force single-load-reused-for-store-and-arg while
+    keeping arg*12 index CSE'd across the CdIntToPos call) — three BB4C callees
   - sub_scrn: Sub_screen_sort_sub, func_800605DC, Map_screen_init,
     func_8005EC34 (back-ground set + routine_0 table dispatch),
     func_8005EC80, func_80060DB8, Sub_screen_cancel_check,

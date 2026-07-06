@@ -535,8 +535,23 @@
   D_800AD142; CF98: counter/ptr register order + arg*12 index order).
   These are the next targets before BB4C itself.
 
+## 2026-07-06 — Opus (CF98 matched; census reconciled to 232)
+- 1 match (232 total, census.py --matched authoritative: 232 / 252 stubs /
+  484): cd func_8001CF98 (CD arm). Resolved the parked load-duplication:
+  declare `s32 v;` and ASSIGN it in the body (not at declaration) — collapses
+  the [arg][0] load to ONE reg reused for both the D_80098A7C store and the
+  CdIntToPos arg0, WHILE keeping the arg*12 index CSE'd in a callee-saved reg
+  across the call for the later [arg][1] read. Hoisting the init breaks the
+  index CSE (re-derives arg*12 twice); writing the expr twice splits the
+  value into two regs. Both knobs needed — see LESSONS. Clean rebuild 0
+  errors, hash OK, cmp byte-identical; mutation (D_80098B42 7->8) failed while
+  mutated, restored OK. THIRD (last remaining drafted) BB4C callee done.
+- Count reconciliation: the prior CB7C entry below claimed "232 total" — that
+  was an off-by-one (it was 231 after CB7C). census confirms 232 only now,
+  after CF98.
+
 ## 2026-07-06 — Fable (overnight: CB7C matched, CF98 parked, BB4C started)
-- 1 match (232 total): cd func_8001CB7C (CD retry re-arm). D_800AD142
+- 1 match (231 total): cd func_8001CB7C (CD retry re-arm). D_800AD142
   array-decl for the single-materialized-address RMW; D_8009896C=0 before
   the |= for the schedule. Clean rebuild 0 errors, hash OK, cmp identical;
   mutation test failed while mutated; restored OK.

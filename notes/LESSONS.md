@@ -629,3 +629,26 @@ iteration teaches something; this file is how the project gets smarter.
   loads [arg][1] ONCE after the call. Needs -dj/-dc CSE-dump analysis to
   find the source form that stops the duplication. Signature is confirmed
   `void func_8001CF98(s32)` — BB4C is NOT blocked by this.
+- **func_8001CF98 MATCHED (2026-07-06)** — resolved the parked duplication.
+  The real conflict was between TWO CSEs that pull the temp in opposite
+  directions:
+  - The value `D_80082CD0[arg][0]` must load ONCE and that one register must
+    serve both `D_80098A7C = ...` (the store) AND `CdIntToPos(..., )` (arg0).
+    Writing the expression twice (`D_80098A7C = D_80082CD0[arg][0];
+    CdIntToPos(D_80082CD0[arg][0], ...)`) makes cc1 load it into two regs
+    ($4 for the arg, $3 for the store). Introduce a local `v` used in both
+    spots to collapse to one load reused everywhere.
+  - The INDEX `arg*12` (`&D_80082CD0[arg]`) must be CSE'd into a callee-saved
+    reg and held ACROSS the call, because `[arg][1]` is read after it. But if
+    you HOIST the local's init (`s32 v = D_80082CD0[arg][0];` at the
+    declaration, i.e. before the intervening statements), cc1 computes the
+    offset at the top, keeps raw `arg` in $s0, and RE-derives arg*12 twice.
+  - Fix: declare `s32 v;` uninitialized, then ASSIGN `v = D_80082CD0[arg][0];`
+    in the body right before its use. The two array accesses ([arg][0] and
+    [arg][1]) then sit close together around the call → cc1 CSEs the arg*12
+    offset into the callee-saved reg and holds it across the call, matching.
+  GENERAL: declaration-init vs in-body-assignment of the same local is a
+  scheduling knob — hoisted init computes address math early (breaks
+  across-call index CSE); in-body assignment keeps the address a live CSE
+  next to its sibling accesses. Distinct from the value-CSE (use a local to
+  merge duplicate loads). The two knobs are independent and were both needed.
