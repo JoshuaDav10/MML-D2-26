@@ -493,7 +493,16 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80056280);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800563A8);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800564C8);
+void func_800564C8(MOJI_TASK *m) {
+    u8 *base = m->x44;
+
+    if (base != 0) {
+        MojiTaskExec(m->script[1], base, (u8)(m->script[2] + m->x71));
+    } else {
+        MojiTaskExec(m->script[1], D_8008CACC[m->script[2] + (s8)m->x71], 0xFF);
+    }
+    m->script += 3;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80056558);
 
