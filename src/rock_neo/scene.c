@@ -32,6 +32,7 @@ extern s16 D_8009824C;
 extern s16 D_800982FA;
 extern s16 D_800982FC;
 extern s16 D_800982FE;
+extern s16 D_80098276;
 
 void func_8001D854(u8 arg0) {
     if (D_80098788 == 0) {
@@ -394,7 +395,33 @@ void func_8001FCA4(void) {
     D_8009825A = out;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FCE4);
+/* Dense switch: cc1 emits the jump table into .rodata; the linker script
+   places scene.c.o(.rodata) at 0x80010920, carved out of the extracted
+   rodata (800/1140 split). */
+void func_8001FCE4(void) {
+    s8 v = Game_work.x52;
+    s16 out;
+    switch (v) {
+    case 0:
+        out = 0x8E;
+        break;
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        out = 0x8F;
+        break;
+    case 6:
+    case 7:
+        out = 0x90;
+        break;
+    default:
+        out = 0x91;
+        break;
+    }
+    D_80098276 = out;
+}
 
 void func_8001FD3C(void) {
     s8 x;

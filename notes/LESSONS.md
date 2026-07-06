@@ -498,3 +498,45 @@ iteration teaches something; this file is how the project gets smarter.
   `D_xxx = out;` after the switch. FDE4 shows duplicate constant case
   bodies (4→0xC4, 0xB→0xC4) do NOT get cross-jumped when written as
   separate cases — write them separately if the original has two li's.
+
+## Session 2026-07-06 (Fable, jump-table infrastructure) — proven against the hash
+- **Dense-switch jump tables now WORK from C** (func_8001FCE4, first table
+  function matched). Mechanism: cc1 emits the table inline as
+  `.rdata / .align 3 / $Ln: .word $Lcase...` inside the function body; the
+  whole block survives maspsx/gprel/patchasm untouched and GAS maps .rdata
+  to a .rodata section in the object. The table entries relocate against
+  .text, so if the function's code matches, the table bytes match for free.
+- **Placement recipe** (repeat per newly matched table function):
+  1. Find the table's ROM range in the extracted rodata (comment column of
+     `asm/rock_neo/data/*.rodata.s`, e.g. jtbl_80010920 = ROM 0x1120-0x113F).
+  2. Split the rodata asm file around it (800.rodata.s now ends at ROM
+     0x1120; 1140.rodata.s carries on) — the carved range comes from the
+     C object instead.
+  3. In rock_neo.ld, place `<tu>.c.o(.rodata)` between the two asm pieces.
+  4. splat yamls updated to match (0x1120/0x1140 rodata subsegments); a
+     re-extracted 1120.rodata.s is intentionally not linked (/DISCARD/).
+- **Verified live**: full-binary sha1 + cmp on first build; separate
+  mutation tests for a case VALUE (code bytes) and a case-to-body REMAPPING
+  (table bytes only) both broke the check, restored OK. Map file shows
+  scene.c.o .rodata at exactly 0x80010920, size 0x20.
+- **Constraints to respect later**: a TU's tables all land in ONE .rodata
+  section in FUNCTION ORDER, so a multi-table TU needs its matched table
+  functions' original tables to be CONTIGUOUS in rodata (they are, for
+  scene's F8DC/F9AC/FCE4 trio) or matched in address-contiguous groups
+  with separate carves. The .main SUBALIGN(4) means a carve point that is
+  not 8-aligned would fight cc1's `.align 3` — check alignment when carving
+  (0x80010920 was 8-aligned; all jtbl starts observed so far are).
+- **Switch codegen census for table functions**: sltiu bound + sll 2 +
+  lui/addu/lw %lo + jr; case bodies as `j <shared store>` with the li in
+  the delay slot. The FCE4 shape (byte switch, s16 local, single gp-half
+  store after) is the same source template as the FCA4/FC50/FDE4 ladder
+  family — cc1 picks table vs ladder purely by case density (8 dense
+  cases → table; ~3-5 sparse → beq ladder).
+- **asm/ and rock_neo.ld are GITIGNORED (generated state)** — the rodata
+  split (800/1140) and the scene.c.o(.rodata) line in rock_neo.ld exist
+  only in the local checkout. The committed source of truth is the splat
+  yamls' `- [0x1120, .rodata, scene]` subsegment; anyone re-extracting
+  must verify the regenerated rock_neo.ld places scene.c.o(.rodata) at
+  0x1120 (splat's leading-dot syntax does this without extracting). A
+  fresh clone that runs extraction gets it from the yaml; THIS checkout
+  was hand-edited to match without re-running splat.

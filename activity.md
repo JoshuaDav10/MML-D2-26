@@ -492,3 +492,17 @@
 - 2/2 mutation tests failed while mutated; restored, 0 errors, hash OK,
   cmp byte-identical. Remaining parked in the family: sound-side
   func_800199A4/func_80019918 (retry with switch next).
+
+## 2026-07-06 — Fable (jump-table infrastructure + FCE4)
+- JUMP-TABLE INFRASTRUCTURE LANDED: C switches can now emit their rodata
+  jump tables and the build places them byte-identically. Proven on
+  func_8001FCE4 (227 total, first-of-71-tables function): 800.rodata.s
+  split at ROM 0x1120/0x1140, scene.c.o(.rodata) slotted between them in
+  rock_neo.ld, splat yamls updated to match. Full recipe in LESSONS.md.
+- Verified: clean rebuild 0 errors, hash OK, cmp byte-identical; TWO
+  mutation tests (case value = code bytes; case remap = table bytes only)
+  both failed while mutated; restored OK. Map confirms .rodata at
+  0x80010920 size 0x20 from scene.c.o.
+- This unblocks the 28 parked jump-table functions (31 tables), including
+  the scene F8DC/F9AC siblings and — eventually — cd/func_8001BB4C
+  (~845 insns, 3 tables), the binary's biggest function.
