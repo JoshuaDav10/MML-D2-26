@@ -77,3 +77,153 @@ opcode) and a post table D_8008AAE4[x7C].
 3. bytecmp-iterate; expect heavy register-allocation work (8 saved regs + 5 hoisted
    constants). Use the -dl/-dg allocno-priority dumps (LESSONS) rather than blind
    permutation. This is a dedicated-session effort like BB4C.
+
+## Session (worktree agent, opus) — draft + 5-constant hoist analysis
+
+Draft lives in `notes/wip/53b40_draft.c` (scratch TU, mirrors moji.h layout).
+Runs via: `CPP=cpp tools/bytecmp.sh func_80053B40 <draft> <REF.s>` — BUT the
+worktree is GITIGNORED-tool-poor: `asm/`, `tools/maspx/`, are only in the MAIN
+checkout. Run bytecmp FROM the main checkout pointing at the worktree draft:
+  `cd /home/X/Documents/MML-D2-26 && source .venv/bin/activate`
+  `CPP=cpp tools/bytecmp.sh func_80053B40 .claude/worktrees/<wt>/notes/wip/53b40_draft.c`
+(no REF needed from main tree — it auto-finds asm/rock_neo/nonmatchings/moji/).
+
+### Field-map corrections (verified against $s0-relative disps, base 0x71)
+- -0x5D (0x14) = **m->script** (NOT script2). LOOP 2 (render, .L80053EC0)
+  iterates m->script (0x14); LOOP 1 (timing, .L80053CC4) iterates m->script2
+  (0x6C, disp -0x5). Loop-2 exit compares script(0x14) != script2(0x6C).
+- 0x02 disp = m->x73 (sb 0 in render setup). 0x4D disp = m->xBE (sh 0).
+- The active-slot flag shift is `0x8000000 >> ((m-Moji_work)/0xC4)` — the
+  `sra $a0,$t0,2` after the *0x1A1F58D1 mult IS the /0xC4 divide (index), NOT
+  an extra <<2. (The D_80098B2C pack at .L800541D4 adds `sll $a0,3` = index*8.)
+- Active test is `if ((s32)m->flags < 0)` → **bgez** (NOT `& 0x80000000`;
+  that materialized a spurious 0x80000000 constant).
+- pb[0xC]=(ch%0x15)*0xC, pb[0xD]=(ch/0x15)*0xC — ch = m->script[0] reloaded
+  each time (two lbu of -0x5D). 0x86186187 is the /0x15 (21) magic → $s6.
+- Loop over slots: `for (m=Moji_work; m < &Moji_work[5]; m++)` (5 slots).
+  D_800BB9C8 = &Moji_work[4]. The x71→D_80098B2C pack is SKIPPED for slot 4
+  (`if (m != &Moji_work[4])`).
+
+### THE 5-CONSTANT HOIST — root cause identified (not yet solved)
+Original hoists into callee-saved: $s3=0xFFFFFF, $s4=0xFF000000, $s5=0x40000,
+$s6=0x86186187, $s7=0x40000000. It does **NOT** hoist 0x1F800070 (the
+Map_prim_ptr scratchpad addr) — every one of its 4 sites is inline
+`lui/ori 0x1F800070` (80053DF4/EEC, 800540BC, 80054240).
+
+My draft's cc1 output hoists 0x40000, 0xFFFFFF, 0xFF000000, 0x86186187 CORRECTLY
+but ALSO hoists **0x1F800070** (into a 6th callee-saved reg, $s8/$fp), which
+STEALS the slot that should hold **0x40000000**. 0x40000000 then falls to two
+inline `li $3,0x40000000` (blocks $L22/$L38). Net: frame 0x40 (wrong, want
+0x50), $fp saved (original saves only s0-s7), and the whole tail mis-registers.
+
+Diagnosis (via `cc1 ... -dl`, gccdump.lreg): 0x1F800070 forms a long-lived
+invariant pseudo (crosses 8 calls, 4 uses); 0x40000000 has only 2 uses. gcc-2.7
+loop.c hoists invariants roughly by use-count under register pressure; with 6
+invariants for 5 slots, the 2-use 0x40000000 loses to the 4-use 0x1F800070.
+In the ORIGINAL, 0x1F800070 is never a hoist candidate (each site is a fresh
+independent `lui/ori`), so only the 5 real constants compete and all fit.
+
+**OPEN PROBLEM**: make the raw-constant address `0x1F800070` stay inline
+(un-hoisted) so exactly 5 invariants remain. Tried: `volatile`-qualified
+pointer deref (`*(u32 * volatile *)0x1F800070`) — did NOT stop the LICM hoist
+(it's the ADDRESS const being hoisted, not the load). Probes show that with few
+competing invariants BOTH 0x1F800070 and 0x40000000 hoist; only the full
+function's slot pressure drops one. Next avenues to try:
+  - Reduce OTPTR to <2 uses so it's below the hoist threshold (hard: 4 real
+    sites — render, glyph-loop, post-render, tail). The tail site is OUTSIDE
+    the slot loop already; the 3 in-loop sites are the invariant.
+  - Find a source form where the 3 in-loop map-prim-ptr accesses do NOT merge
+    into ONE invariant pseudo (original keeps them as independent fresh
+    lui/ori). Possibly: don't route through a shared macro; write each as a
+    distinct-looking expression; or an `asm` barrier. Investigate whether the
+    accesses being in nested/conditional blocks that don't all execute stops
+    the merge.
+  - Check whether the extern-symbol `Map_prim_ptr` (= 0x1F800070 absolute)
+    assembles to lui/ori vs %hi/%lo — it produces the SHORTER `lw sym` (2-insn
+    %hi/%lo) form, NOT the 3-insn lui/ori/lw the original has. So the symbol
+    form does NOT byte-match; must stay raw-constant.
+
+Mismatch trajectory so far: first bytecmp 449 hard (frame + full tail drift).
+After `bgez` + `>>c` (not <<2) fixes + volatile ptr: constants now hoist
+4-of-5 correctly but 0x1F800070 vs 0x40000000 slot theft persists → still
+heavy tail drift. NOT yet re-counted post-fix; the 5-constant hoist must be
+solved before instruction-level matching is meaningful.
+
+### Update: logic verified; hoist is REGISTER-PRESSURE-driven (leading theory)
+Fixed loop-1 tail sense: on the reset path `if ((s16)m->x4 == 0) { flags |=
+0x40000000; goto loop1; }` (D8C: x4==0 loops back, x4!=0 exits to render-
+decision DD0). x3F changed to u8 (lbu everywhere). The /0x15 div-magic + *0xC
+SPRT-uv block now generates BYTE-EXACT (multu $s6/mfhi/subu/srl1/addu/srl4/
+mul-by-0x15/subu/andi ff/*0xC) — confirms `pb[0xC]=(ch%0x15)*0xC`,
+`pb[0xD]=(ch/0x15)*0xC` with ch=m->script[0] reloaded. So the BODY logic is
+right; only the callee-saved constant allocation is wrong.
+
+Proven with probes (/tmp/p6-p9): gcc-2.7 loop.c ALWAYS hoists a repeated large
+constant ADDRESS (0x1F800070) as a loop invariant — volatile-slot, volatile-
+ptr, const-local-ptr, and distinct-but-folding address expressions all still
+hoist it (constant folding precedes loop.c; CSE merges to one movable). With
+FEW competing invariants BOTH 0x1F800070 and 0x40000000 hoist; only under
+enough register pressure does loop.c drop one, and it drops the lower-use one
+(0x40000000, 2 uses) rather than 0x1F800070 (4 uses).
+
+The ORIGINAL has NO free 6th callee-saved reg (epilogue restores only s0-s7),
+so it too faced the choice and kept 0x40000000 (inline-drop 0x1F800070). The
+delta is the PRESSURE PROFILE of the loop body: my draft's body evidently has
+slightly LOWER register pressure at the hoist-decision point, so loop.c can
+still afford to hoist 0x1F800070 into a 6th reg ($s8/$fp). The original's body
+pressure is high enough that hoisting 0x1F800070 would spill, so loop.c leaves
+it inline and 0x1F800070 never competes → 5 real constants fill s3-s7 exactly.
+
+NEXT-SESSION PLAN (in priority order):
+1. Get the FULL body byte-exact modulo the constant regs — the pressure profile
+   is emergent from the exact set/liveness of temps. Likely the hoist self-
+   corrects once loop-2 (the nested glyph loop) has the right live temps
+   (m, prim, the tag/DRAWCTX temps, the SetDrawArea RECT). loop.c hoists out of
+   the INNER loop first; a correctly-pressured inner loop is the lever.
+2. If it doesn't self-correct, use `-dg` (gccdump.greg) to read the greg
+   allocation order + conflicts of the 0x40000000 pseudo vs the 0x1F800070
+   pseudo, and the MojiTaskExec allocno-priority formula
+   (floor_log2(n_refs)*n_refs/live_length) to see the exact tie. Then perturb
+   0x40000000's live_length (e.g. its two uses' spacing) to raise its priority
+   above 0x1F800070, OR shorten 0x1F800070's effective life so loop.c declines.
+3. Worst case: accept that 0x1F800070 must be un-hoisted and find the source
+   idiom (an `__asm__ __volatile__("" ::: "memory")` barrier between OTPTR
+   accesses was NOT yet tried — could break the single-movable merge).
+
+STATUS: draft logic complete & largely byte-faithful; blocked solely on the
+5-constant callee-saved allocation (0x1F800070 vs 0x40000000). NOT ready to
+port. Do NOT move into moji.c until bytecmp hits 0 hard mismatches.
+
+### CORRECTION: hoist is loop.c THRESHOLD-driven, NOT register-pressure driven
+Falsified the pressure theory with probes: adding many live locals + spills
+(frame 96) did NOT stop 0x1F800070 from hoisting, and a genuine NESTED inner
+loop around one OTPTR site did NOT either (loop.c propagates a doubly-invariant
+constant out to the OUTERMOST preheader). So nesting/pressure are red herrings.
+
+The real mechanism (gcc-2.7 loop.c move_movables): it hoists movables ranked by
+"savings" (~ use-count); as it consumes registers the acceptance THRESHOLD
+rises. With MANY invariants, the 2-use 0x40000000 falls below threshold and is
+NOT hoisted, while the 4-use 0x1F800070 stays above and IS. In a small probe
+(few invariants, low threshold) 0x40000000 DOES hoist — confirming it's the
+threshold, not pressure. Neither volatile, const-local-ptr, distinct-folding
+addresses, an `__asm__ __volatile__("":::"memory")` barrier, nor nesting moved
+0x1F800070 off the hoist list.
+
+=> The ONLY way to reproduce the original is to make loop.c NOT rank
+0x1F800070 as a hoistable movable AT ALL (so 0x40000000 rises above threshold),
+i.e. the original C accesses Map_prim_ptr in a form whose ADDRESS constant is
+not a single CSE'd loop-invariant movable. UNTRIED / next avenues:
+  - Make the 3 in-loop Map_prim_ptr accesses genuinely NON-mergeable by CSE so
+    no single movable forms: e.g. read the pointer ONCE into a local at loop
+    top and thread it, writing back once — BUT the asm re-reads memory at each
+    site, so that changes bytes. Need to confirm whether the original truly
+    re-reads or threads a local.  <-- verify against asm memory round-trips.
+  - Try `-dg` greg dump on the real draft: read whether 0x1F800070's pseudo and
+    0x40000000's pseudo even coexist post-loop.c; if 0x40000000 never becomes a
+    movable, the fix is purely "demote 0x1F800070 below it in loop.c ranking".
+  - Investigate whether the original's Map_prim_ptr type/decl (game.c uses
+    `(*(UNK_PRIM_1**)0x1F800070)`) combined with a DIFFERENT prim advance
+    idiom changes the movable count.
+
+This is a genuine BB4C-scale register grind; body logic is done, this is the
+sole blocker. Draft compiles clean; NOT ready to port.
