@@ -90,6 +90,7 @@ void func_8001BB4C(void) {
     s32 one;
     RECT *r;
     CMD_ENT *e;
+    CMD_ENT *cbase;
     s32 type;
     s32 t, wd;
     s32 x, y;
@@ -130,13 +131,14 @@ void func_8001BB4C(void) {
             return;
         }
         one = 1;
+        cbase = D_800B5DB0;
         w = &D_800C5604;
         p2 = &w->x8;
         q4 = &w->x1C;
         while (1) {
             switch (D_800989C8) {
             case 0:
-                e = &D_800B5DB0[D_800987A8];
+                e = &cbase[D_800987A8];
                 type = e->x0;
                 D_80098A54 = type;
                 if (type == -1) {
@@ -277,12 +279,12 @@ void func_8001BB4C(void) {
 
             case 1:
                 if ((u32)w->x0 >= 0x800) {
-                    func_800176DC((u8 *)&D_800B5DB0[D_800987A8], w->x8, 0x40);
+                    func_800176DC((u8 *)&cbase[D_800987A8], w->x8, 0x40);
                     w->x0 -= 0x800;
                     w->x8 += 0x800;
                 } else {
                     dst = (u8 *)w->x8;
-                    src = (u8 *)&D_800B5DB0[D_800987A8];
+                    src = (u8 *)&cbase[D_800987A8];
                     if (w->x0 != 0) {
                         do {
                             *dst++ = *src++;
@@ -300,7 +302,7 @@ void func_8001BB4C(void) {
                 r = &D_8009BE48;
                 r->x = *(s32 *)&D_800C561C + (D_800C5634 << 5);
                 D_8009BE4A = *(s32 *)&D_800C5620 + (D_800C5638 << 5);
-                LoadImage(r, (u8 *)&D_800B5DB0[D_800987A8]);
+                LoadImage(r, (u8 *)&cbase[D_800987A8]);
                 D_800C5634 += 1;
                 if (D_800C5634 == ((u32)D_800C5624 >> 5)) {
                     D_800C5634 = 0;
@@ -315,7 +317,7 @@ void func_8001BB4C(void) {
                 r = &D_8009BE48;
                 r->x = p2[0] + (p2[10] << 5);
                 r->y = p2[1] + (p2[11] << 5);
-                LoadImage(r, (u8 *)&D_800B5DB0[D_800987A8]);
+                LoadImage(r, (u8 *)&cbase[D_800987A8]);
                 p2[10] += 1;
                 if (p2[10] == p2[2]) {
                     p2[10] = 0;
@@ -335,20 +337,20 @@ void func_8001BB4C(void) {
                 } else {
                     x = q4[-2];
                     if (x >= 0x800) {
-                        func_800176DC((u8 *)&D_800B5DB0[D_800987A8], q4[-1], 0x40);
+                        func_800176DC((u8 *)&cbase[D_800987A8], q4[-1], 0x40);
                         q4[-1] += 0x800;
                         q4[-2] -= 0x800;
                     } else if (x != 0) {
                         if (x < 0) {
                             x += 3;
                         }
-                        func_80017684((u8 *)&D_800B5DB0[D_800987A8], q4[-1], x >> 2);
+                        func_80017684((u8 *)&cbase[D_800987A8], q4[-1], x >> 2);
                         t = q4[-5];
                         q4[-2] = 0;
                         GW_VAB(q4[-5]) =
                             SsVabOpenHeadSticky(t * 0x1820 + 0x8014B000, t, q4[-3]);
                     } else {
-                        if (SsVabTransBodyPartly((u8 *)&D_800B5DB0[D_800987A8], 0x800,
+                        if (SsVabTransBodyPartly((u8 *)&cbase[D_800987A8], 0x800,
                                 GW_VAB(q4[-5])) == GW_VAB(q4[-5])) {
                             D_800989C8 = 0;
                         }
@@ -360,14 +362,14 @@ void func_8001BB4C(void) {
             case 8:
                 if ((u32)w->x0 >= 0x800) {
                     if (w->x14 != 0) {
-                        func_800176DC((u8 *)&D_800B5DB0[D_800987A8], w->x10, 0x40);
+                        func_800176DC((u8 *)&cbase[D_800987A8], w->x10, 0x40);
                     }
                     w->x0 -= 0x800;
                     w->x10 += 0x800;
                 } else {
                     if (w->x14 != 0) {
                         dst = (u8 *)w->x10;
-                        src = (u8 *)&D_800B5DB0[D_800987A8];
+                        src = (u8 *)&cbase[D_800987A8];
                         if (w->x0 != 0) {
                             do {
                                 *dst++ = *src++;
@@ -382,14 +384,14 @@ void func_8001BB4C(void) {
             case 9:
                 if ((u32)w->x0 >= 0x800) {
                     if (w->x18 != 0) {
-                        func_800176DC((u8 *)&D_800B5DB0[D_800987A8], w->x14, 0x40);
+                        func_800176DC((u8 *)&cbase[D_800987A8], w->x14, 0x40);
                     }
                     w->x0 -= 0x800;
                     w->x14 += 0x800;
                 } else {
                     if (w->x18 != 0) {
                         dst = (u8 *)w->x14;
-                        src = (u8 *)&D_800B5DB0[D_800987A8];
+                        src = (u8 *)&cbase[D_800987A8];
                         if (w->x0 != 0) {
                             do {
                                 *dst++ = *src++;
