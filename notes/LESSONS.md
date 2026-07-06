@@ -271,7 +271,9 @@ iteration teaches something; this file is how the project gets smarter.
 - **Casting an s8-array symbol through (u8*) selects lbu** without disturbing
   the same TU's lb accesses of other elements (sound.c reads Game_work[0x53]
   as s8/lb but the 0x1BA table as u8/lbu). No second extern needed.
-- **OPEN PROBLEM — equality leg in a ternary chain (func_8001FCA4)**: cc1
+- **OPEN PROBLEM (CLOSED 2026-07-06: a `switch` on the byte field keeps the
+  beq un-inverted — see the switch entry at the end of this file)
+  — equality leg in a ternary chain (func_8001FCA4)**: cc1
   tree-folds `(v == 5) ? A : B` and `(v != 5) ? B : A` to the same RTL, and
   jump-opt then inverts the branch (bne→end with B in the delay slot). The
   original has the UN-inverted form (beq→end with A in the delay, then
@@ -357,8 +359,9 @@ iteration teaches something; this file is how the project gets smarter.
   0x8001FCxx-FDxx)**: when several ternary/if legs assign the same constant,
   cc1-27 cross-jumps them into one li block and/or inverts a beq→store-with-
   value-in-delay into bne→return. No source shape found (ladder, chain,
-  goto, arm swaps all canonicalize identically). Skip siblings with this
-  shape until a compiler-level explanation is found.
+  goto, arm swaps all canonicalize identically). UPDATE 2026-07-06: a
+  `switch` on the value defeats this — FCA4 matched; try switch on FC50/
+  FDE4 next (see the switch entry at the end of this file).
 - **Negative constant through a narrow ANSI prototype truncates at the CALL
   SITE** (sub_scrn's MojiTaskExec(..., -1)): `u8 op` in the prototype makes
   cc1 emit li a2,0xFF; the original has li a2,-1. Fix: declare the function
@@ -464,3 +467,18 @@ iteration teaches something; this file is how the project gets smarter.
   func_80040224): `pl->field & k` puts k (the older live register) first
   in the emitted and (`and $v0,$k,$field`); `k & pl->field` mirrors it.
   Cheap first knob for a single-insn and mirror.
+
+## Session 2026-07-06 (Fable + Cursor, batch 16 / FCA4) additions — proven against the hash
+- **`switch` beats jump-canonicalization on equality legs** (func_800400B8,
+  func_800164B4, and now func_8001FCA4 — the parked OPEN PROBLEM above is
+  CLOSED): a `switch` on a byte-sized value keeps the ==K leg as an
+  UN-inverted beq/beqz with the case body OUT of line (beqz/beq/j ladder),
+  where the equivalent if/else or ternary chain gets tree-folded and
+  jump-inverted (bnez with the body inline). cc1's switch expander
+  (expand_case) emits an explicit compare/branch ladder for small sparse
+  case sets, and jump.c does not re-canonicalize those branches. Recipe
+  for FCA4: load the field into an s8 local, switch on it, group cases
+  0..4 as fallthrough labels onto one body, ==5 leg its own case, default
+  the third value; assign to a local and store once after the switch.
+  Try `switch` FIRST on any parked jump-canonicalization sibling
+  (func_8001FC50, func_8001FDE4, func_800199A4, func_80019918).

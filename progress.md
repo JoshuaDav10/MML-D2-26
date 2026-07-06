@@ -3,13 +3,13 @@
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
 - rock_neo main: **484** functions in linked object code (`tools/census.py
   --matched`; see `notes/COUNTS.md`). **475** have splat asm under
-  `asm/rock_neo/nonmatchings/`; **261** active INCLUDE_ASM stubs (cpp census);
+  `asm/rock_neo/nonmatchings/`; **260** active INCLUDE_ASM stubs (cpp census);
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 223 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 224 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~4370 of ~31,300 mapped instructions (~14.0%)
+- Volume: ~4388 of ~31,300 mapped instructions (~14.0%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -61,8 +61,10 @@
     dead 8-byte frame local + t-reuse/in-place-shift for the v1 index),
     func_8001DFEC (slot register: D_800ACD40[k]=Scene_work.x24[k] +
     D_800988E8 bit; integer-typed e addend keeps the scaled index in rs)
-    (func_8001FCA4, func_8001FC50, func_8001FDE4 attempted, NOT matched —
-    same jump-canonicalization family; see activity 2026-07-05)
+    func_8001FCA4 (switch on Game_work.x52 keeps the ==5 beq un-inverted;
+    closed the jump-canonicalization open problem — Cursor + Fable)
+    (func_8001FC50, func_8001FDE4 attempted, NOT matched — same
+    jump-canonicalization family, retry with switch; see LESSONS 2026-07-06)
   - cd: func_8001B4C4, func_8001B63C, Cd_read_sync2, func_8001D414,
     Cd_read_comb, func_8001D468 (CD_CMD queue writers), func_8001C7F0,
     func_8001D7AC, func_8001B858 (fn-table dispatch via D_80098A84->x8),
@@ -132,6 +134,10 @@
     table load AND defeat arg anchor-CSE)
 
 ## Last verified build
+- 2026-07-06 (Fable, FCA4 audit) — clean rebuild 0 errors, hash OK,
+  cmp byte-identical after auditing Cursor's scene func_8001FCA4 switch
+  match (branch match/fca4-switch, ff-merged to dev); mutation test
+  (0x86→0x88) failed while mutated; restored, 0 errors, OK.
 - 2026-07-05 (Fable day session 2, batch 16) — clean rebuild 0 errors,
   hash OK, cmp byte-identical after player func_800400B8 + game
   func_800164B4; mutation test failed while mutated; restored OK.

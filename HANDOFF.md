@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-05 day, 209 matched / 12.6%)
+# HANDOFF — MML Decomp session state (2026-07-06, 224 matched / 14.0%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,7 +19,8 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 209 / 475** functions (~12.6% of instruction volume). See
+- **Matched: 224** (~14.0% of instruction volume; 260 active stubs,
+  484 total per `tools/census.py --matched` / `notes/COUNTS.md`). See
   `progress.md`.
 - **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&
   rm -f build/rock_neo.elf` before `make`). This session found a prior
@@ -164,8 +165,10 @@ agent on the `overlay-expedition` branch.
    'nonmatchings/...' ; done` then wc -l the .s files.
 2. PARKED with findings (don't re-grind blind): func_80042044 +
    func_8001A6DC + func_80013578 (register-birth/scheduling genus),
-   func_8001FC50/FCA4/FDE4 + func_800199A4 + func_80019918
-   (jump-canonicalization family), func_80041EF4 (andi elision — RTL
+   func_8001FC50/FDE4 + func_800199A4 + func_80019918
+   (jump-canonicalization family — FCA4 CRACKED 2026-07-06 via `switch`,
+   see LESSONS.md; retry the siblings with switch), func_80041EF4 (andi
+   elision — RTL
    verified), Sub_screen_rb_parts_calc (draft 6 insns short),
    func_8001FCE4 (needs jump-table-in-rodata infrastructure).
 3. Scratch-TU tooling from this session (recreate if scratchpad is gone):

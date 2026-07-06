@@ -467,3 +467,17 @@
   delegation queue. Brief 1 remains fork/push/repoint (gh auth now works).
 - Mutation test failed while mutated; restored, 0 errors, OK,
   cmp byte-identical.
+
+## 2026-07-06 — Fable (session start: audit Cursor's FCA4 + Briefs 6/7)
+- Audited Cursor's match/fca4-switch branch: func_8001FCA4 matched via
+  switch on Game_work.x52 (the batch-16 switch discovery applied to the
+  parked jump-canonicalization problem). Independent clean rebuild →
+  0 errors, hash OK, cmp byte-identical; mutation test (0x86→0x88) failed
+  the check while mutated; restored OK. ff-merged to dev. 224 matched,
+  ~14.0% volume, 260 active stubs.
+- Cursor had not updated progress/activity/LESSONS — done now; the switch
+  idiom is written up in LESSONS.md (2026-07-06 section) with a retry list
+  for the rest of the family (FC50, FDE4, 199A4, 19918).
+- Spot-checked Briefs 6/7 on dev: census.py --matched reproduces
+  484 = 224 matched + 260 stubs; xref.py regenerates notes/XREF.md clean
+  (stub count refreshed 261→260 in this commit).
