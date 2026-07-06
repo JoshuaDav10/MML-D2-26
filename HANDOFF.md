@@ -19,7 +19,7 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 229** (~14.4% of instruction volume; 255 active stubs,
+- **Matched: 230** (~14.4% of instruction volume; 254 active stubs,
   484 total per `tools/census.py --matched` / `notes/COUNTS.md`). See
   `progress.md`.
 - **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&

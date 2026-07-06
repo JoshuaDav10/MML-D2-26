@@ -521,3 +521,16 @@
   tests on a case VALUE (F8DC code) and a case-to-body REMAP (F9AC table)
   both failed while mutated; restored, OK. Multi-table constraint confirmed
   (contiguous matched tables per TU) and written to LESSONS.
+
+## 2026-07-06 — Fable (cd sibling campaign toward BB4C)
+- 1 match (230 total, ~14.4% volume): cd func_8001CAAC (CD command-queue
+  dequeue/shift-down). KEY: field-by-field struct copy (not `*dst=dst[1]`)
+  reproduces the original's two-IV cursor (a1=&dst->xC). Clean rebuild 0
+  errors, hash OK, cmp byte-identical; mutation test (cmd<-arg0) failed
+  while mutated; restored OK.
+- Scoped the path to cd/func_8001BB4C (~845 insns, the binary's biggest):
+  only 3 of its callees remain stubs — CAAC (done), CB7C, CF98. Both CB7C
+  and CF98 drafted + analyzed to <=2 shape issues each; PARKED with precise
+  findings in LESSONS (CB7C: cross-block delay-slot fill + address-CSE for
+  D_800AD142; CF98: counter/ptr register order + arg*12 index order).
+  These are the next targets before BB4C itself.

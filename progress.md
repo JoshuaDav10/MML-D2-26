@@ -3,13 +3,13 @@
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
 - rock_neo main: **484** functions in linked object code (`tools/census.py
   --matched`; see `notes/COUNTS.md`). **475** have splat asm under
-  `asm/rock_neo/nonmatchings/`; **255** active INCLUDE_ASM stubs (cpp census);
+  `asm/rock_neo/nonmatchings/`; **254** active INCLUDE_ASM stubs (cpp census);
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 229 (verified: full-binary sha1 OK after a CLEAN rebuild —
+- rock_neo main: 230 (verified: full-binary sha1 OK after a CLEAN rebuild —
   see the func_800605DC note under "Last verified build")
-- Volume: ~4504 of ~31,300 mapped instructions (~14.4%)
+- Volume: ~4536 of ~31,300 mapped instructions (~14.4%)
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -76,7 +76,9 @@
     func_8001CB30 (CdReady/CdSync callback setup + func_8001D254 kick),
     func_8001D7E4 (queue-drain wait loop via func_80012E98(1)),
     func_8001D254 + func_8001D2BC (CdSync-then-CdControl/CdControlB retry
-    twins; u8 com param masked at use)
+    twins; u8 com param masked at use),
+    func_8001CAAC (CD queue dequeue/shift-down; field-by-field copy keeps
+    the two-IV cursor — a BB4C callee, signature void(void))
   - sub_scrn: Sub_screen_sort_sub, func_800605DC, Map_screen_init,
     func_8005EC34 (back-ground set + routine_0 table dispatch),
     func_8005EC80, func_80060DB8, Sub_screen_cancel_check,
@@ -139,6 +141,9 @@
     table load AND defeat arg anchor-CSE)
 
 ## Last verified build
+- 2026-07-06 (Fable, cd sibling) — clean rebuild 0 errors, hash OK, cmp
+  byte-identical after cd func_8001CAAC; mutation test failed while
+  mutated; restored, OK.
 - 2026-07-06 (Fable, multi-table proof) — clean rebuild 0 errors, hash OK,
   cmp byte-identical after scene func_8001F8DC + func_8001F9AC; all three
   scene jump tables now from scene.c.o(.rodata) at 0x800108C0 (size 0x80,

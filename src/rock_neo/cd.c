@@ -9,6 +9,7 @@ typedef struct {
 
 extern CD_CMD *unknown_Cd_strucptr;
 extern s32 D_800989C4;
+extern s32 D_800989C8;
 void CdSyncCallback(s32);
 s32 func_80012E98(s32);
 extern u8 D_800A3A40[];
@@ -48,7 +49,27 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001C824);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001C95C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001CAAC);
+/* Dequeue head of the CD command queue: shift every entry down by one
+   (field-by-field copy — a struct copy strength-reduces to one cursor and
+   comes up 2 insns short; the field copy keeps the a1=&dst->xC second IV),
+   zero the new tail's cmd, clear the two status words, drop the write
+   pointer by one entry. */
+void func_8001CAAC(void) {
+    CD_CMD *dst = (CD_CMD *)D_800A3A40;
+    if (dst->cmd != 0) {
+        do {
+            dst->cmd = dst[1].cmd;
+            dst->arg0 = dst[1].arg0;
+            dst->arg1 = dst[1].arg1;
+            dst->xC = dst[1].xC;
+            dst++;
+        } while (dst->cmd != 0);
+    }
+    dst->cmd = 0;
+    D_800989C8 = 0;
+    D_800989C4 = 0;
+    unknown_Cd_strucptr--;
+}
 
 extern u8 D_8009896C;
 extern u8 D_80098A98[];

@@ -572,3 +572,31 @@ iteration teaches something; this file is how the project gets smarter.
   Confirmed harmless: it resolves at link (FCE4/F8DC/F9AC all matched
   in-tree with exactly these bytecmp flags). When the ONLY remaining
   bytecmp mismatches are gp_rel stores, land it.
+
+## Session 2026-07-06 (Fable, cd sibling campaign for BB4C) — proven against the hash
+- **Queue shift-down: field-by-field copy beats struct copy** (func_8001CAAC).
+  A CD_CMD command-queue dequeue slides every 16-byte entry down one
+  (`*dst = dst[1]`) until cmd==0. A whole-struct copy `*dst = dst[1]`
+  strength-reduces to ONE induction variable and comes 2 insns short. Writing
+  the four fields individually (`dst->cmd = dst[1].cmd; dst->arg0 =
+  dst[1].arg0; ...`) makes cc1 keep a SECOND IV `a1 = &dst->xC` (base+0xC)
+  that serves both the source reads (a1[+4..+0x10]) and the dest-tail stores
+  (a1[-8..0]) while a2 handles cmd + the loop test — the original's exact
+  two-cursor shape. Field copy, not struct copy, for shift loops.
+- BB4C callee signatures now pinned: func_8001CAAC is `void(void)`.
+- **PARKED — func_8001CB7C (BB4C callee, ~42 insns)**: decrement loop
+  `for(i=0x7F;i>0;i--) func_8001D394(i)` then a CdReadyCallback(0)/
+  CdSyncCallback(&func_8001CC08)/func_8001D254(9,0,&D_80098A98) arm sequence.
+  Two open shape problems: (1) the original hoists `a0=0` (CdReadyCallback's
+  arg) into the loop-exit bgtz DELAY SLOT, jumping over the intervening
+  D_800AD142/D_8009896C code — a cross-block delay fill I haven't reproduced;
+  (2) D_800AD142 is read+written via a SINGLE materialized address
+  (`lui;addiu v1;lhu 0(v1);...;sh 0(v1)`), but every source form tried
+  (plain `|=`, pointer local, nested-block pointer, split t=*p) emits two
+  lui/%lo instead. Needs the address-CSE / array-decl angle next session.
+- **PARKED — func_8001CF98 (BB4C callee, ~63 insns)**: byte-clear loop over
+  [D_80098B38..D_80098B41] then arm via D_80082CD0[arg] (the [][3] s32 table,
+  arg*12 index). Two issues: the clear-loop counter/pointer are register-
+  SWAPPED from mine (original: counter=$v1, ptr=$v0; init counter first),
+  and the arg*12 index (sll1/addu/sll2) is emitted in a different order.
+  Retry with counter declared/initialized before the pointer.
