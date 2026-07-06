@@ -1,5 +1,25 @@
 # Activity Log
 
+## 2026-07-06 (Fable, session resume) — moji small-opcode harvest (10 matches)
+- Landed 10 moji.c script-opcode handlers, each full-binary sha1 OK:
+  func_8005497C, func_800564C8, func_80056558, func_80056610, func_800566CC,
+  func_80055438, func_80057184, func_80055A78, func_80055B14, func_8005721C.
+- Reusable CALL-opcode template: base=m->x44; if(base) MojiTaskExec(no, base,
+  op) else MojiTaskExec(no, D_8008CACC[idx], 0xFF); script += 3. Variants remap
+  the op index through a table (D_800BE2F8, or Player_work+0x450/0x454) and the
+  null-arm folds an op bias (e.g. -1) into the table base (D_8008CAC8=CACC-4).
+- Idioms pinned this session: (s8)m->x71 forces signed lb; the u16-remap-inside-
+  Player_work needs struct-member access (Game_work-style) to emit per-site
+  %hi/%lo(Player_work+off) instead of a hoisted base ptr; `m->x48 = m->script2
+  = ...` store order (script2 first) load-bearing in func_80055438; explicit
+  `& 0xFFFF` into an int (not a u16 var) pins the mask at the store in 55B14.
+- Near-match parked: func_80056778 — cc1 hoists the join-block `lui` (flags
+  const 0x402000) into the bnez delay slot; original keeps a nop there.
+  Same delay-slot/const-hoist genus as the giants. Left as INCLUDE_ASM.
+- Salvaged both dead background giants' work into notes/wip/: BB4C cbase-local
+  iteration (461 mismatches, 806/809 words) and the 53B40 draft + root-cause
+  (loop.c move_movables use-count ranking hoists 0x1F800070 over 0x40000000).
+
 ## 2026-07-04
 - Fresh clone from ChrisNonyminus/mml1
 - Remotes: upstream + origin (MML-D2-26)

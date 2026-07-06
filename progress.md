@@ -42,7 +42,15 @@
     (flag 0x10000 clear + func_80039E18 call; callee typed s32),
     func_80057A24 (stack2 push + Sce_flag_on(D_80098830|0x500)),
     func_80058788 (slot-index magic-div, Moji_flag3 bit clear),
-    func_80054ADC + func_80055BB0 (D_8008AAC0 fn-table dispatchers)
+    func_80054ADC + func_80055BB0 (D_8008AAC0 fn-table dispatchers),
+    func_8005497C + func_800564C8 + func_80056558 + func_80056610 +
+    func_800566CC (script CALL-opcode family; op index remapped via
+    D_800BE2F8 or Player_work+0x450/0x454 tables, -1 bias folded into
+    D_8008CAC8), func_80055438 + func_80055A78 (jump-byte select +
+    ((u16*)x44)[b] table; Sce_flag / Game_work.stage_no guards),
+    func_80057184 (D_8008D0D4 guard before MojiTaskExec), func_80055B14
+    (Game_logo_kill / func_80063FC0 two-arm), func_8005721C (D_80098B6C
+    predicate via Sce_flag_test(0x2EE)+func_8004327C)
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8
   - scene: func_8001D928 (flag-array clear + Scene_work reset), func_8001D878, func_8001DEDC, func_8001F820, func_8001D974,
