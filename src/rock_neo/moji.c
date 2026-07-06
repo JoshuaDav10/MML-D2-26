@@ -212,7 +212,26 @@ void func_8005459C(MOJI_TASK *m) {
     m->script += 1;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800545C8);
+s32 func_800545C8(MOJI_TASK *m) {
+    if (!(m->flags & 0x1000000)) {
+        m->flags |= 0x1000000;
+        m->x4 = func_80054410(m->script2 + 1);
+    }
+    m->flags |= 0x10000000;
+    if ((s16)m->x4 <= 0) {
+        m->flags &= ~0x1000000;
+        m->x4 = 5;
+        m->x71 = 0;
+        m->x72 = 0;
+        m->x73 = 0;
+        m->x48 = m->script2 = m->script2 + 3;
+        m->x3C = m->x3E;
+        *(u32 *)Moji_flag |= 0x200000;
+    } else {
+        m->x4 -= 1;
+    }
+    return 0;
+}
 
 void func_80054694(MOJI_TASK *m) {
     m->x3E = m->script[1];
