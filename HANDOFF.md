@@ -169,8 +169,12 @@ agent on the `overlay-expedition` branch.
    scene side FCA4/FC50/FDE4 all CRACKED 2026-07-06 via `switch`, see
    LESSONS.md; retry these sound siblings with switch), func_80041EF4
    (andi elision — RTL
-   verified), Sub_screen_rb_parts_calc (draft 6 insns short),
-   func_8001FCE4 (needs jump-table-in-rodata infrastructure).
+   verified), Sub_screen_rb_parts_calc (draft 6 insns short).
+   func_8001FCE4 MATCHED 2026-07-06 — jump-table-in-rodata infrastructure
+   now EXISTS (carve recipe in LESSONS.md; splat yamls carry the
+   [0x1120, .rodata, scene] subsegment; asm/ + rock_neo.ld edits are
+   LOCAL-ONLY, gitignored). 27 more table functions (30 tables) are now
+   reachable, including cd/func_8001BB4C (~845 insns, 3 tables) later.
 3. Scratch-TU tooling from this session (recreate if scratchpad is gone):
    tryfn.sh (pipeline to .o + objdump) and bytecmp.sh (assembles a draft,
    extracts the function words from objdump, byte-compares against the
