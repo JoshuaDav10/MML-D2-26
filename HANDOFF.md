@@ -170,8 +170,13 @@ agent on the `overlay-expedition` branch.
    LESSONS.md; retry these sound siblings with switch);
    cd func_8001CF98 — MATCHED 2026-07-06 (in-body local assignment resolves
    the load-duplication + index-CSE conflict; see LESSONS);
-   cd func_8001BB4C (THE 845-insn CD loader — full analysis + m2c draft in
-   notes/wip/BB4C_ANALYSIS.md; multi-session, tables carve like scene's),
+   cd func_8001BB4C (THE 845-insn CD loader — full analysis + m2c draft +
+   VERIFIED field widths in notes/wip/BB4C_ANALYSIS.md; multi-session, tables
+   carve like scene's. Command entry = all s32 words + data[0x100]; RECT all
+   s16; the work struct @D_800C5604 is a common header + PER-COMMAND-TYPE UNION
+   from +0x14 on — SAME address is byte in type-7, word in type-8. NEXT:
+   enumerate every read of +0x14/+0x18 across inner states 6/8/9 to fix each
+   union arm, then define the struct and translate the m2c draft),
    func_80041EF4
    (andi elision — RTL
    verified), Sub_screen_rb_parts_calc (draft 6 insns short).

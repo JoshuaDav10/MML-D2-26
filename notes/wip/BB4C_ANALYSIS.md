@@ -1,8 +1,11 @@
 # func_8001BB4C — analysis & matching plan (the 845-insn CD loader state machine)
 
-Status: **draft + full structure mapped; not yet matched.** m2c draft in
-`notes/wip/bb4c_m2c_draft.c`; combined asm+tables in `notes/wip/bb4c_combined.s`.
-Signature: `void func_8001BB4C(void)`. Frame 0x38, saves $ra + $s0..$s6.
+Status: **draft + full structure mapped + field widths VERIFIED; not yet
+matched.** m2c draft in `notes/wip/bb4c_m2c_draft.c`; combined asm+tables in
+`notes/wip/bb4c_combined.s`. Signature: `void func_8001BB4C(void)`. Frame 0x38,
+saves $ra + $s0..$s6. 2026-07-06: all load/store widths cross-checked from asm
+(see "VERIFIED FIELD WIDTHS"); the central open question is the per-command-type
+UNION in the work struct (+0x14 onward) — enumerate union arms next.
 
 ## Why it's a multi-session job
 Three nested jump-table switches, two complex work structs to type exactly,
@@ -59,6 +62,57 @@ land in cd.c at 0 hard mismatches.
    - 7: D_80098AD4[type*8]=cmd->x14+0x8013B000; D_800C5614=..; compare
      D_80098AD0[type*8].
    - 8: like 7 with cmd->x18 and D_80098AD1[type*8].
+
+## VERIFIED FIELD WIDTHS (2026-07-06 Opus — cross-checked against every
+## load/store in func_8001BB4C.s; supersedes the "VERIFY signedness" draft below)
+
+Base regs held across the whole inner loop (all callee-saved):
+  $s5 = &D_800B5DB0 (command buffer base)
+  $s3 = &D_800C5604 (work base)   $s2 = $s3+8 (=0x560C)   $s4 = $s3+0x1C (=0x5620)
+  $s0 = $a2 = &D_800B5DB0[slot] (current command entry; slot = D_800987A8<<11)
+  $s6 = 1 (a held constant, reused as the "1" immediate everywhere)
+  $s1 = &D_8009BE48 (the RECT) — set up lazily inside the type-1/3 blocks
+
+### Command entry @ D_800B5DB0, stride 0x800 — ALL s32 WORDS.
+  Every access is lw/sw. Offsets touched: 0x00 (type; -1 sentinel),
+  0x04, 0x08, 0x0C, 0x10, 0x14, 0x18, 0x1C, 0x20, 0x24, 0x28; payload at 0x100
+  (passed as `entry+0x100` to the loaders/DMA). No sub-word reads of the entry.
+  => `typedef struct { s32 x0..x28; u8 data[...]; } CMD_ENT;` (0x800 stride).
+
+### Work area @ D_800C5604 — COMMON HEADER + PER-COMMAND-TYPE UNION.
+  KEY DISCOVERY: the region from +0x14 (D_800C5618) onward is NOT one fixed
+  layout. The SAME address is written at different WIDTHS by different command
+  types, so the source is almost certainly a common header followed by a
+  `union` of per-type sub-structs. Evidence (asm line #s):
+   - D_800C5618 (+0x14): `sb $zero`/`sb $s6` in the type-7 handler (C1C4/C1FC,
+     a 0/1 flag) BUT `sw $v0` in the type-8 handler (C230, a 0x8013B000 ptr).
+   - D_800C561C (+0x18): `sb $s6` in type-8 (C288, flag) BUT written as a WORD
+     pointer in the type-5/sound path (temp_s2->unk10 store).
+   - D_800C5620 (+0x1C = $s4+0): u8 everywhere (lbu C10C/C48C, sb 0x14($s2)).
+  Confirmed-width fields:
+    +0x00 (5604) u32   rem / copy-loop counter (lw/sw; unsigned compares >=0x800)
+    +0x04 (5608) s32   countdown (lw/sw)
+    +0x08 (560C) s32   ($s2+0)   dest ptr / field (lw/sw)
+    +0x0C (5610) s32   ($s2+4)   (lw/sw)
+    +0x10 (5614) s32   ($s2+8)   (lw/sw; type-7 value word at C1BC)
+    +0x14 (5618) UNION s8 flag (type7) | s32 word (type8)   <-- union boundary
+    +0x18 (561C) UNION s8 flag (type8) | s32 word (type5)
+    +0x1C (5620) u8    ($s4+0)   the ==1 gate (lbu/sb)
+    +0x20 (5624) u32   ($s4+4)   width param (>>5 tile count)
+    +0x24 (5628) u32   ($s4+8)   height param (>>5)
+    +0x30 (5634) s32   ($s2+0x28) tile-x counter (lw/sw)
+    +0x34 (5638) s32   ($s2+0x2C) tile-y counter (lw/sw)
+  Next-session task: enumerate every READ of +0x14/+0x18 in inner states
+  6/8/9 to fix each union arm's member types, then declare
+  `struct { <header>; union { struct type1{}; struct type7{}; ... } u; }`.
+
+### RECT @ D_8009BE48 — all s16 (every access is sh/lh).
+  0x00 s16 x, 0x02 s16 y, 0x04 s16 w, 0x06 s16 h. (D_8009BE4A/4C/4E are y/w/h.)
+
+### Per-type 8-byte arrays (indexed by cmd->xC * 8, i.e. `type<<3`):
+  D_80098AD0[] (lbu/sb — u8 per type), D_80098AD1[] (sb — u8),
+  D_80098AD4[] (sw — s32/ptr per type). Game_work @ 0x1B8+type*8:
+  0x1B8 s16 (lh/sh, a SsVab handle), 0x1BA s8 (sb), 0x1BC (sb). 0x1DA u8 (lbu).
 
 ## Struct layouts (derived from the asm; VERIFY signedness per field)
 ### Command entry @ D_800B5DB0, stride 0x800 (indexed by D_800987A8)
