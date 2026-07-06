@@ -21,6 +21,10 @@ s32 func_80039E18(void); // s32 (not void) is load-bearing in func_80055C1C:
                          // and lets `return 1` fill the load-delay slot
 extern u8 D_800BE2F8[];
 extern u8 D_8009899C; // sdata ($gp)
+extern u8 D_80098930; // sdata ($gp)
+extern u8 D_80098B6C; // sdata ($gp)
+extern u16 D_8008FD3C[];
+s32 func_8004327C(s32);
 // byte-view of Player_work (0x800B51B0, size 0x5F4); the script CALL handlers
 // index u8 remap tables inside it (at +0x450 and +0x454). Member access forces
 // per-site %hi/%lo(Player_work+off) rather than a hoisted base pointer.
@@ -656,7 +660,16 @@ s32 func_80057184(MOJI_TASK *m) {
     return 1;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_8005721C);
+s32 func_8005721C(MOJI_TASK *m) {
+    D_80098930 = D_800BE2F8[D_8009899C + (s8)m->x71] + m->script2[1];
+    if (Sce_flag_test(0x2EE) == 0 && func_8004327C(-D_8008FD3C[D_80098930])) {
+        D_80098B6C = 1;
+    } else {
+        D_80098B6C = 0;
+    }
+    m->script2 += 2;
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800572C8);
 
