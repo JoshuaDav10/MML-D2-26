@@ -167,7 +167,13 @@ agent on the `overlay-expedition` branch.
    func_8001A6DC + func_80013578 (register-birth/scheduling genus),
    func_800199A4 + func_80019918 (jump-canonicalization family — the
    scene side FCA4/FC50/FDE4 all CRACKED 2026-07-06 via `switch`, see
-   LESSONS.md; retry these sound siblings with switch), func_80041EF4
+   LESSONS.md; retry these sound siblings with switch);
+   cd func_8001CF98 (structure fully understood — CdIntToPos is PSYQ 2-arg;
+   remaining: cc1 double-emits the [arg][1] load/store around the call,
+   needs a CSE-dump; see LESSONS 2026-07-06);
+   cd func_8001BB4C (THE 845-insn CD loader — full analysis + m2c draft in
+   notes/wip/BB4C_ANALYSIS.md; multi-session, tables carve like scene's),
+   func_80041EF4
    (andi elision — RTL
    verified), Sub_screen_rb_parts_calc (draft 6 insns short).
    JUMP-TABLE INFRA COMPLETE + multi-table proven 2026-07-06: scene

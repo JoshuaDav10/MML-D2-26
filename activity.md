@@ -547,3 +547,18 @@
   (void(s32)), so BB4C proceeds.
 - Both remaining BB4C callees now either matched (CB7C) or signature-known
   (CF98 = void(s32)). Starting func_8001BB4C (~845 insns).
+
+## 2026-07-06 — Fable (overnight, cont.): BB4C foundation laid
+- Started func_8001BB4C (845 insns, biggest in the binary). Generated an
+  m2c draft (notes/wip/bb4c_m2c_draft.c) using the combined asm+3-tables
+  input (notes/wip/bb4c_combined.s), mapped the ENTIRE control flow, and
+  wrote notes/wip/BB4C_ANALYSIS.md: the three nested jump-table switches
+  (outer state machine on D_800989C4 / inner on D_800989C8 / innermost on
+  cmd->type), both work-struct layouts (D_800B5DB0 command entries stride
+  0x800; the D_800C5604 work area with the s2/s3/s4 pointer trio), the
+  PSYQ signatures, and a step-by-step matching plan.
+- Deliberately NOT landing a partial draft in-tree (can't hash-gate a
+  non-matching function; project rule). BB4C is a multi-session decomp;
+  this session laid the full resumable foundation. Its three tables
+  (jtbl_80010244/25C/284) are contiguous in 800.rodata.s → one cd.c.o
+  rodata carve, mirroring the proven scene multi-table recipe.
