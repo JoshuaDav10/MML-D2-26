@@ -162,6 +162,36 @@ FIRST (fewer decls, m2c's temp_s2/temp_s4 offsets map straight onto it), fall ba
 to the formal union if a width won't reproduce. Signedness that IS load-bearing:
 5618-as-remaining is SIGNED (slti, and the `if (<0) +=3` in state6 C51C-524).
 
+## JUMP TABLES (read 2026-07-06; carve as one contiguous block 0x244..0x2AC)
+jtbl_80010244 (outer, D_800989C4, sltiu 0x5): 0=.L8001BB9C 1=.L8001BBD0
+  2=.L8001BC04 3=.L8001BC6C 4=.L8001C7BC + one .word 0 pad.
+jtbl_8001025C (inner, D_800989C8, sltiu 0xA): 0=BD14 1=C2AC 2=C350 3=C740
+  4=C40C 5=C740 6=C48C 7=C740 8=C5F0 9=C698. (cases 3,5,7 → C740 = the
+  block_87 default no-op; so switch(state){0,1,2,4,6,8,9 real; default: fall}.)
+jtbl_80010284 (cmd type, sltiu 0xB): 0=BD80 1=BD98 2=C28C 3=BEF8 4=BF44
+  5=C064 6=C28C 7=C194 8=C208 9=BF44 10=BF44. (cases 9,10 SHARE case 4's
+  target BF44 → `case 4: case 9: case 10:`; cases 2,6 → C28C = default
+  `D_800989C8 = D_80098A54 + 1` tail.)
+
+## ⚠ ADDRESSING CRUX (the thing the match hinges on) — 2026-07-06 Opus
+The work block is accessed TWO ways in the SAME function:
+ - DMA/copy/sound states (1,4,6,8,9) use base+offset off the callee-saved
+   pointers $s3=&D_800C5604, $s2=$s3+8, $s4=$s3+0x1C (set up ONCE in the inner-
+   loop preamble .L8001BCCC..E0, held across all calls). These states walk the
+   block pointer-style (copy loops increment $a2/$v1).
+ - The TILING state 2 (.L8001C350) instead references D_800C5634/561C/5638/
+   5620/5624/5628 by ABSOLUTE lui/%lo — even though $s3 is live. State 4
+   (.L8001C40C) does the SAME tiling logic but via 0x28($s2)/0x0($s2)/etc.
+ => The source almost certainly declares the block as SEPARATE contiguous
+    globals (D_800C5604, _5608, _560C, ... _5638) AND, in the copy/tiling
+    inner states, takes their address into a local pointer for pointer-walk
+    access. cc1 then hoists &D_800C5604 / +8 / +0x1C into $s3/$s2/$s4 as loop
+    invariants. Matching plan: declare the individual globals; in states that
+    the asm addresses base-relative, write `p = &D_800C5604;` (or a small
+    struct pointer) and index; in state 2 write the globals by name. Getting
+    which-state-uses-which right is what reproduces the lui/%lo-vs-offset mix.
+    This supersedes the "one flat struct" idea — it's globals + a pointer view.
+
 ## Struct layouts (derived from the asm; VERIFY signedness per field)
 ### Command entry @ D_800B5DB0, stride 0x800 (indexed by D_800987A8)
     0x00 s32 type          // -> D_80098A54; -1 sentinel = skip
