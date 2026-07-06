@@ -415,9 +415,36 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800557B8);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055868);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055A78);
+s32 func_80055A78(MOJI_TASK *m) {
+    u8 *s = m->script2;
+    u8 b;
+    u8 *base;
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055B14);
+    if (Game_work.stage_no == s[1] && Game_work.area_no == s[2]) {
+        b = s[3];
+    } else {
+        b = m->script2[4];
+    }
+    if (b == 0xFF) {
+        m->script2 += 5;
+    } else {
+        m->xC2 = b;
+        base = m->x44;
+        m->x48 = m->script2 = base + ((u16 *)base)[b];
+    }
+    return 1;
+}
+
+s32 func_80055B14(MOJI_TASK *m) {
+    if ((u16)func_80054410(m->script2 + 1)) {
+        Game_logo_kill((s16)func_80054410(m->script2 + 3));
+    } else {
+        s32 arg = func_80054410(m->script2 + 3) & 0xFFFF;
+        func_80063FC0(arg, func_80054424(m->script2 + 5));
+    }
+    m->script2 += 9;
+    return 1;
+}
 
 s32 func_80055BB0(MOJI_TASK *m) {
     u32 f = m->flags;
