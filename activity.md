@@ -614,3 +614,14 @@
   New idioms recorded in LESSONS.md 2026-07-11.
 - progress.md census header refreshed (was stale at 232): 246 matched /
   238 active stubs / 484; moji 94/145.
+
+## 2026-07-11 — Fable (cont.): salvaged stopped agents; sound pair landed (248)
+- The user inadvertently stopped the three relaunched background agents.
+  Salvage sweep: harvest worktree had func_80019918 + func_800199A4
+  BYTECMP-VERIFIED (the parked jump-canon family, cracked via the switch
+  recipe from LESSONS 2026-07-06). Cherry-picked to dev, clean rebuild,
+  sha1 OK, mutation test (0x39→0x3A broke it, restore OK) → 248 matched.
+- BB4C agent left an uncommitted in-flight iteration (u32 xm mask locals +
+  D_800C5608 extern) — saved to notes/wip/bb4c_inflight_xm.diff for the
+  relaunched agent to evaluate; 53B40 agent's worktree was unchanged.
+- All three agents relaunched with updated prompts.

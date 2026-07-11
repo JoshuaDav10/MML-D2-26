@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-11, 246 matched / ~15%)
+# HANDOFF — MML Decomp session state (2026-07-11, 248 matched / ~15%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,7 +19,7 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 246** (~15% of instruction volume; 238 active stubs,
+- **Matched: 248** (~15% of instruction volume; 236 active stubs,
   484 total per `tools/census.py --matched` — authoritative). moji.c is
   94/145 matched (51 stubs left). See `progress.md`.
 - Agent worktrees from the 07-06 sessions were audited + pruned 2026-07-11:
@@ -224,9 +224,8 @@ agent on the `overlay-expedition` branch.
    'nonmatchings/...' ; done` then wc -l the .s files.
 2. PARKED with findings (don't re-grind blind): func_80042044 +
    func_8001A6DC + func_80013578 (register-birth/scheduling genus),
-   func_800199A4 + func_80019918 (jump-canonicalization family — the
-   scene side FCA4/FC50/FDE4 all CRACKED 2026-07-06 via `switch`, see
-   LESSONS.md; retry these sound siblings with switch);
+   func_800199A4 + func_80019918 — CRACKED 2026-07-11 by a harvest agent
+   with the switch recipe (goto-chain + range-collapse), landed + hash-gated;
    cd func_8001CF98 — MATCHED 2026-07-06 (in-body local assignment resolves
    the load-duplication + index-CSE conflict; see LESSONS);
    cd func_8001BB4C (THE 845-insn CD loader — full analysis + m2c draft +

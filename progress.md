@@ -7,10 +7,10 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 246 (verified 2026-07-11: full-binary sha1 OK after a CLEAN
+- rock_neo main: 248 (verified 2026-07-11: full-binary sha1 OK after a CLEAN
   rebuild — see the func_800605DC note under "Last verified build";
-  census.py --matched is authoritative: 246 matched / 238 active stubs / 484
-  total; moji 94/145, player 32/91, scene 35/59, sub_scrn 15/44)
+  census.py --matched is authoritative: 248 matched / 236 active stubs / 484
+  total; moji 94/145, player 32/91, scene 35/59, sound 18/34, sub_scrn 15/44)
 - Volume: ~15% of ~31,300 mapped instructions
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
@@ -109,6 +109,9 @@
   - sound: func_80019F94, func_8001B2F0, func_8001997C, func_8001B314,
     func_80019A70, func_80019AE0, func_80019AA4, func_800199F8,
     func_80019A34, func_8001A1FC, func_8001A238 (stride-8 search loops),
+    func_80019918 + func_800199A4 (ex-PARKED jump-canon family, cracked via
+    goto-chain w/ $v0 reuse + switch range-collapse; harvest-agent drafts,
+    foreground hash-gated 2026-07-11),
     func_80019FB4 (Game_work[0x50] fn-table dispatch + D_80098958 |= 0x800),
     Sound_call + Sound_call2 (SND_CMD queue writers, 0x14 stride; call2
     needs in-place q++ to pin the store order), func_800198C0
