@@ -597,3 +597,20 @@
   this session laid the full resumable foundation. Its three tables
   (jtbl_80010244/25C/284) are contiguous in 800.rodata.s → one cd.c.o
   rodata carve, mirroring the proven scene multi-table recipe.
+
+## 2026-07-11 — Fable (session restart: stock-take + 557B8 matched)
+- Took stock after the 3-workstream session: TaskList empty (background agents
+  died with the session); audited all three agent worktrees against dev.
+  VERDICT: everything already banked — a46's ba01152 (BB4C 805/809, ~510 hard)
+  is superseded by dev's 806/809 @ 461 (commits 09e0770 + 1017bbc); aee's
+  dirty bb4c_draft_v2.c is the already-salvaged cbase iteration (net-neutral);
+  ac12's three 53B40 commits are byte-identical to dev's notes/wip files.
+  Worktrees pruned; branches kept as archival refs.
+- **func_800557B8 MATCHED (246 total)** — the uncommitted `&&`-shape draft
+  left in moji.c was 2 insns long / wrong layout. Fixed via scratch bytecmp in
+  3 iterations: s16 local (frame 0x18→0x20 + lh/addu copy), `||` condition
+  with expire as then-arm, direct returns (ret local cost a $a1→$v0 copy).
+  Clean rebuild + sha1 OK + mutation test (cnt-2 broke it, restore OK).
+  New idioms recorded in LESSONS.md 2026-07-11.
+- progress.md census header refreshed (was stale at 232): 246 matched /
+  238 active stubs / 484; moji 94/145.

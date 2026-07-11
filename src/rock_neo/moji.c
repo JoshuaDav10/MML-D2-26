@@ -447,7 +447,24 @@ s32 func_80055660(MOJI_TASK *m) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055688);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800557B8);
+s32 func_800557B8(MOJI_TASK *m) {
+    s16 cnt;
+
+    if (!(m->flags & 0x1000000)) {
+        m->flags |= 0x1000000;
+        m->x4 = func_80054410(m->script2 + 1);
+    }
+    m->flags |= 0x10000000;
+    cnt = m->x4;
+    if (cnt <= 0 || !(m->flags & 0x40000)) {
+        m->x4 = 0;
+        m->flags &= 0xEEFFFFFF;
+        m->script2 += 3;
+        return 1;
+    }
+    m->x4 = cnt - 1;
+    return 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80055868);
 

@@ -7,10 +7,11 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 232 (verified: full-binary sha1 OK after a CLEAN rebuild —
-  see the func_800605DC note under "Last verified build"; census.py --matched
-  is authoritative: 232 matched / 252 active stubs / 484 total)
-- Volume: ~4568 of ~31,300 mapped instructions (~14.5%)
+- rock_neo main: 246 (verified 2026-07-11: full-binary sha1 OK after a CLEAN
+  rebuild — see the func_800605DC note under "Last verified build";
+  census.py --matched is authoritative: 246 matched / 238 active stubs / 484
+  total; moji 94/145, player 32/91, scene 35/59, sub_scrn 15/44)
+- Volume: ~15% of ~31,300 mapped instructions
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
     func_80054410, func_8005457C, func_80054B88, func_8005563C, func_80056128,
@@ -50,7 +51,11 @@
     ((u16*)x44)[b] table; Sce_flag / Game_work.stage_no guards),
     func_80057184 (D_8008D0D4 guard before MojiTaskExec), func_80055B14
     (Game_logo_kill / func_80063FC0 two-arm), func_8005721C (D_80098B6C
-    predicate via Sce_flag_test(0x2EE)+func_8004327C)
+    predicate via Sce_flag_test(0x2EE)+func_8004327C),
+    func_800545C8 + func_80054700 + func_800557B8 (wait-counter trio:
+    0x1000000-init + x4 countdown; 545C8 full-reset arm, 54700 slim
+    script2-only expiry, 557B8 0x40000-gated — s16 local + `||` shape +
+    direct returns, see LESSONS 2026-07-11)
   - Code800133D8: func_80013418, func_80013890, func_80013F60, func_80013F8C,
     func_800133D8
   - scene: func_8001D928 (flag-array clear + Scene_work reset), func_8001D878, func_8001DEDC, func_8001F820, func_8001D974,

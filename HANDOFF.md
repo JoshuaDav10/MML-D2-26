@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-06 PM, 244 matched / ~15%)
+# HANDOFF — MML Decomp session state (2026-07-11, 246 matched / ~15%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,9 +19,13 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 244** (~15% of instruction volume; 240 active stubs,
+- **Matched: 246** (~15% of instruction volume; 238 active stubs,
   484 total per `tools/census.py --matched` — authoritative). moji.c is
-  92/145 matched (53 stubs left). See `progress.md`.
+  94/145 matched (51 stubs left). See `progress.md`.
+- Agent worktrees from the 07-06 sessions were audited + pruned 2026-07-11:
+  ALL content was already salvaged into dev (BB4C baseline = 806/809 words
+  @ 461 hard mismatches in notes/wip/bb4c_draft_v2.c; cbase-local iteration
+  already tried, net-neutral). Branches `worktree-agent-*` kept as archives.
 - **Trust matches only after a CLEAN rebuild** (`touch src/rock_neo/*.c &&
   rm -f build/rock_neo.elf` before `make`). This session found a prior
   "match" (func_800605DC) that never actually compiled — the stale stub

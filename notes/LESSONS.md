@@ -697,3 +697,25 @@ iteration teaches something; this file is how the project gets smarter.
   flags constant, used only after the merge) gets pulled by cc1 into the `bnez`
   delay slot; the original keeps a `nop` there. Reordering the tail statements
   did not stop it. Same family as the giants' constant-hoist allocation puzzle.
+
+## 2026-07-11 (Fable) — func_800557B8: HImode locals, ||-shape, direct returns
+
+Three knobs that turned a +2-insn near-miss into a byte match (all verified
+against the hash; the wait-counter trio 545C8/54700/557B8 now share one genus):
+
+- **A `s16` local (HImode) does two things an `s32 local = (s16)cast` does
+  not**: (1) it reserves an 8-byte frame temp area (sibling 54700 got the same
+  8 bytes implicitly from `m->x4 -= 1`'s in-memory u16 RMW), growing the frame
+  0x18→0x20; (2) the load emits `lh $t; addu $pseudo, $t` — a reg copy of the
+  load temp into the HImode pseudo — and later arithmetic (`cnt - 1`) reads the
+  pseudo while the compare (`blez`) folds onto the load temp. If you see
+  lh + addu-copy + an unexplained 8 frame bytes, the source had a short local.
+- **`if (A || !B) expire; else dec;` vs `if (!A && B) dec; else expire;`**:
+  logically identical, but the `||` form emits blez→then, bnez(B un-inverted)→
+  else, then-arm falls through with `j` past the else-arm placed LAST. The `&&`
+  form cost +2 insns and inverted the branch senses. When the original's
+  second test branches TO the small arm with an un-inverted bnez and the big
+  arm falls through, write the condition as `||` with the big arm as `then`.
+- **Direct `return k;` in each arm vs accumulating into `ret`**: the `ret`
+  local materializes in a callee reg (here $a1) with a final `addu $v0,$a1`
+  copy (+1 insn). If the original sets $v0 inside each arm, use direct returns.
