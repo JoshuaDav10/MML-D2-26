@@ -2,6 +2,7 @@
 #include "rock_neo/moji.h"
 #include "rock_neo/game.h"
 #include "rock_neo/sound.h"
+#include "rock_neo/sce.h"
 
 extern s32 D_80098AF4; // sdata ($gp)
 extern s32 D_80098824; // lui-accessed word, not in gp census
@@ -24,6 +25,8 @@ extern u8 D_8009899C; // sdata ($gp)
 extern u8 D_80098930; // sdata ($gp)
 extern u8 D_80098B6C; // sdata ($gp)
 extern u16 D_8008FD3C[];
+extern u8 *D_8008BAA4[];
+extern u8 *D_8008CE58;
 s32 func_8004327C(s32);
 // byte-view of Player_work (0x800B51B0, size 0x5F4); the script CALL handlers
 // index u8 remap tables inside it (at +0x450 and +0x454). Member access forces
@@ -881,7 +884,14 @@ s32 func_80058C08(MOJI_TASK *m) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058C28);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80058CC8);
+void func_80058CC8(MOJI_TASK *m) {
+    m->stack[m->xBE++] = m->script + 3;
+    if (Sce_flag_test((u16)func_80054410(m->script + 1))) {
+        m->script = D_8008BAA4[(u16)func_80054410(m->script + 1)];
+    } else {
+        m->script = D_8008CE58;
+    }
+}
 
 void func_80058D64(MOJI_TASK *m) {
     m->x10 = func_80054410(m->script + 1);
