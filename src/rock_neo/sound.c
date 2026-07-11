@@ -14,6 +14,8 @@ extern s32 D_80098958; // lui-accessed (not sdata)
 extern s8 Game_work[]; // this TU only reads byte x53; full type in game.h
 
 extern s16 D_8008222A;
+extern s16 D_8008222C;
+extern s16 D_80082278;
 
 void func_800198C0(void) {
     s32 a;
@@ -28,7 +30,24 @@ void func_800198C0(void) {
     } while (--i >= 0);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019918);
+void func_80019918(void) {
+    s32 v;
+    if (Sce_flag_test(0x204) != 0) {
+        if (Sce_flag_test(0x206) == 0) {
+            v = 0x39;
+            goto done;
+        }
+    }
+    if (Sce_flag_test(0x212) == 0) {
+        v = 0x7;
+        goto done;
+    }
+    v = Sce_flag_test(0x213);
+    if (v != 0) v = 0x7;
+    else v = 0x39;
+done:
+    D_8008222C = v;
+}
 
 void func_8001997C(void) {
     if (Game_work[0x53] == 1) {
@@ -38,7 +57,24 @@ void func_8001997C(void) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_800199A4);
+void func_800199A4(void) {
+    s8 v = Game_work[0x53];
+    s16 out;
+    switch (v) {
+    case 1:
+    case 2:
+    case 3:
+        if (Sce_flag_test(0x30) == 0) {
+            out = 0x16;
+            break;
+        }
+        /* fallthrough */
+    default:
+        out = 0x108;
+        break;
+    }
+    D_80082278 = out;
+}
 
 extern s16 D_800822A6;
 
