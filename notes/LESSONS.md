@@ -724,3 +724,37 @@ against the hash; the wait-counter trio 545C8/54700/557B8 now share one genus):
 - **Direct `return k;` in each arm vs accumulating into `ret`**: the `ret`
   local materializes in a callee reg (here $a1) with a final `addu $v0,$a1`
   copy (+1 insn). If the original sets $v0 inside each arm, use direct returns.
+
+## 2026-07-12 (Opus) — moji harvest: 3 giant-class knobs, proven against the hash
+
+From func_80053AA4 / func_80053788 / func_80057C2C (all clean-rebuilt + sha1 OK +
+mutation-tested). These control register/addressing/scheduling — the same class
+of decision that blocks the giants, so they generalize well beyond moji.
+
+- **AND-of-3 grouping — split a temporary to pin the accumulator.** `x = f & LIT
+  & RT` where LIT is a constant mask and RT is a runtime value: cc1 reassociates
+  the commutative `&` to `f & (LIT & RT)` (combines the two masks first, `and
+  v0,v0,a0; and v1,v1,v0`). The original often wants `(f & LIT) & RT` with `f`
+  as the running accumulator (`and v1,v1,a0; and v1,v1,v0`). Force it by
+  splitting: `t = f & LIT; x = t & RT;`. (func_80053AA4, the Moji_flag mask.)
+- **Mixed array-vs-pointer addressing in a struct-array loop.** In
+  `for(i..) { Base[i].field = ...; }`, cc1 emits each store as absolute
+  `%lo(Base+off)($at)` (with `$at = %hi + i*stride`). If the original holds a
+  per-element base pointer for ONE field but stays absolute for the others,
+  write exactly that mix: `T *m = &Base[i]; m->thatField = ...; Base[i].other =
+  ...;`. cc1 honors the pointer form for `m->` and the array form for `Base[i]`.
+  (func_80053788: script2/0x6C via `m`, flags/x6/x48 array-absolute.)
+- **Preheader scheduling knob — for-init comma order → preheader insn order.**
+  When a hoisted loop-invariant constant (e.g. a `0x80` shift base) lands on the
+  wrong side of an accumulator/walking-pointer init in the loop preheader, make
+  the constant a NAMED local and place it in the for-init at the exact comma
+  position you want: `for (i=0, mask=0x80, p=Base; i<N; i++)` emits `i`, then
+  `mask`, then `p` in that order in the preheader. A plain pre-loop statement
+  schedules too early; a bare literal (hoisted) schedules too late. This is a
+  real, controllable knob for preheader ordering — relevant to the 53B40
+  movable-ranking fight. (func_80057C2C.)
+- **Corollary (same fn):** a CONDITIONAL `count++` (incremented inside an `if`
+  in the loop) is NOT a loop induction variable, so cc1 cannot strength-reduce
+  `Base[count] = ...` into a walking pointer — you must write the walking
+  pointer explicitly (`*p++ = ...`). And `u32` vs `s32` loop counter selects
+  `sltiu` vs `slti` for the bound test.
