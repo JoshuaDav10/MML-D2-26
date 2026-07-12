@@ -214,11 +214,26 @@ agent on the `overlay-expedition` branch.
 
 - **func_8001BB4C (cd.c, 845 insns)** — the CD loader. Structure fully solved:
   805–806/809 words, all control flow / CD_WORK union / three-pointer addressing
-  correct. Blocked at **319 hard mismatches** (2026-07-12: salvaged the dead
-  agent's 22266e1 advance — case-0 entry via temp ptr `ec` then `e=ec`, a2-birth
-  + addu-copy in delay slot; 461→319, bytecmp-reconfirmed). Now a focused
-  register/scheduling finish (earlier: extra $s7 hoist FIXED via struct-member
-  Game_work access → 510→461→319). Scratch draft: `notes/wip/bb4c_draft_v2.c`; forensics:
+  correct. Blocked at **319 hard mismatches / 811 words** (2026-07-12 confirmed).
+  NOT a register/scheduling fight — bg/bb4c-endgame DISPROVED that via -dg: all 7
+  callee-saved regs ($s0-$s6, pseudos 72-78 → hw 16-22) held exactly as the
+  original. The 319 is a **2-word instruction surplus** cascading every downstream
+  branch displacement + reg number. Both surplus words are the PROJECT'S PARKED
+  GENERA, not new problems:
+    (1) ADDRESSING-CRUX (states 2 & 4): draft emits `r->x`/`r->y` as an absolute
+        store (`sh $v1, D_800...`); reference reuses the held `$s1`=r pointer
+        (`addu $a0,$s1,$zero; sh $v1,0($a0)`). cc1 won't reuse the pointer.
+    (2) JUMP-CANONICALIZATION (state 1 tail): reference gets a delay-slot store by
+        holding `&D_800C5608` in a base reg (`bnez tail; sw` in slot; `j tail0`);
+        draft stores first then `beqz` + extra `j` — cc1 constant-folds the
+        pointer form back to absolute. Same genus as scene's parked FC50 family.
+  Count-neutral fidelity fixes already landed in the draft (case-4 r->y absolute,
+  case-2/4 branch senses → reference goto-out `bne`). DEFERRED: an unsigned-mask
+  srl fix that is proven-required but spikes the count to 419 until word-parity is
+  reached — apply only AFTER the 2-word surplus closes. Full aligner method + the
+  two precise blockers in notes/wip/BB4C_PROGRESS.md; branch bg/bb4c-endgame
+  (commit 0b41228). Earlier history: 510→461 ($s7 hoist fix)→319 (case-0 temp-ptr).
+  Scratch draft: `notes/wip/bb4c_draft_v2.c`; forensics:
   `notes/wip/BB4C_ANALYSIS.md`. First hard mismatch is a branch displacement
   from a small instruction-count deficit; verify with
   `CPP=cpp tools/bytecmp.sh func_8001BB4C notes/wip/bb4c_draft_v2.c`. Do NOT land

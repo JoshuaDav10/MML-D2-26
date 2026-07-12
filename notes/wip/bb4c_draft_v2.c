@@ -294,8 +294,7 @@ void func_8001BB4C(void) {
                         } while (w->x0 != 0);
                     }
                 }
-                D_800C5608 -= 1;
-                if (D_800C5608 != 0) {
+                if ((D_800C5608 -= 1) != 0) {
                     goto tail;
                 }
                 goto tail0;
@@ -306,29 +305,31 @@ void func_8001BB4C(void) {
                 D_8009BE4A = *(s32 *)&D_800C5620 + (D_800C5638 << 5);
                 LoadImage(r, (u8 *)&cbase[D_800987A8]);
                 D_800C5634 += 1;
-                if (D_800C5634 == ((u32)D_800C5624 >> 5)) {
-                    D_800C5634 = 0;
-                    D_800C5638 += 1;
-                    if (D_800C5638 == ((u32)D_800C5628 >> 5)) {
-                        goto tail0;
-                    }
+                if (D_800C5634 != ((u32)D_800C5624 >> 5)) {
+                    goto tail;
+                }
+                D_800C5634 = 0;
+                D_800C5638 += 1;
+                if (D_800C5638 == ((u32)D_800C5628 >> 5)) {
+                    goto tail0;
                 }
                 goto tail;
 
             case 4:
                 r = &D_8009BE48;
                 r->x = p2[0] + (p2[10] << 5);
-                r->y = p2[1] + (p2[11] << 5);
+                D_8009BE4A = p2[1] + (p2[11] << 5);
                 LoadImage(r, (u8 *)&cbase[D_800987A8]);
                 p2[10] += 1;
-                if (p2[10] == p2[2]) {
-                    p2[10] = 0;
-                    p2[11] += 1;
-                    if (p2[11] == p2[3]) {
-                        goto tail0;
-                    }
+                if (p2[10] != p2[2]) {
+                    goto tail;
                 }
-                goto tail;
+                p2[10] = 0;
+                p2[11] += 1;
+                if (p2[11] != p2[3]) {
+                    goto tail;
+                }
+                goto tail0;
 
             case 6:
                 if (*(u8 *)q4 == 0) {
