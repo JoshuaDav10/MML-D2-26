@@ -638,3 +638,14 @@
   family func_80040FA8/41044/410D4/41158 (D_80089A84 stride-12, goto-shared
   return-1). Cherry-picked, clean rebuild, sha1 OK, mutation test (0xC0→0xC1
   broke it, restore OK). PL_WORK gains x12C/x12E/x13A/x13C/x100/x171/x174.
+
+## 2026-07-12 — Opus (resume/salvage): moji func_80058CC8 landed (259)
+- Recovered a stranded bytecmp-verified match from the dead codex-moji agent's
+  branch (dc5aee9): func_80058CC8 = script-call-stack push (m->stack[m->xBE++]
+  = script+3) then Sce_flag_test-gated entry select (D_8008BAA4[k] vs D_8008CE58).
+  Cherry-picked onto dev, CLEAN rebuild, sha1 OK, mutation test (xBE++ → xBE+=2
+  broke it, restore OK). Needs externs D_8008BAA4[]/D_8008CE58 + sce.h include.
+- Also salvaged the two giants' advanced scratch drafts from the dead agents'
+  branches into notes/wip/ (BB4C 22266e1, 53B40 eba6103); mismatch counts
+  re-verified by bytecmp (numbers recorded in the salvage commit, not trusting
+  the stale analysis-doc headers).
