@@ -7,10 +7,10 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 248 (verified 2026-07-11: full-binary sha1 OK after a CLEAN
+- rock_neo main: 252 (verified 2026-07-11: full-binary sha1 OK after a CLEAN
   rebuild — see the func_800605DC note under "Last verified build";
-  census.py --matched is authoritative: 248 matched / 236 active stubs / 484
-  total; moji 94/145, player 32/91, scene 35/59, sound 18/34, sub_scrn 15/44)
+  census.py --matched is authoritative: 252 matched / 232 active stubs / 484
+  total; moji 94/145, player 36/91, scene 35/59, sound 18/34, sub_scrn 15/44)
 - Volume: ~15% of ~31,300 mapped instructions
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,
@@ -143,6 +143,9 @@
     func_8003EE68 (state 7 setup, x74/x75 typed, shot enable + 41DDC),
     func_80040380 (x112/x113 swap on key match), func_80040710 (x128 vs
     x12A select, xA=0/0x100), func_80040AEC (Game_work x83==1 or x140 key),
+    func_8004030C + func_800404FC + func_80040574 + func_80040630 (key-test
+    siblings: Scene_work-gated k-select, x44A hold counter, x130/x132/x16B
+    fields; harvest-agent drafts, foreground hash-gated 2026-07-11),
     func_80041E90 (x56 -=/+= x116 around func_8002FEA4, s16 params),
     func_8003F224 (x83-gated key test; goto-shared return-1 defeats the
     sltiu tail; field-first & order), func_80040224 (state reset unless

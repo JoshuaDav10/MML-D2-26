@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-11, 248 matched / ~15%)
+# HANDOFF — MML Decomp session state (2026-07-11, 252 matched / ~15%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,7 +19,7 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 248** (~15% of instruction volume; 236 active stubs,
+- **Matched: 252** (~15% of instruction volume; 232 active stubs,
   484 total per `tools/census.py --matched` — authoritative). moji.c is
   94/145 matched (51 stubs left). See `progress.md`.
 - Agent worktrees from the 07-06 sessions were audited + pruned 2026-07-11:

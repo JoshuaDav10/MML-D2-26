@@ -625,3 +625,10 @@
   D_800C5608 extern) — saved to notes/wip/bb4c_inflight_xm.diff for the
   relaunched agent to evaluate; 53B40 agent's worktree was unchanged.
 - All three agents relaunched with updated prompts.
+
+## 2026-07-11 — Fable (gate): 4 player key-test siblings landed (252)
+- Harvest agent (resumed, context intact): func_8004030C, func_800404FC,
+  func_80040574, func_80040630 BYTECMP-VERIFIED in its worktree; cherry-picked
+  to dev, clean rebuild, sha1 OK, mutation test (x16B bit 2→4 broke it,
+  restore OK). PL_WORK gains x130/x132 (key masks), x16B (flag byte),
+  x44A/x44B (hold counter) — all layout-neutral padding carves.
