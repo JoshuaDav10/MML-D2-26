@@ -253,3 +253,63 @@ After your first successful `make CPP=cpp`, install the local pre-push gate with
 your current `build/` tree (it does not `rm -rf build`). If either gate fails,
 the push is aborted with the gate name; rebuild and re-check, or use
 `git push --no-verify` to skip the hook when you intentionally push WIP.
+
+## Tooling — parts list
+
+The matching-decomp toolchain used by this project:
+
+| Tool | Location | Role |
+|------|----------|------|
+| `cc1-27` | `bin/cc1-27` | the actual GCC 2.7.2 compiler (in-repo; do NOT install a modern mipsel-gcc) |
+| system `cpp` | via `CPP=cpp` | C preprocessor (required on every `make`) |
+| maspsx | `tools/maspx/` | translates cc1 GNU-syntax asm → Sony ASPSX-compatible asm |
+| gprel.py | `tools/gprel.py` | rewrites small-symbol refs to $gp-relative (sdata) access |
+| patchasm.py | `tools/patchasm.py` | function-reorder pass (moves deferred C bodies back to their `.globl`) |
+| splat | `tools/splat/` | ROM splitter / disassembler (produces the nonmatching asm + yaml) |
+| asm-differ | `tools/asm-differ/` (`./diff.py`) | instruction-level diff of built vs original |
+| m2c | `tools/m2c/` | decompiler — generates rough C drafts to iterate from |
+| bytecmp.sh / tryfn.sh | `tools/` | scratch-TU pipeline: compile one function → .o → byte-compare vs splat .s |
+| **decomp-permuter** | `tools/decomp-permuter/` | **automated matcher for the hard tail** (see below) |
+
+### decomp-permuter (adopted 2026-07-12 for the giant walls)
+
+Third-party tool by Simon Lindholm (`github.com/simonlindholm/decomp-permuter`),
+the same author as asm-differ. It automates the semantics-preserving
+guess-and-check that humans do by hand: it mutates a near-matching C function
+(reorder statements, add temporaries, change types, etc.), recompiles each
+variant, and scores its assembly against the target — thousands of variants,
+purely on local CPU (no LLM/tokens). It is the standard community answer to
+register-allocation / instruction-scheduling walls where the logic is already
+correct but one value lands in the wrong register or slot — e.g. **`func_80053B40`**
+(the OTPTR/0x1F800070 movable-swap; see `notes/wip/53B40_PROGRESS.md`).
+
+**Status: SET UP and running (2026-07-12).** The clone is `.gitignore`d (it's an
+embedded git repo; don't commit it). Reproduce the setup:
+
+1. `git clone --depth 1 https://github.com/simonlindholm/decomp-permuter tools/decomp-permuter`
+2. `pip install pycparser toml` (into `.venv`).
+3. **Local patch** (like the asm-differ Py3.14 patch — not committable, lives in
+   the ignored clone): in `tools/decomp-permuter/src/objdump.py`, add
+   `"mipsel-elf-objdump"` as the first entry of the **mips** arch `executable=[...]`
+   list (~line 211). Our toolchain uses `mipsel-elf-*`, not the tool's default
+   `mips-linux-gnu-*`; without this the scorer errors with "Could not find any
+   objdump executables."
+
+Per-function working dir (example `tools/decomp-permuter/mml_53B40/`):
+- `base.c` — our draft, preprocessed for pycparser:
+  `cpp -Iinclude -undef -Wall -lang-c -fno-builtin -P -Dmips -D__GNUC__=2 … <draft>.c > base.c`
+  (same `-D` set as `tryfn.sh`, plus `-P` to drop line markers).
+- `target.o` — assemble the reference: prepend `.include "macro.inc"` to the
+  splat `asm/rock_neo/nonmatchings/<mod>/<fn>.s`, then
+  `mipsel-elf-as -Iinclude -march=r3000 -mtune=r3000 -no-pad-sections -O1 -G0 target.s -o target.o`.
+- `compile.sh` — feeds preprocessed C straight into `cc1-27 | maspsx | gprel |
+  patchasm | mipsel-elf-as` (the `tryfn.sh` pipeline minus `cpp`); invoked by the
+  permuter as `./compile.sh input.c -o output.o`.
+- `settings.toml` — `func_name = "<fn>"` and `compiler_type = "gcc"`.
+
+Run: `python3 tools/decomp-permuter/permuter.py tools/decomp-permuter/<dir> -j 8 --stop-on-zero --better-only`.
+It writes each improved candidate to `<dir>/output-<score>-N/` (a score of 0 =
+byte-perfect). **A score-0 result is still only a lead**: copy its C back into the
+real tree and confirm via `make CPP=cpp check_rock_neo_only` OK + mutation test
+before claiming a match. Workflow value: the search runs token-free on CPU; the
+model only re-engages to verify/land a result.
