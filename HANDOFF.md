@@ -235,13 +235,27 @@ agent on the `overlay-expedition` branch.
   Map_prim_ptr accesses non-CSE-mergeable / -dg ranking-demotion) is in
   `notes/wip/53B40_ANALYSIS.md`; scratch draft `notes/wip/53b40_draft.c`. moji.h
   already exposes xB8/xBA for it. Land via the foreground (moji.c ownership).
-  - 2026-07-12: salvaged the dead agent's eba6103 advance (movable set now 5,
-    Moji_flag address-hoist killed via u8[8]+`*(u32*)` idiom). BUT bytecmp on
-    the salvaged draft reports **426 hard mismatches** — far higher than the
-    commit's "swap-only" framing implies. RECONCILE before trusting: either the
-    0x1F800070↔0x40000000 saved-reg swap cascades across all use sites (plausible
-    in a 522-insn fn) or the draft regressed vs the prior state. Measure the
-    prior dev draft (git history) next session before building on this baseline.
+  - 2026-07-12 RECONCILED (bg/53b40-reconcile, notes/wip/53B40_PROGRESS.md):
+    the 426 is a CASCADE, not a regression — the eba6103 salvage actually
+    IMPROVED it (455→426 via the Moji_flag u8[8]+`*(u32*)` gp idiom). 426 is the
+    correct baseline; keep the current draft. The earlier "$fp / 6th saved reg"
+    theory was DISPROVEN via -dg: both draft and reference save exactly $s0-$s7
+    +$ra. The whole 426 is ONE fault — a 1-for-1 swap of which constant holds
+    $s7: draft hoists 0x1F800070 into $s4 (wrong) and leaves 0x40000000 as inline
+    `li` ×2; reference hoists 0x40000000 into $s7 and keeps 0x1F800070 as fresh
+    `lui/ori` at all 4 sites. The frame 0x40-vs-0x50 delta is downstream spill
+    slots, not an extra reg. Fix the swap → the cascade (frame + every stack
+    offset) collapses at once.
+    BLOCKER (loop.c move_movables, -dL): 0x1F800070's 3 in-loop uses CSE-merge
+    into one savings-3 movable that clears the hoist threshold (3); the original
+    never forms that movable (kept inline), so its threshold stays 2 and the
+    2-use 0x40000000 hoists into $s7 instead. 6 source forms tried to break the
+    CSE-merge of the 3 OTPTR (0x1F800070) address computations (plain/volatile/
+    memory-clobber asm, distinct ptr types, volatile locals, same-addr-diff-mode)
+    — all failed; gcc-2.7 merges an identical constant address into one pseudo at
+    -O2. PLATEAUED at 426. **This is the prime Fable-escalation candidate** (a
+    tightly-scoped movable-ranking problem; same genus as BB4C). Full forensics +
+    next hypotheses in notes/wip/53B40_PROGRESS.md; branch bg/53b40-reconcile.
 
 ## Where to pick up next (day session's view)
 

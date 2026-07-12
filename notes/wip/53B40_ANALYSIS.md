@@ -228,7 +228,27 @@ not a single CSE'd loop-invariant movable. UNTRIED / next avenues:
 This is a genuine BB4C-scale register grind; body logic is done, this is the
 sole blocker. Draft compiles clean; NOT ready to port.
 
+### 2026-07-12 (bg/53b40-reconcile, Opus) — CORRECTION: no $fp; clean $s7 swap; reconcile = cascade
+RECONCILE VERDICT: 426 (current 4d77f3e/eba6103 draft) is NOT a regression —
+the prior d9982f6 salvage measured 455, so eba6103's `u8[8]+*(u32*)` Moji_flag
+idiom IMPROVED the count by 29. 426 is the correct baseline; keep the draft.
+
+CORRECTION to the "6th callee-saved reg / $fp" theory in the entries BELOW: it
+is WRONG. Verified via `-dg` greg dispositions + the emitted prologue: BOTH the
+draft and the reference save exactly $s0-$s7 + $ra (no $fp/$s8). The defect is a
+clean 1-for-1 SWAP of which constant holds $s7:
+  DRAFT:     $s7 = 0x86186187; 0x1F800070 -> $s4 (hoisted); 0x40000000 -> inline `li` x2
+  REFERENCE: $s7 = 0x40000000 (hoisted); 0x1F800070 -> fresh lui/ori x4 (never hoisted)
+Draft frame 0x40 vs reference 0x50: the 0x10 delta is SPILL SLOTS (downstream of
+the swap), NOT an extra saved reg. Fix the swap and frame + whole-tail cascade
+collapse together. loop.c -dL: outer-loop threshold = 3; 0x1F800070 (3 merged
+uses, savings 3) clears it, 0x40000000 (2 uses, savings 2) doesn't; original
+never forms the 0x1F800070 movable so its threshold is 2 and 0x40000000 hoists.
+Six distinct CSE-defeat attempts failed — the constant address always merges
+into one pseudo under -O2. Full attempt log + resume in 53B40_PROGRESS.md.
+
 ### 2026-07-11 (worktree agent, Fable) — Moji_flag address-hoist eliminated; movable set now 5-of-6 correct
+### (NOTE: the "$fp / 6th reg" framing in THIS and the entries above is superseded — see the 2026-07-12 correction.)
 Baseline re-measured: 455 hard mismatches. -dL dump showed SIX hoisted movables
 (not five): Moji_flag's ADDRESS (symbol_ref, from `extern u32 Moji_flag[]` +
 `Moji_flag[0]` indexing → `la $4,Moji_flag` → CSE'd/hoisted) was a 6th movable
