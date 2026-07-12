@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-11, 258 matched / ~15.5%)
+# HANDOFF — MML Decomp session state (2026-07-12, 259 matched / ~15.5%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,9 +19,13 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 258** (~15.5% of instruction volume; 226 active stubs,
+- **Matched: 259** (~15.5% of instruction volume; 225 active stubs,
   484 total per `tools/census.py --matched` — authoritative). moji.c is
-  94/145 matched (51 stubs left). See `progress.md`.
+  95/145 matched (50 stubs left). See `progress.md`.
+  - 2026-07-12 resume: salvaged stranded work from the dead agent branches —
+    moji func_80058CC8 (codex-moji dc5aee9) landed + hash-gated (259); both
+    giants' advanced scratch drafts pulled into notes/wip (see giant status).
+    Three agent-* worktrees pruned; branches kept as archives.
 - Agent worktrees from the 07-06 sessions were audited + pruned 2026-07-11:
   ALL content was already salvaged into dev (BB4C baseline = 806/809 words
   @ 461 hard mismatches in notes/wip/bb4c_draft_v2.c; cbase-local iteration
@@ -191,9 +195,11 @@ agent on the `overlay-expedition` branch.
 
 - **func_8001BB4C (cd.c, 845 insns)** — the CD loader. Structure fully solved:
   805–806/809 words, all control flow / CD_WORK union / three-pointer addressing
-  correct. Blocked at **461 hard mismatches**, now a focused register/scheduling
-  finish (was: extra $s7 hoist, FIXED via struct-member Game_work access →
-  510→461). Scratch draft: `notes/wip/bb4c_draft_v2.c`; forensics:
+  correct. Blocked at **319 hard mismatches** (2026-07-12: salvaged the dead
+  agent's 22266e1 advance — case-0 entry via temp ptr `ec` then `e=ec`, a2-birth
+  + addu-copy in delay slot; 461→319, bytecmp-reconfirmed). Now a focused
+  register/scheduling finish (earlier: extra $s7 hoist FIXED via struct-member
+  Game_work access → 510→461→319). Scratch draft: `notes/wip/bb4c_draft_v2.c`; forensics:
   `notes/wip/BB4C_ANALYSIS.md`. First hard mismatch is a branch displacement
   from a small instruction-count deficit; verify with
   `CPP=cpp tools/bytecmp.sh func_8001BB4C notes/wip/bb4c_draft_v2.c`. Do NOT land
@@ -210,6 +216,13 @@ agent on the `overlay-expedition` branch.
   Map_prim_ptr accesses non-CSE-mergeable / -dg ranking-demotion) is in
   `notes/wip/53B40_ANALYSIS.md`; scratch draft `notes/wip/53b40_draft.c`. moji.h
   already exposes xB8/xBA for it. Land via the foreground (moji.c ownership).
+  - 2026-07-12: salvaged the dead agent's eba6103 advance (movable set now 5,
+    Moji_flag address-hoist killed via u8[8]+`*(u32*)` idiom). BUT bytecmp on
+    the salvaged draft reports **426 hard mismatches** — far higher than the
+    commit's "swap-only" framing implies. RECONCILE before trusting: either the
+    0x1F800070↔0x40000000 saved-reg swap cascades across all use sites (plausible
+    in a 522-insn fn) or the draft regressed vs the prior state. Measure the
+    prior dev draft (git history) next session before building on this baseline.
 
 ## Where to pick up next (day session's view)
 
