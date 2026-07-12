@@ -10,6 +10,17 @@
   masks first). To pin the original's `(f & lit) & rt` accumulator form, split
   off a temporary: `f = *(u32*)Moji_flag & 0xBFC1FFFF; ... = f & ~(0x08000000>>no);`.
   First attempt (single expression) mismatched ONLY on this grouping.
+- **func_80053788 MATCHED** (268→269), clean rebuild + sha1 OK + mutation test
+  (x6=no→0 broke it; restore → OK). moji reset-all: Cd_read_comb(0x1E),
+  func_8001D7E4(), loop over Moji_work[0..4] clearing flags/script2/x6/x48,
+  then D_80098B2C/Moji_flag/D_80098960 = 0.
+  - **IDIOM (addressing mix):** the loop's `script2` (0x6C) store compiled to an
+    absolute `%lo(Moji_work+0x6C)($at)` under plain `Moji_work[no].script2 = 0`,
+    but the original holds a base pointer `m = &Moji_work[no]` for THAT store
+    only (`sw zero,0x6c(v0)`) while flags/x6/x48 stay array-absolute. Writing
+    exactly that mix (`m->script2` + `Moji_work[no].field` for the rest) matched.
+  - Header had a guessed `s32 func_80053788()`; kept the def `s32 ...(void)` with
+    no return (byte-identical to void) to avoid touching unknown callers.
 - Filed the deep-research FINDINGS doc for the two giant blockers (53B40 CSE-hoist
   / BB4C pointer-fold) — notes/RESEARCH_FINDINGS_gcc272_idioms.md, candidate-only,
   kept out of LESSONS.md until hash-gated (commit 62512b6).

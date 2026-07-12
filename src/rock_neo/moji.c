@@ -6,6 +6,9 @@
 
 extern s32 D_80098AF4; // sdata ($gp)
 extern s32 D_80098824; // lui-accessed word, not in gp census
+extern s32 D_80098960; // sdata ($gp)
+s32 Cd_read_comb();
+void func_8001D7E4();
 s32 func_8005BF10(s32, s32, u8*);
 s32 func_8005DA78(s32);
 s32 func_8005DAEC(s32);
@@ -43,7 +46,22 @@ u8 Moji_flag[8]; // COMMON on purpose: splat carved 0x80098A58 out of the
                  // extracted data for C to provide; gprel.py gp-rewrites
                  // refs to small .comm symbols in the census (see tool)
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053788);
+s32 func_80053788(void) {
+    s16 no;
+
+    Cd_read_comb(0x1E);
+    func_8001D7E4();
+    for (no = 0; no < 5; no++) {
+        MOJI_TASK *m = &Moji_work[no];
+        Moji_work[no].flags = 0;
+        m->script2 = 0;
+        Moji_work[no].x6 = no;
+        Moji_work[no].x48 = 0;
+    }
+    D_80098B2C = 0;
+    *(u32 *)Moji_flag = 0;
+    D_80098960 = 0;
+}
 
 s32 MojiTaskExec(no, script_base, op)
 s32 no;

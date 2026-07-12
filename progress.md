@@ -7,10 +7,10 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 268 (verified 2026-07-12: full-binary sha1 OK after a CLEAN
+- rock_neo main: 269 (verified 2026-07-12: full-binary sha1 OK after a CLEAN
   rebuild + mutation test — see the func_800605DC note under "Last verified
-  build"; census.py --matched is authoritative: 268 matched / 216 active stubs
-  / 484 total; moji 104/145, player 42/91, scene 35/59, sound 18/34,
+  build"; census.py --matched is authoritative: 269 matched / 215 active stubs
+  / 484 total; moji 105/145, player 42/91, scene 35/59, sound 18/34,
   sub_scrn 15/44)
 - Volume: ~15% of ~31,300 mapped instructions
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
@@ -36,6 +36,9 @@
     sweep+accumulate over Moji_work[0..4], cond func_8001D494 kick),
     func_80053AA4 (kill-one-slot: xC2=0xFF + flag mask clear; the mask AND
     needs a temporary to force (f & lit) & ~shift, not f & (lit & ~shift)),
+    func_80053788 (moji reset-all: Cd_read_comb + loop clearing Moji_work[0..4]
+    flags/script2/x6/x48; script2 store MUST use a `m=&Moji_work[no]` pointer
+    while the other 3 stay array-absolute — mixed addressing matched exactly),
     func_80054804 (Moji_work[s[1]].flags gate), func_800570B0 (55344
     sibling gated on Moji_flag[0]==s[1]; c1/c2-before-key/flag init order),
     func_80057D00 (stack2 push + double-table jump), func_80057DF4
