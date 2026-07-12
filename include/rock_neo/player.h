@@ -28,7 +28,9 @@ typedef struct PL_WORK {
     u16 xB4;      // cleared by func_80042044 when keys don't select the action
     u8 xB6[0xBD - 0xB6];
     u8 xBD;
-    u8 xBE[0x108 - 0xBE];
+    u8 xBE[0x100 - 0xBE];
+    u8 x100;      // level threshold (func_80040FA8 compares vs D_80089A84 column)
+    u8 x101[0x108 - 0x101];
     u16 x108;     // cleared by func_80040224 with x9/xA
     u8 x10A[0x10C - 0x10A];
     u16 x10C;     // func_80041EF4 clears when no key match
@@ -47,20 +49,25 @@ typedef struct PL_WORK {
     u16 x126;     // key/input mask (func_80041EF4 alt of x124)
     u16 x128;     // key/input mask (func_800405F4 ORs with x12A, tests vs x11C)
     u16 x12A;     // key/input mask
-    u8 x12C[0x130 - 0x12C];
+    u16 x12C;     // key/input mask (func_800403D4 ORs with x12E)
+    u16 x12E;     // key/input mask
     u16 x130;     // key/input mask (func_80040630 ORs with x132)
     u16 x132;     // key/input mask
     u16 x134;     // key/input mask (func_800402C4 tests vs x11C)
     u8 x136[0x138 - 0x136];
     u16 x138;
-    u8 x13A[0x13E - 0x13A];
+    u16 x13A;     // key/input mask (func_80041044 tests vs x11C)
+    u16 x13C;     // key/input mask
     u16 x13E;
     u16 x140;     // key/input mask (func_80040AEC tests vs x11C)
     u8 x142[0x16B - 0x142];
     u8 x16B;      // flag byte (func_80040574 tests bit 1)
     u8 x16C[0x170 - 0x16C];
     s8 weapon_right_no;
-    u8 x171[0x449 - 0x171];
+    s8 x171;      // left/special weapon slot (indexes the D_80089A84 stride-12 table)
+    u8 x172[0x174 - 0x172];
+    s8 x174;      // weapon-arm flags (func_80040FA8 masks 0xC0)
+    u8 x175[0x449 - 0x175];
     u8 x449;
     u8 x44A;      // hold counter (func_80040574 increments, resets)
     u8 x44B;

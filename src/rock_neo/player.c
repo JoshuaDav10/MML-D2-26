@@ -255,9 +255,57 @@ s32 func_80040380(PL_WORK* pl) {
     return 0;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800403D4);
+s32 func_800403D4(PL_WORK* pl, s32 arg1) {
+    u16 k, m0, m1;
+    u8 t;
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040468);
+    if (Scene_work.x0 != 0 || arg1 == 0) {
+        k = pl->x11C;
+    } else {
+        k = pl->x11E;
+    }
+    m0 = pl->x12C;
+    m1 = pl->x12E;
+    if ((k & (m0 | m1)) != (m0 | m1)) {
+        if (k & m0) {
+            if (!(k & pl->x134)) {
+                t = pl->x112;
+                pl->x9 = 2;
+                pl->xA = 0;
+                pl->x112 = 1;
+                pl->x113 = t;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+
+s32 func_80040468(PL_WORK* pl, s32 arg1) {
+    u16 k, m0, m1;
+    u8 t;
+
+    if (Scene_work.x0 != 0 || arg1 == 0) {
+        k = pl->x11C;
+    } else {
+        k = pl->x11E;
+    }
+    m0 = pl->x12C;
+    m1 = pl->x12E;
+    if ((k & (m0 | m1)) != (m0 | m1)) {
+        if (k & m1) {
+            if (!(k & pl->x134)) {
+                t = pl->x112;
+                pl->x9 = 2;
+                pl->xA = 0;
+                pl->x112 = 3;
+                pl->x113 = t;
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
 
 s32 func_800404FC(PL_WORK* pl, s32 arg1) {
     u16 k;
@@ -390,13 +438,88 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040E00);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040E9C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040FA8);
+extern u8 D_80089A84[]; // weapon stride-12 stat table, level column
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041044);
+s32 func_80040FA8(PL_WORK* pl) {
+    s32 c = pl->x174 & 0xC0;
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800410D4);
+    if (c == 0) {
+        goto ret1;
+    }
+    if (c == 0x40) {
+        if ((u32)pl->x100 > D_80089A84[pl->weapon_right_no * 12]) {
+            return 1;
+        }
+    }
+    if (c != 0x80) {
+        return 0;
+    }
+    if ((u32)pl->x100 > D_80089A84[pl->x171 * 12]) {
+    ret1:
+        return 1;
+    }
+    return 0;
+}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041158);
+extern u8 D_80089A88[]; // weapon stride-12 stat table, +4 column
+
+s32 func_80041044(PL_WORK* pl) {
+    u16 k = pl->x11C;
+
+    if (k & pl->x13C) {
+        if (D_80089A88[pl->weapon_right_no * 12] == 0) {
+            goto ret1;
+        }
+    }
+    if (!(k & pl->x13A)) {
+        return 0;
+    }
+    if (D_80089A88[pl->x171 * 12] == 0) {
+    ret1:
+        return 1;
+    }
+    return 0;
+}
+
+extern u8 D_80089A89[]; // weapon stride-12 stat table, +5 column
+
+s32 func_800410D4(PL_WORK* pl) {
+    s32 c = pl->x174 & 0xC0;
+
+    if (c == 0x40) {
+        if (D_80089A89[pl->weapon_right_no * 12] == 0) {
+            goto ret1;
+        }
+    }
+    if (c != 0x80) {
+        return 0;
+    }
+    if (D_80089A89[pl->x171 * 12] == 0) {
+    ret1:
+        return 1;
+    }
+    return 0;
+}
+
+extern u8 D_80089A8A[]; // weapon stride-12 stat table, +6 column
+
+s32 func_80041158(PL_WORK* pl) {
+    s32 c = pl->x174 & 0xC0;
+
+    if (c == 0x40) {
+        if (D_80089A8A[pl->weapon_right_no * 12] == 0) {
+            goto ret1;
+        }
+    }
+    if (c != 0x80) {
+        return 0;
+    }
+    if (D_80089A8A[pl->x171 * 12] == 0) {
+    ret1:
+        return 1;
+    }
+    return 0;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800411DC);
 
