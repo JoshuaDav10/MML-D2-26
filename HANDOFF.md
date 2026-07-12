@@ -26,6 +26,25 @@
     moji func_80058CC8 (codex-moji dc5aee9) landed + hash-gated (259); both
     giants' advanced scratch drafts pulled into notes/wip (see giant status).
     Three agent-* worktrees pruned; branches kept as archives.
+
+## THREE BACKGROUND STREAMS IN FLIGHT (launched 2026-07-12) — check first on resume
+
+Background agents die with the session, but each is worktree-isolated, commits
+frequently to a FIXED branch, and maintains a `_PROGRESS.md` resume doc. If this
+session ended mid-flight, DON'T restart them blind — read each branch + doc:
+
+| Branch | Task | Baseline → target | Resume doc / draft |
+|---|---|---|---|
+| `bg/bb4c-endgame` | BB4C reg/sched endgame (func_8001BB4C, cd.c) | 319 → 0 hard mismatches | `notes/wip/BB4C_PROGRESS.md`, `bb4c_draft_v2.c` |
+| `bg/moji-harvest` | small moji.c stub harvest (50 left) | +N matches | `notes/wip/MOJI_HARVEST_PROGRESS.md` |
+| `bg/53b40-reconcile` | reconcile func_80053B40 426-mismatch, push→0 | explain 426, then →0 | `notes/wip/53B40_PROGRESS.md`, `53b40_draft.c` |
+
+Rules the agents follow: worktree-isolated, NEVER push, NEVER touch dev/main,
+stay in their file lane. Landing to dev is FOREGROUND-only: cherry-pick a
+bytecmp/hash-clean result, clean-rebuild hash-gate + mutation test, then commit.
+Verify BB4C/53B40 with `CPP=cpp tools/bytecmp.sh <func> <draft>`. To continue a
+stream yourself: `git worktree add /tmp/<name> <branch>` and iterate there, or
+cherry-pick its landable commits.
 - Agent worktrees from the 07-06 sessions were audited + pruned 2026-07-11:
   ALL content was already salvaged into dev (BB4C baseline = 806/809 words
   @ 461 hard mismatches in notes/wip/bb4c_draft_v2.c; cbase-local iteration
