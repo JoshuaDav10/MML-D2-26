@@ -1,5 +1,19 @@
 # Activity Log
 
+## 2026-07-12 (Opus) — moji harvest resume (target: reliable wins)
+- **func_80053AA4 MATCHED** (267→268), clean rebuild + full-binary sha1 OK +
+  mutation test (xC2 0xFF→0xFE broke the hash; restore → OK). The kill-one-slot
+  handler: `m=&Moji_work[no]` (u8 no), cond `func_8001D494(0,1,0)` on the
+  0x40000 flag, `m->xC2=0xFF; m->flags=0`, then clear a Moji_flag bitset.
+- **IDIOM (new knob):** an AND-of-3 where two operands are a literal mask and a
+  runtime value gets reassociated by cc1 into `f & (lit & rt)` (combines the two
+  masks first). To pin the original's `(f & lit) & rt` accumulator form, split
+  off a temporary: `f = *(u32*)Moji_flag & 0xBFC1FFFF; ... = f & ~(0x08000000>>no);`.
+  First attempt (single expression) mismatched ONLY on this grouping.
+- Filed the deep-research FINDINGS doc for the two giant blockers (53B40 CSE-hoist
+  / BB4C pointer-fold) — notes/RESEARCH_FINDINGS_gcc272_idioms.md, candidate-only,
+  kept out of LESSONS.md until hash-gated (commit 62512b6).
+
 ## 2026-07-06 (Fable, session resume) — moji small-opcode harvest (10 matches)
 - Landed 10 moji.c script-opcode handlers, each full-binary sha1 OK:
   func_8005497C, func_800564C8, func_80056558, func_80056610, func_800566CC,

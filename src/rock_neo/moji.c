@@ -132,7 +132,17 @@ s32 MojiTaskKill(void) {
     *(u32 *)Moji_flag = 0;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053AA4);
+void func_80053AA4(u8 no) {
+    MOJI_TASK *m = &Moji_work[no];
+    u32 f;
+    if (m->flags & 0x40000) {
+        func_8001D494(0, 1, 0);
+    }
+    m->xC2 = 0xFF;
+    m->flags = 0;
+    f = *(u32 *)Moji_flag & 0xBFC1FFFF;
+    *(u32 *)Moji_flag = f & ~(0x08000000 >> no);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80053B40);
 
