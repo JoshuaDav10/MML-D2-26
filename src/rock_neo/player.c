@@ -137,7 +137,7 @@ void func_8003FDA8(PL_WORK* pl) {
     u16 k = pl->x11C; /* preloaded so the lhu schedules above the first branch */
     if (*(u8*)&pl->xA < 3) {
         if ((k & pl->x134) == 0) {
-            pl->x44A[0] = 0;
+            pl->x44A = 0;
             Sound_call(0x8F, 0, 0);
             if (func_800406A8(pl) == 0) {
                 pl->x9 = 0;
@@ -259,9 +259,45 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800403D4);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040468);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_800404FC);
+s32 func_800404FC(PL_WORK* pl, s32 arg1) {
+    u16 k;
+    u8 t;
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040574);
+    if (Scene_work.x0 != 0 || arg1 == 0) {
+        k = pl->x11C;
+    } else {
+        k = pl->x11E;
+    }
+    if ((k & pl->x126) && !(k & pl->x134)) {
+        t = pl->x112;
+        pl->x9 = 2;
+        pl->xA = 0;
+        pl->x112 = 2;
+        pl->x113 = t;
+        return 1;
+    }
+    return 0;
+}
+
+s32 func_80040574(PL_WORK* pl) {
+    u8 c;
+
+    if ((pl->x11C & pl->x134) && (pl->x16B & 2)) {
+        c = pl->x44A + 1;
+        pl->x44A = c;
+        if (c < 9) {
+            return 0;
+        }
+        if (pl->x44B != 0) {
+            return 0;
+        }
+        pl->x9 = 3;
+        pl->xA = 0;
+        return 1;
+    }
+    pl->x44A = 0;
+    return 0;
+}
 
 s32 func_800405F4(PL_WORK* pl) {
     if (pl->x11C & (pl->x128 | pl->x12A)) {
@@ -272,7 +308,21 @@ s32 func_800405F4(PL_WORK* pl) {
     return 0;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040630);
+s32 func_80040630(PL_WORK* pl, s32 arg1) {
+    if (Scene_work.x0 != 0 || arg1 == 0) {
+        arg1 = pl->x11C;
+    } else {
+        arg1 = pl->x11E;
+    }
+    if (pl->x134 & arg1) {
+        if (arg1 & (pl->x130 | pl->x132)) {
+            pl->x9 = 6;
+            pl->xA = 0;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_800406A8(PL_WORK* pl) {
     if (pl->x11E & pl->x138) {

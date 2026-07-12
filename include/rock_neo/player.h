@@ -47,18 +47,24 @@ typedef struct PL_WORK {
     u16 x126;     // key/input mask (func_80041EF4 alt of x124)
     u16 x128;     // key/input mask (func_800405F4 ORs with x12A, tests vs x11C)
     u16 x12A;     // key/input mask
-    u8 x12C[0x134 - 0x12C];
+    u8 x12C[0x130 - 0x12C];
+    u16 x130;     // key/input mask (func_80040630 ORs with x132)
+    u16 x132;     // key/input mask
     u16 x134;     // key/input mask (func_800402C4 tests vs x11C)
     u8 x136[0x138 - 0x136];
     u16 x138;
     u8 x13A[0x13E - 0x13A];
     u16 x13E;
     u16 x140;     // key/input mask (func_80040AEC tests vs x11C)
-    u8 x142[0x170 - 0x142];
+    u8 x142[0x16B - 0x142];
+    u8 x16B;      // flag byte (func_80040574 tests bit 1)
+    u8 x16C[0x170 - 0x16C];
     s8 weapon_right_no;
     u8 x171[0x449 - 0x171];
     u8 x449;
-    u8 x44A[0x450 - 0x44A];
+    u8 x44A;      // hold counter (func_80040574 increments, resets)
+    u8 x44B;
+    u8 x44C[0x450 - 0x44C];
     u8 rb_parts_equip_data[4];
     u8 rb_parts_sort_data[0x454 + 0x20 - 0x454];
     u8 x474[0x474 + 0x80 - 0x474];
