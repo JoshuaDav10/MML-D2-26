@@ -38,6 +38,14 @@
     and place it IN the for-init between `i` and `p`
     (`for (i=0, mask=0x80, p=D_800BE2F8; ...)`) — for-init comma order maps to
     preheader instruction order.
+- **PARKED func_80057924** (left INCLUDE_ASM): logic fully solved and verified via
+  diff (two-arm func_80043294 call: fall-through `-(x7D-x7C)*10`, else
+  `-zennyCount`; then `x7C=x7D; script2+=2; return 1`). Blocked because the
+  original holds `&Game_work.x7D` in a SECOND callee-saved reg ($s0) across the
+  call and reloads x7D through it per-arm, while my clean C loads x7D fresh at
+  the join. This is the hold-a-struct-field-base-pointer-across-a-call genus —
+  same family as BB4C's addressing-crux. Not worth grinding; revisit if that
+  genus gets a general idiom.
 - Filed the deep-research FINDINGS doc for the two giant blockers (53B40 CSE-hoist
   / BB4C pointer-fold) — notes/RESEARCH_FINDINGS_gcc272_idioms.md, candidate-only,
   kept out of LESSONS.md until hash-gated (commit 62512b6).
