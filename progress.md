@@ -7,10 +7,10 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 259 (verified 2026-07-12: full-binary sha1 OK after a CLEAN
+- rock_neo main: 267 (verified 2026-07-12: full-binary sha1 OK after a CLEAN
   rebuild — see the func_800605DC note under "Last verified build";
-  census.py --matched is authoritative: 259 matched / 225 active stubs / 484
-  total; moji 95/145, player 42/91, scene 35/59, sound 18/34, sub_scrn 15/44)
+  census.py --matched is authoritative: 267 matched / 217 active stubs / 484
+  total; moji 103/145, player 42/91, scene 35/59, sound 18/34, sub_scrn 15/44)
 - Volume: ~15% of ~31,300 mapped instructions
   - moji: func_800542FC + accessor family func_80054310..func_800543F8, func_80054BAC,
     func_80055304, func_80054694, func_80056180, func_8005A858,

@@ -649,3 +649,19 @@
   branches into notes/wip/ (BB4C 22266e1, 53B40 eba6103); mismatch counts
   re-verified by bytecmp (numbers recorded in the salvage commit, not trusting
   the stale analysis-doc headers).
+
+## 2026-07-12 — Opus (background streams): 8 moji matches + giant forensics (267)
+- bg/moji-harvest (background Opus, worktree): 8 moji.c matches landed via
+  foreground re-gate (moji 95→103, stubs 50→42): func_8005A598, func_80058C28,
+  func_80057744, func_8005958C+func_80059660 (twins), func_80058DEC,
+  func_800548C4, func_800563A8. Clean rebuild sha1 OK + mutation test on
+  func_800563A8. 2 attempted+reverted (func_80057924, func_80057C2C — cc1
+  scheduling). LESSON: a normalizing asm-differ can show CLEAN while the hash
+  FAILS — gate on the byte check only (now in COMPILER_IDIOMS §0).
+- bg/53b40-reconcile (done): 426 is a CASCADE not a regression; $fp theory
+  disproven; single $s7-swap fault (movable-ranking). Landed to dev.
+- bg/bb4c-endgame (done): 319 reframed — NOT a regalloc fight; 2-word surplus in
+  the addressing-crux + jump-canonicalization parked genera. Landed to dev.
+- Built notes/COMPILER_IDIOMS.md (portable gcc-2.7.2 cookbook) +
+  RESEARCH_BRIEF_gcc272_idioms.md. Fable launched on the 53B40 constant-CSE
+  blocker (bg/53b40-fable, in flight).

@@ -31,6 +31,10 @@ section name.
   toolchain will assemble a *truncated* stream into a partial `.o` with a fresh
   mtime while `make` later aborts — the stale exe still passes. GREP THE BUILD
   OUTPUT for `error:` yourself before trusting the check.
+- **A normalizing asm-differ (register-renaming, reorder-commuting) can show a
+  function as CLEAN while the real hash still FAILS** — it hides swapped setup
+  loads, size shifts, and register mirrors it "normalizes" away. Gate on the
+  byte/hash check, never on the pretty differ alone.
 - **The diff isolates which function; then reason about the shape:** register
   mirror → reorder temps / flip decl order; extra-or-missing `nop` → aliasing or
   scheduling; branch-displacement cascade → an instruction-count deficit

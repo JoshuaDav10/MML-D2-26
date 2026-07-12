@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-12, 259 matched / ~15.5%)
+# HANDOFF — MML Decomp session state (2026-07-12, 267 matched / ~15.5%)
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,9 +19,9 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 259** (~15.5% of instruction volume; 225 active stubs,
+- **Matched: 267** (~15.5% of instruction volume; 217 active stubs,
   484 total per `tools/census.py --matched` — authoritative). moji.c is
-  95/145 matched (50 stubs left). See `progress.md`.
+  103/145 matched (42 stubs left). See `progress.md`.
   - 2026-07-12 resume: salvaged stranded work from the dead agent branches —
     moji func_80058CC8 (codex-moji dc5aee9) landed + hash-gated (259); both
     giants' advanced scratch drafts pulled into notes/wip (see giant status).
