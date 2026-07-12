@@ -24,6 +24,7 @@ s32 func_80039E18(void); // s32 (not void) is load-bearing in func_80055C1C:
                          // reserving $v0 across the call moves script2 to $v1
                          // and lets `return 1` fill the load-delay slot
 extern u8 D_800BE2F8[];
+extern u8 D_800BE3DB;
 extern u8 D_8009899C; // sdata ($gp)
 extern u8 D_80098930; // sdata ($gp)
 extern u8 D_80098B6C; // sdata ($gp)
@@ -899,7 +900,40 @@ s32 func_80057BFC(MOJI_TASK *m) {
     return func_8005BF10(1, D_80098AF4, m->script += 1);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057C2C);
+s32 func_80057C2C(MOJI_TASK *m) {
+    u32 i;
+    s32 count;
+    s32 mask;
+    u8 *p;
+    u8 *q;
+    u8 op;
+
+    q = &D_800BE3DB;
+    count = 0;
+    for (i = 0, mask = 0x80, p = D_800BE2F8; i < 8; i++) {
+        if (*q & (mask >> i)) {
+            *p++ = i;
+            count++;
+        }
+    }
+    D_800BE2F8[count] = 8;
+
+    op = m->script2[count];
+    if (op == 0xFF) {
+        m->script2 += 9;
+    } else {
+        m->xC2 = op;
+        if (m->x44 != 0) {
+            m->script2 = m->x48 = m->x44 + *(u16 *)(m->x44 + op * 2);
+        } else {
+            m->script2 = m->x48 = D_8008CACC[op];
+        }
+        m->x3E = 0;
+        m->x3C = 0;
+        m->x72 = 0;
+    }
+    return 1;
+}
 
 s32 func_80057D00(MOJI_TASK *m) {
     m->stack2[m->xC0++] = m->script2 + 2;

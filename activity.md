@@ -21,6 +21,23 @@
     exactly that mix (`m->script2` + `Moji_work[no].field` for the rest) matched.
   - Header had a guessed `s32 func_80053788()`; kept the def `s32 ...(void)` with
     no return (byte-identical to void) to avoid touching unknown callers.
+- **func_80057C2C MATCHED** (269→270), clean rebuild + sha1 OK + mutation test
+  (terminator 8→9 broke it; restore → OK). Bit-scan of D_800BE3DB (MSB-first)
+  builds the D_800BE2F8 index list + `8` terminator, then a CALL-op dispatch on
+  `m->script2[count]`. Took 7 evidence-driven diff iterations; each fixed a real
+  difference. Idioms proven:
+  - count++ is CONDITIONAL, so gcc can't strength-reduce `D_800BE2F8[count]` —
+    the walking pointer must be EXPLICIT in source (`*p++ = i`).
+  - `u32 i` (not s32) → `sltiu` for the `i < 8` bound (s32 gives `slti`).
+  - `u8 *q = &D_800BE3DB; *q` — the write through `*p++` aliases it, forcing cc1
+    to hold &D_800BE3DB in a reg and reload the value each iter (matches `lbu 0(t1)`).
+  - if/else with ONE tail `return 1` (not an early `return`) → cc1 shares the
+    return and fills the `script2` store into the branch delay slot.
+  - **preheader scheduling knob:** the hoisted `0x80` mask kept landing on the
+    wrong side of the walking-ptr init. Fix: make it a named local `s32 mask`
+    and place it IN the for-init between `i` and `p`
+    (`for (i=0, mask=0x80, p=D_800BE2F8; ...)`) — for-init comma order maps to
+    preheader instruction order.
 - Filed the deep-research FINDINGS doc for the two giant blockers (53B40 CSE-hoist
   / BB4C pointer-fold) — notes/RESEARCH_FINDINGS_gcc272_idioms.md, candidate-only,
   kept out of LESSONS.md until hash-gated (commit 62512b6).
