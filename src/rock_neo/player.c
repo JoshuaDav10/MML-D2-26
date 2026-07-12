@@ -1,6 +1,7 @@
 #include "common.h"
 #include "rock_neo/player.h"
 #include "rock_neo/game.h"
+#include "rock_neo/scene.h"
 #include "rock_neo/sound.h"
 
 s32 func_800406A8(PL_WORK*);
@@ -222,7 +223,23 @@ s32 func_800402C4(PL_WORK* pl) {
     return 0;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8004030C);
+s32 func_8004030C(PL_WORK* pl, s32 arg1) {
+    u16 k;
+
+    if (Scene_work.x0 != 0 || arg1 == 0) {
+        k = pl->x11C;
+    } else {
+        k = pl->x11E;
+    }
+    if (k & pl->x126) {
+        if (k & pl->x134) {
+            pl->x9 = 1;
+            pl->xA = 0x100;
+            return 1;
+        }
+    }
+    return 0;
+}
 
 s32 func_80040380(PL_WORK* pl) {
     u8 t;
