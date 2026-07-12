@@ -146,6 +146,18 @@ NEXT HYPOTHESES for a fresh session (untried):
    (Attempt D used same addr diff types and DIDN'T merge — retest with the
    SAME address 0x1F800070 but genuinely different struct modes at the deref.)
 
+### 2026-07-12 (Opus) — re-confirmed, no novel crack
+Re-ran bytecmp on the main checkout: **426 baseline holds** (500 words vs 495).
+Evaluated this session's new preheader-scheduling knob (from func_80057C2C):
+it controls preheader instruction ORDER, not hoist SUPPRESSION, so it does NOT
+apply to this movable-formation blocker. Research-doc Q1 idioms substantially
+overlap the failed attempts A–F (inline-asm forms = B/C; volatile-offset var
+would add an lw/addu per site that the clean reference does not have). No
+high-probability untried form identified. Per the GIANTS_PLAN timebox rule,
+parking 53B40 again rather than low-yield grinding; the crack likely needs the
+research still in flight (RESEARCH_FINDINGS_gcc272_idioms.md) or an RTL-pass
+(-dj cse1-vs-cse2) investigation, not another blind C permutation.
+
 ### Resume bytecmp (current best = 426)
 ```
 cd /home/X/Documents/MML-D2-26 && source .venv/bin/activate
