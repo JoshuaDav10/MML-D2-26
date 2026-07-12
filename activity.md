@@ -1,5 +1,12 @@
 # Activity Log
 
+## 2026-07-12 (Opus) — sub_scrn sort vein
+- **sub_scrn 271→275** (f2e025e). Sub_screen_sort_{attack,energy,range,rapid}
+  activated from parked drafts (stripped ACCEPT_REORDERING_BULLSHIT guards).
+  Verified full-binary sha1 OK after a forced-clean rebuild (rm'd sub_scrn.c.o).
+  NOTE: census.py under-counted (270) — it reads the built .c.o intermediate, so
+  always rebuild before trusting census. Ground truth is the hash.
+
 ## 2026-07-12 (Opus) — moji harvest resume (target: reliable wins)
 - **func_80053AA4 MATCHED** (267→268), clean rebuild + full-binary sha1 OK +
   mutation test (xC2 0xFF→0xFE broke the hash; restore → OK). The kill-one-slot
