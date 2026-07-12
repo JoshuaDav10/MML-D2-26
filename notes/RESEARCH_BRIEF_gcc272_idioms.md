@@ -1,5 +1,9 @@
 # Deep-research brief — gcc 2.7.2 matching-decomp idioms
 
+> **A report answering this brief has landed:**
+> [`RESEARCH_FINDINGS_gcc272_idioms.md`](RESEARCH_FINDINGS_gcc272_idioms.md)
+> (candidate idioms — not yet hash-gated).
+
 Paste the block below into a research-capable chat (ChatGPT deep research,
 Claude with web, Perplexity, etc.). It is self-contained.
 

@@ -39,6 +39,8 @@ All paths below are relative to `notes/reference/` (symlink to `/home/X/Document
 | Path | Description |
 |------|-------------|
 | `notes/LESSONS.md` | Accumulated compiler idioms & matching tactics, proven against the hash — read before matching |
+| `notes/RESEARCH_BRIEF_gcc272_idioms.md` | Deep-research **prompt** for the two open codegen blockers (const-address CSE-hoist; pointer-fold) |
+| `notes/RESEARCH_FINDINGS_gcc272_idioms.md` | Deep-research **answer** to that brief — candidate CSE/hoist + pointer-fold idioms, NOT yet hash-gated |
 
 ## Usage
 
