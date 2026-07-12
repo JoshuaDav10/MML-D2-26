@@ -61,7 +61,7 @@ typedef struct PRIM {
 
 typedef struct { s16 x, y, w, h; } RECT;
 
-extern u32 Moji_flag[]; /* 0x80098A58 (as u32) */
+extern u8 Moji_flag[8]; /* 0x80098A58 (COMMON; accessed via *(u32*) so gprel.py gp-rewrites the bare refs, no address hoist) */
 extern MOJI_TASK Moji_work[]; /* 0x800BB6B8 */
 extern s32 D_80098824;
 extern s32 D_80098B2C;
@@ -95,11 +95,11 @@ void func_80053B40(void) {
     s32 c;
     s32 t;
 
-    if ((Moji_flag[0] & 0x400000) || D_80098824) {
+    if ((*(u32*)Moji_flag & 0x400000) || D_80098824) {
         return;
     }
     m = Moji_work;
-    Moji_flag[0] &= 0x3043FFFF;
+    *(u32*)Moji_flag &= 0x3043FFFF;
     D_80098B2C = 0;
     if (m >= &Moji_work[5]) {
         goto tail_env;
@@ -109,10 +109,10 @@ void func_80053B40(void) {
         if ((s32)m->flags < 0) {
             /* --- active slot --- */
             c = ((s32)((u8 *)m - (u8 *)Moji_work) / 0xC4);
-            Moji_flag[0] = (Moji_flag[0] | 0x80000000) | (0x8000000 >> c);
+            *(u32*)Moji_flag = (*(u32*)Moji_flag | 0x80000000) | (0x8000000 >> c);
 
-            if ((Moji_flag[0] & 0x40000) == 0
-                && (Moji_flag[0] & (0x10000 >> m->x6)) == 0) {
+            if ((*(u32*)Moji_flag & 0x40000) == 0
+                && (*(u32*)Moji_flag & (0x10000 >> m->x6)) == 0) {
                 m->xB8 = D_800C0C26;
                 m->xBA = D_800C0C2A;
             } else {
@@ -235,7 +235,7 @@ void func_80053B40(void) {
             }
         } else {
             /* --- inactive: clear bit --- */
-            Moji_flag[0] &= ~(0x10000 >> m->x6);
+            *(u32*)Moji_flag &= ~(0x10000 >> m->x6);
         }
 
         /* slot-4-skip: pack x71 low byte into D_80098B2C */

@@ -1,5 +1,49 @@
 # func_8001BB4C — analysis & matching plan (the 845-insn CD loader state machine)
 
+## 2026-07-11 (Fable, worktree agent) — xm-diff VERDICT + real blocker re-diagnosed
+VERDICT on notes/wip/bb4c_inflight_xm.diff: **REVERTED, both variants.**
+  - full inflight diff (u32 xm + D_800C5608 extern replacing p2[-1]):
+    817 words / **479 hard** (baseline: 809 expected / 806 / 461). The
+    D_800C5608 absolute-name form for the countdown adds lui+sw pairs
+    (p2[-1] base-relative is CORRECT per the original's base-off-$s2
+    addressing) — that half is permanently wrong, discard.
+  - partial variant (u32 xm for the & 0x100 masks ONLY, p2[-1] kept):
+    808 words / **472 hard**. Numerically worse BUT the shift fix itself is
+    PROVEN REQUIRED (below); the count rise is positional-cascade noise.
+KEY FINDING 1 — srl/sra proof: the original emits **srl** for every
+  `(x10 & 0x100) >> 4` texpage shift (ref .s lines 205/216/222/286/297/303)
+  and the draft's `s32 x` emits **sra**. sra can NEVER byte-match srl, so the
+  mask local MUST be unsigned in the final code. With u32 xm the scratch srl
+  count == ref (9/9). Re-introduce the u32-mask form once word parity (809)
+  is reached; only then is the hard count comparable again.
+KEY FINDING 2 — the "$s5/$s6 rematerialized" blocker is STALE: cc1 -dg/-dl
+  dumps of the 461 baseline show dispositions 77→16 76→17 73→18 72→19 74→20
+  78→21 75→22 — all SEVEN pseudos hold $s0..$s6; prologue/epilogue match the
+  original exactly (frame 0x38, 7 saves). Global regalloc is NOT the problem.
+KEY FINDING 3 — the REAL remaining blocker: a 3-word deficit (806 vs 809)
+  plus a catalog of true per-site codegen-shape diffs found by resynced
+  (difflib/opcode-normalized) alignment, NOT a regalloc cascade:
+   - states 8/9 gate reads: ref does **lbu** where draft's `w->x14 != 0` /
+     `w->x18 != 0` emit lw (4 sites, ref norm-lines ~687/704/729/746).
+     Byte-read the gates ((u8) member alias or cast).
+   - branch-sense inversions: ref bne vs scratch beq (~norm 589), ref bnez
+     vs scratch beqz (~510, ~600) in states 6/8 — leg-order/shape knobs.
+   - store-order swaps in the type7/type8 setup (sw/sb pairs emitted in
+     opposite order, norm 412-417/441-445) — LESSONS store-order rules.
+   - sound path raw consts: ref materializes 0x8014B000/0x8013B000 as
+     lui/ori pairs positioned differently than scratch (norm 337-341,
+     403-408, 432-437) — see LESSONS "Raw-constant pointers use lui/ori".
+   - case-6 sign-fixup shape differs (norm 623-635): ref = nop/sll/bgez/
+     addu/addiu then sra later; scratch = addiu/bgez/nop/sra earlier.
+     Re-derive from ref C530-C540 (looks like (x+3)>>2 conditional form).
+   - outer state-3 `D_8009896C |= 2` region: scratch emits an extra
+     lui/sw/j (norm 87-91) — one redundant store + jump; check the case-3
+     early-return shape.
+  Method note: normalize both streams (regs→R, imm→#, %hi/%lo→#, branch
+  targets→L, li≡addiu) and difflib-align; the positional bytecmp count is
+  DOMINATED by the 3-word shift — fix word count first, then the hard count
+  becomes meaningful again.
+
 Status: **STRUCTURE MATCHED, register allocation NOT converged; not yet
 matched.** Signature: `void func_8001BB4C(void)`. Frame 0x38, saves $ra +
 $s0..$s6 (7 callee-saved). Full compilable draft: `notes/wip/bb4c_draft_v2.c`

@@ -44,6 +44,7 @@ extern s32 D_80098A54;
 extern u8  D_80098B38[];
 /* state-2 / type-7 / type-8 access the work block by ABSOLUTE name.
    Union offsets 5618/561C/5620 declared at their BYTE nature; word sites cast. */
+extern s32 D_800C5608;
 extern s32 D_800C5614, D_800C5624, D_800C5628, D_800C5634, D_800C5638;
 extern s8  D_800C5618, D_800C561C;
 extern u8  D_800C5620;
@@ -90,6 +91,7 @@ void func_8001BB4C(void) {
     s32 one;
     RECT *r;
     CMD_ENT *e;
+    CMD_ENT *ec;
     CMD_ENT *cbase;
     s32 type;
     s32 t, wd;
@@ -135,18 +137,18 @@ void func_8001BB4C(void) {
         w = &D_800C5604;
         p2 = &w->x8;
         q4 = &w->x1C;
-        while (1) {
+        do {
             switch (D_800989C8) {
             case 0:
-                e = &cbase[D_800987A8];
-                type = e->x0;
+                ec = &cbase[D_800987A8];
+                type = ec->x0;
                 D_80098A54 = type;
                 if (type == -1) {
-                    D_800989C4 = 4;
-                    return;
+                    goto done;
                 }
-                w->x0 = e->x4;
-                w->x4 = e->x8;
+                w->x0 = ec->x4;
+                w->x4 = ec->x8;
+                e = ec;
                 switch (type) {
                 case 0:
                     p2[0] = e->xC;
@@ -292,11 +294,11 @@ void func_8001BB4C(void) {
                         } while (w->x0 != 0);
                     }
                 }
-                w->x4 -= 1;
-                if (w->x4 == 0) {
-                    goto tail0;
+                D_800C5608 -= 1;
+                if (D_800C5608 != 0) {
+                    goto tail;
                 }
-                goto tail;
+                goto tail0;
 
             case 2:
                 r = &D_8009BE48;
@@ -331,43 +333,40 @@ void func_8001BB4C(void) {
             case 6:
                 if (*(u8 *)q4 == 0) {
                     q4[-6] -= 1;
-                    if (q4[-6] == 0) {
-                        goto tail0;
+                    if (q4[-6] != 0) {
+                        goto tail;
                     }
+                    goto tail0;
+                }
+                x = q4[-2];
+                if (x >= 0x800) {
+                    func_800176DC((u8 *)&cbase[D_800987A8], q4[-1], 0x40);
+                    q4[-1] += 0x800;
+                    q4[-2] -= 0x800;
+                } else if (x != 0) {
+                    func_80017684((u8 *)&cbase[D_800987A8], q4[-1], x / 4);
+                    t = q4[-5];
+                    q4[-2] = 0;
+                    GW_VAB(q4[-5]) =
+                        SsVabOpenHeadSticky(t * 0x1820 + 0x8014B000, t, q4[-3]);
                 } else {
-                    x = q4[-2];
-                    if (x >= 0x800) {
-                        func_800176DC((u8 *)&cbase[D_800987A8], q4[-1], 0x40);
-                        q4[-1] += 0x800;
-                        q4[-2] -= 0x800;
-                    } else if (x != 0) {
-                        if (x < 0) {
-                            x += 3;
-                        }
-                        func_80017684((u8 *)&cbase[D_800987A8], q4[-1], x >> 2);
-                        t = q4[-5];
-                        q4[-2] = 0;
-                        GW_VAB(q4[-5]) =
-                            SsVabOpenHeadSticky(t * 0x1820 + 0x8014B000, t, q4[-3]);
-                    } else {
-                        if (SsVabTransBodyPartly((u8 *)&cbase[D_800987A8], 0x800,
-                                GW_VAB(q4[-5])) == GW_VAB(q4[-5])) {
-                            D_800989C8 = 0;
-                        }
-                        SsVabTransCompleted(1);
+                    if (SsVabTransBodyPartly((u8 *)&cbase[D_800987A8], 0x800,
+                            GW_VAB(q4[-5])) == GW_VAB(q4[-5])) {
+                        D_800989C8 = 0;
                     }
+                    SsVabTransCompleted(1);
                 }
                 goto tail;
 
             case 8:
                 if ((u32)w->x0 >= 0x800) {
-                    if (w->x14 != 0) {
+                    if (*(u8 *)&w->x14 != 0) {
                         func_800176DC((u8 *)&cbase[D_800987A8], w->x10, 0x40);
                     }
                     w->x0 -= 0x800;
                     w->x10 += 0x800;
                 } else {
-                    if (w->x14 != 0) {
+                    if (*(u8 *)&w->x14 != 0) {
                         dst = (u8 *)w->x10;
                         src = (u8 *)&cbase[D_800987A8];
                         if (w->x0 != 0) {
@@ -383,13 +382,13 @@ void func_8001BB4C(void) {
 
             case 9:
                 if ((u32)w->x0 >= 0x800) {
-                    if (w->x18 != 0) {
+                    if (*(u8 *)&w->x18 != 0) {
                         func_800176DC((u8 *)&cbase[D_800987A8], w->x14, 0x40);
                     }
                     w->x0 -= 0x800;
                     w->x14 += 0x800;
                 } else {
-                    if (w->x18 != 0) {
+                    if (*(u8 *)&w->x18 != 0) {
                         dst = (u8 *)w->x14;
                         src = (u8 *)&cbase[D_800987A8];
                         if (w->x0 != 0) {
@@ -414,10 +413,11 @@ tail:
             if (D_800987A8 == 0xA) {
                 D_800987A8 = 0;
             }
-            if (D_80098B38[D_800987A8] != one) {
-                return;
-            }
-        }
+        } while (D_80098B38[D_800987A8] == one);
+        return;
+done:
+        D_800989C4 = 4;
+        return;
     case 4:
         func_8001CAAC();
         break;

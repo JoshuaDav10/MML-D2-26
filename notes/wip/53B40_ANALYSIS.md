@@ -227,3 +227,26 @@ not a single CSE'd loop-invariant movable. UNTRIED / next avenues:
 
 This is a genuine BB4C-scale register grind; body logic is done, this is the
 sole blocker. Draft compiles clean; NOT ready to port.
+
+### 2026-07-11 (worktree agent, Fable) — Moji_flag address-hoist eliminated; movable set now 5-of-6 correct
+Baseline re-measured: 455 hard mismatches. -dL dump showed SIX hoisted movables
+(not five): Moji_flag's ADDRESS (symbol_ref, from `extern u32 Moji_flag[]` +
+`Moji_flag[0]` indexing → `la $4,Moji_flag` → CSE'd/hoisted) was a 6th movable
+the earlier analysis missed. The original never hoists it — every access is
+`lw/sw %gp_rel(Moji_flag)($gp)` (gp-relative, no address register at all).
+FIX (canonical matched-moji.c idiom): declare `extern u8 Moji_flag[8]` and
+access via `*(u32*)Moji_flag` — cc1 then emits bare `lw $x,Moji_flag` operands
+(no la), gprel.py rewrites them gp-relative. Confirmed in -dL: Moji_flag no
+longer on the movable list. Count now 456 (unchanged numerically — the tail
+drift dominates), but the hoisted-movable set is now exactly 5:
+  0x40000(s), 0x1F800070(WRONG — should be inline), 0xFF000000(s),
+  0xFFFFFF(s), 0x86186187(s); 0x40000000 (2 uses, savings 2) NOT hoisted.
+Remaining single deviation: 0x1F800070 (savings 3, 3 in-loop mem-base uses,
+insns 392/549/808 merge) outranks 0x40000000 (savings 2, insns 340/360 merge).
+Original: 0x40000000 hoisted to $s7; 0x1F800070 fresh lui/ori at ALL 4 sites
+(3 in-loop + 1 tail), each followed by `lw 0($reg)` (memory re-read per site).
+Matched game.c funcs (func_80016E90) use PRIM_PTR read-once/thread/write-back
+per SITE — same per-site round-trip. A minimal 3-site OTPTR probe STILL hoists
+the address → site count alone doesn't explain the original; need $s7 use-count
+in the reference to see if 0x40000000 has >2 effective uses (e.g. 0x60000000
+= $s7|0x20000000 or the 0xAF7FFFFF clear built from it).
