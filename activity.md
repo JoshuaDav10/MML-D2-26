@@ -632,3 +632,9 @@
   to dev, clean rebuild, sha1 OK, mutation test (x16B bit 2→4 broke it,
   restore OK). PL_WORK gains x130/x132 (key masks), x16B (flag byte),
   x44A/x44B (hold counter) — all layout-neutral padding carves.
+
+## 2026-07-11 — Fable (gate): 6 more player functions landed (258)
+- Harvest batch 2: func_800403D4/40468 (dual-mask k-select), weapon stat-table
+  family func_80040FA8/41044/410D4/41158 (D_80089A84 stride-12, goto-shared
+  return-1). Cherry-picked, clean rebuild, sha1 OK, mutation test (0xC0→0xC1
+  broke it, restore OK). PL_WORK gains x12C/x12E/x13A/x13C/x100/x171/x174.
