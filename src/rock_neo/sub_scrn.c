@@ -227,11 +227,6 @@ void Sub_screen_shift_check(SUB_SCREEN_WORK* subp) {
 
 // clang-format off
 
-#ifndef ACCEPT_REORDERING_BULLSHIT
-// clang-format off
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_sort_attack);
-#else
-// clang-format on
 void Sub_screen_sort_attack(void) {
     s32 d0, d1;
     u8 sort_src, sort_dist;
@@ -252,13 +247,6 @@ void Sub_screen_sort_attack(void) {
     }
 }
 
-// clang-format off
-#endif
-
-#ifndef ACCEPT_REORDERING_BULLSHIT
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_sort_energy);
-#else
-// clang-format on
 void Sub_screen_sort_energy(void) {
     s32 d0, d1;
     u8 sort_src, sort_dist;
@@ -278,14 +266,7 @@ void Sub_screen_sort_energy(void) {
         }
     }
 }
-// clang-format off
 
-#endif
-
-#ifndef ACCEPT_REORDERING_BULLSHIT
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_sort_range);
-#else
-// clang-format on
 void Sub_screen_sort_range(void) {
     s32 d0, d1;
     u8 sort_src, sort_dist;
@@ -305,12 +286,7 @@ void Sub_screen_sort_range(void) {
         }
     }
 }
-// clang-format off
-#endif
 
-#ifndef ACCEPT_REORDERING_BULLSHIT
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_sort_rapid);
-#else
 void Sub_screen_sort_rapid(void) {
     s32 d0, d1;
     u8 sort_src, sort_dist;
@@ -330,7 +306,6 @@ void Sub_screen_sort_rapid(void) {
         }
     }
 }
-#endif
 
 #ifndef ACCEPT_REORDERING_BULLSHIT
 void Sub_screen_sort_sub(PL_WORK *pw, s32 arg1, s32 arg2) {
