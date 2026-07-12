@@ -178,10 +178,6 @@ unknown_t func_80060DB8(SUB_SCREEN_WORK* subp) {
 }
 #endif
 
-#ifndef ACCEPT_REORDERING_BULLSHIT
-// clang-format off
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_cancel_check);
-#else
 s32 Sub_screen_cancel_check(void) {
     u32 joy_trg;
 
@@ -201,7 +197,6 @@ s32 Sub_screen_cancel_check(void) {
         return (0);
     }
 }
-#endif
 
 #ifndef ACCEPT_REORDERING_BULLSHIT
 

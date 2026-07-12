@@ -46,6 +46,11 @@
   the join. This is the hold-a-struct-field-base-pointer-across-a-call genus —
   same family as BB4C's addressing-crux. Not worth grinding; revisit if that
   genus gets a general idiom.
+- **Sub_screen_cancel_check MATCHED** (270→271), clean rebuild + sha1 OK +
+  mutation test. This was a PRE-WRITTEN draft parked behind `#ifdef
+  ACCEPT_REORDERING_BULLSHIT` (from before the patchasm reorder pass existed) —
+  it compiles-matches as-is now. Just un-ifdef'd it. **Lead: audit the other
+  ACCEPT_REORDERING_BULLSHIT-parked drafts — some may now match for free.**
 - Filed the deep-research FINDINGS doc for the two giant blockers (53B40 CSE-hoist
   / BB4C pointer-fold) — notes/RESEARCH_FINDINGS_gcc272_idioms.md, candidate-only,
   kept out of LESSONS.md until hash-gated (commit 62512b6).
