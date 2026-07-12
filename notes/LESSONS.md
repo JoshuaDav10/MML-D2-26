@@ -6,7 +6,12 @@ iteration teaches something; this file is how the project gets smarter.
 
 ## How knowledge persists between sessions
 - `CLAUDE.md` — auto-loaded rules (build commands, gotchas, branch policy).
-- This file — compiler idioms and matching tactics, growing per session.
+- This file — compiler idioms and matching tactics, growing per session
+  (chronological, with concrete MML symbols/functions = the PROVENANCE).
+- `notes/COMPILER_IDIOMS.md` — the PORTABLE distillation: the same idioms
+  reorganized by compiler mechanism, game symbols stripped, meant to carry to
+  ANY PSX PSY-Q gcc-2.7.2 decomp. When a new idiom here is a property of the
+  COMPILER (not this game's data), distill it into that file too.
 - `notes/DOCUMENT_INDEX.md` — index to the external reference corpus
   (MIPS R3000 manual, PSXSPX hardware spec, PSYQ SDK docs) at
   `notes/reference/`. Index-driven lookup only; never whole-file pulls.
