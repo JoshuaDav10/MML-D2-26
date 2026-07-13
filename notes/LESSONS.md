@@ -758,3 +758,32 @@ of decision that blocks the giants, so they generalize well beyond moji.
   `Base[count] = ...` into a walking pointer — you must write the walking
   pointer explicitly (`*p++ = ...`). And `u32` vs `s32` loop counter selects
   `sltiu` vs `slti` for the bound test.
+
+## 2026-07-12 (Opus) — func_8001F6C4 (scene): 3 reusable knobs
+
+Small (28-insn) scene function matched clean + mutation-tested. Three knobs, all
+generalizable:
+
+- **Call with NO arg-setup + different live values per path = ONE reused
+  variable passed as the arg.** The `jal func_8001D7AC` had no preceding a0 load,
+  yet a0 held `p[0]` on one path and `p[f+1]` on another. That's a single local
+  reassigned along the way and passed at the end: `s32 a = p[0]; if(...){ a =
+  p[f+1]; ...} func_8001D7AC(a);`. cc1 keeps `a` in a0 across both paths, so no
+  reload appears. When a call takes a "leftover" register that differs per path,
+  look for one variable reused as both a compared value and the argument.
+- **A "+0xC whole-data shift" was NOT a COMMON leak — the function was 3 insns
+  too long.** `.data`/`.bss` follow `.text`, so a function that compiles N insns
+  long shifts EVERY data symbol by N*4. All of D_800893BC / D_800C356E/F /
+  Game_work read as +0xC purely because my body had 3 extra insns. Confirm the
+  function's own instruction count BEFORE hunting extern/COMMON decls (the Ch-5
+  symptom-table caveat, seen live).
+- **Hoist an unconditionally-safe load ABOVE the branch to fill its delay slot.**
+  The original loads `D_800C356F` and computes `f*2` in the `bne` delay slot even
+  though `f` is only used in the taken path. Writing `s32 f = D_800C356F[0];`
+  BEFORE the `if` (not inside it) makes cc1 hoist the load and fill the delay
+  slot with the `sll` — killing the 3 extra insns. A value used in only one arm
+  can still be loaded before the branch if the load is side-effect-free.
+- **Byte-in-bss symbols accessed via lui/%lo want the ARRAY decl** (`extern u8
+  D_800C356E[];`, use `[0]`), not the scalar `extern u8 D_800C356E;` (which emits
+  `.extern ,1` and risks the small-scalar COMMON path). Applied to D_800C356E and
+  D_800C356F (rock_neo.h decl flipped to `[]`; it was unused elsewhere).

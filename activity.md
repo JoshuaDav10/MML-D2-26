@@ -1,5 +1,19 @@
 # Activity Log
 
+## 2026-07-12 (Opus) — scene momentum + permuter fix
+- **func_8001F6C4 MATCHED** (275→276), clean rebuild + full-binary sha1 OK +
+  mutation test (`p[f+1]`→`p[f+2]` broke the hash; restore → OK). 28-insn scene
+  fn. Knobs: (1) a call with no arg-setup taking a "leftover" a0 that differs per
+  path = one reused local `a` passed as the arg; (2) a "+0xC whole-data shift"
+  that was NOT a COMMON leak — the body was 3 insns too long (data follows text);
+  (3) hoisting `s32 f = D_800C356F[0];` above the `if` fills the bne delay slot
+  with `sll` and drops the 3 extra insns; (4) byte-in-bss syms via lui/%lo want
+  the array decl (`extern u8 D_800C356E[]`). See LESSONS.
+- **Permuter unblocked**: `pip install toml` + fixed tools/patchasm.py crash
+  (build/test.s debug write from a permuter workdir). Added notes/PERMUTER_GUIDE.md.
+  53B40 confirmed a dead permuter target (best 8535/base 11395 over 2820 iters —
+  value-CSE wall).
+
 ## 2026-07-12 (Opus) — sub_scrn sort vein
 - **sub_scrn 271→275** (f2e025e). Sub_screen_sort_{attack,energy,range,rapid}
   activated from parked drafts (stripped ACCEPT_REORDERING_BULLSHIT guards).

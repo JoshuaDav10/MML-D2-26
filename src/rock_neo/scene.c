@@ -4,6 +4,8 @@
 
 extern u8 D_80098198;
 extern u8 D_80098199;
+extern u8 D_800C356E[];
+extern s16 *D_800893BC[];
 
 extern u8 D_80098AB8[];
 extern s32 D_800BE438[];
@@ -303,7 +305,21 @@ void func_8001F580(u16 no, s32 flag, s32 flag2) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F5E4);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F6C4);
+void func_8001F6C4(void) {
+    s16 *p = D_800893BC[D_800C356E[0]];
+    s32 a = p[0];
+    s32 f = D_800C356F[0];
+    if (Game_work.x68 == a) {
+        a = p[f + 1];
+        if (a < 0) {
+            return;
+        }
+        if (Game_work.x6A == a) {
+            return;
+        }
+    }
+    func_8001D7AC(a);
+}
 
 extern void (*D_8008980C[])(void);
 void func_8001F798(s32);

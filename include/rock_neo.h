@@ -19,7 +19,7 @@ extern unknown_t D_8008CB94; // may be in sub_scrn.c
 extern s32 D_80098B2C;
 unknown_t func_8001F3C8();
 unknown_t func_80038648();
-extern u8 D_800C356F;
+extern u8 D_800C356F[];
 unknown_t func_80017C30(unknown_t);
 unknown_t func_8001B2F0(unknown_t);
 unknown_t func_8005DF3C();

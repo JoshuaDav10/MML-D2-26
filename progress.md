@@ -7,11 +7,13 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 275 (verified 2026-07-12: full-binary sha1 OK after a CLEAN
-  rebuild — forced `rm` of sub_scrn.c.o — see the func_800605DC note under
+- rock_neo main: 276 (verified 2026-07-12: full-binary sha1 OK after a CLEAN
+  rebuild — forced `rm` of the .c.o — see the func_800605DC note under
   "Last verified build"; census.py --matched reads the built .c.o intermediate,
-  so it must be run AFTER a fresh build or it under-counts. 275 matched:
-  moji 106/145, player 42/91, scene 35/59, sound 18/34, sub_scrn 20/44)
+  so it must be run AFTER a fresh build or it under-counts. 276 matched:
+  moji 106/145, player 42/91, scene 36/59, sound 18/34, sub_scrn 20/44)
+  - +1 (func_8001F6C4, scene): matched + mutation-tested; reused-variable call
+    arg + delay-slot load hoist (see LESSONS 2026-07-12 Opus scene entry).
   - +4 this session (f2e025e): Sub_screen_sort_{attack,energy,range,rapid} —
     parked drafts activated by stripping ACCEPT_REORDERING_BULLSHIT guards.
 - Volume: ~15% of ~31,300 mapped instructions
