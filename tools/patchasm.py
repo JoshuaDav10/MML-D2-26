@@ -86,9 +86,16 @@ def reorder_deferred_functions(asm):
 
 def main():
     asm = reorder_deferred_functions(sys.stdin.read())
-    print(patch_asm(asm))
-    f = open("build/test.s", "w")
-    f.write(patch_asm(asm))
+    result = patch_asm(asm)
+    print(result)
+    # Debug dump; skip silently if build/ doesn't exist (e.g. when the
+    # pipeline is driven from a decomp-permuter workdir rather than the
+    # repo root). The stdout output above is the authoritative result.
+    try:
+        with open("build/test.s", "w") as f:
+            f.write(result)
+    except OSError:
+        pass
 
 if __name__ == "__main__":
     main()
