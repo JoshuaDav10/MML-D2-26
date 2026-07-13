@@ -55,6 +55,17 @@ Read ONLY these (keep context small):
 
 ## Phase 1 — Pilot: 53B40's `move_movables` (the ROI gate)
 
+> **SN-PATCH CAVEAT (Phase 0 finding, 6eddf71):** `cc1-27` is
+> `GNU C 2.7.2.SN32.3.7` — an SN Systems / PSY-Q patched build, NOT stock. The
+> FSF source at `~/src/gcc-2.7.2/loop.c:1529` is the likely-correct baseline
+> (generic optimizer passes are usually untouched by SN, whose patches target
+> MIPS/PSX codegen + the assembler interface), but you CANNOT assume it matches
+> byte-for-byte. **Ground truth = the actual `-dL`/`-dg` dumps from `cc1-27`.**
+> Read the FSF source to learn the *mechanism*; confirm every concrete claim
+> against the real dump. Where they disagree, trust the dump and suspect an SN
+> patch. (If this becomes blocking, the SN-patched source is not public FSF —
+> check the decomp community for a reconstructed SN 2.7.2 tree.)
+
 1. Read the ONE function `move_movables` in `loop.c` + the movable-scoring /
    threshold logic it uses. Write down the EXACT rule: the score formula, the
    threshold, what makes a constant hoist vs stay inline.
