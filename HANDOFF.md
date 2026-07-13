@@ -1,4 +1,13 @@
-# HANDOFF — MML Decomp session state (2026-07-12, 267 matched / ~15.5%)
+# HANDOFF — MML Decomp session state (2026-07-12, 276 matched)
+
+> **Latest (2026-07-12 Opus session):** 276 matched (sub_scrn sort vein +4 →
+> func_8001F6C4 scene +1). decomp-permuter FIXED & working (`pip install toml`
+> + patchasm build/test.s guard) — see `notes/PERMUTER_GUIDE.md`. New
+> `notes/PARTS_LIST.md` (tooling inventory). **Planned expedition:**
+> `notes/wip/GCC_SOURCE_EXPEDITION.md` — read GCC 2.7.2 source (Fable lane) to
+> resolve the parked compiler walls (53B40 pilot); has its own checkpoint
+> protocol. A transcript-archive + two-book textbook lives in the separate
+> `MML-decomp-journal` repo (private, GitHub JoshuaDav10).
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`
@@ -19,9 +28,10 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 267** (~15.5% of instruction volume; 217 active stubs,
-  484 total per `tools/census.py --matched` — authoritative). moji.c is
-  103/145 matched (42 stubs left). See `progress.md`.
+- **Matched: 276** (~15.x% of instruction volume; ~214 active stubs,
+  484 total per `tools/census.py --matched` — authoritative, run AFTER a fresh
+  build or it under-counts stale objects). moji.c 106/145; scene 36/59. See
+  `progress.md`.
   - 2026-07-12 resume: salvaged stranded work from the dead agent branches —
     moji func_80058CC8 (codex-moji dc5aee9) landed + hash-gated (259); both
     giants' advanced scratch drafts pulled into notes/wip (see giant status).
