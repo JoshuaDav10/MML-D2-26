@@ -107,3 +107,41 @@ Source: FSF `~/src/gcc-2.7.2/loop.c` (baseline; SN divergence not yet observed i
 
 Next: cross-check these predicates against base.c.loop verdict lines for
 528482416 (0x1F800070) and 1073741824 (0x40000000).
+
+## Ratchet tooth 3 (2026-07-14, Fable) — dump cross-check: formula CONFIRMED, target 0x40000000 hoist is LOOP-UNREACHABLE
+
+Dump verdicts (base.c.loop, outer loop 61..1036, "399 real insns", loop has calls) are
+fully consistent with the FSF formula `moved iff threshold*savings*lifetime >= insn_count`.
+No SN divergence observed in this pass.
+
+**Threshold bounding from verdict pairs** (T0 = initial threshold, -3 per move,
+and note `insn_count *= 2` at "halved since already moved" MUTATES the local param —
+it persists for all LATER movables in the chain, loop.c:1611):
+- insn 88 (savings 3, life 3) not desirable → 9*T0 < 399 → T0 <= 44
+- insn 104 (savings 4, life 4) moved       → 16*T0 >= 399 → T0 >= 25
+- insn 982 (savings 2, life 25) not desirable, after 5 moves (-15) and one doubling
+  (insn_count 798) → 50*(T0-15) < 798 → T0 <= 30
+→ T0 ∈ [25,30] (= 1 + n_non_fixed_regs, loop_has_call=1). Plausible MIPS n_non_fixed ~24-29.
+
+**The two constants:**
+- 0x1F800070 (528482416): three movables (insns 392,549,808; lives 3,3,24) MERGE
+  (549/808 print "matches 392") → combined savings 3, life 30 → product 90*T >> 399
+  → moved to 1129 → greg gives it $20/$s4. TARGET instead rematerializes lui/ori at
+  4 sites and does NOT hoist.
+- 0x40000000 (1073741824): two movables (insns 340,360; adjacent single-use temps,
+  life 1 each) merge → savings 2, life 2 → product 4*T <= 120 < 399 → "not desirable"
+  → inline li. TARGET hoists into $s7 (prologue lui, 2 uses at 44584/445A4).
+
+**Hoist-slot audit:** current build and target agree on 5 of 6 callee-saved constants
+($s2+0x71, 0x40000, 0xFF000000, 0xFFFFFF, 0x86186187); the ONLY swap is
+0x1F800070 (current) vs 0x40000000 (target).
+
+**Decisive inference:** the target's $s7=0x40000000 has exactly 2 uses; product 4*T
+can never reach 399 for any T0 <= 100 → move_movables could NOT have hoisted it in the
+original compile either. Therefore in the original C, 0x40000000 was NOT a loop movable:
+it was a pseudo set OUTSIDE the loop — i.e. a local variable initialized to 0x40000000
+before the loop (`u32 x = 0x40000000;` idiom), register-allocated $s7 by greg directly.
+Corollary: with that pseudo occupying a callee-saved slot, only 6 slots exist for 7
+candidates; the loop-hoisted 0x1F800070 pseudo (REG_EQUIV const) should LOSE a hard reg
+and be rematerialized by reload as inline lui/ori — exactly the target pattern.
+Next (tooth 4): test that C form against the dumps/asm.
