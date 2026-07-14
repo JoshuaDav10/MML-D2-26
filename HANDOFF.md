@@ -1,13 +1,24 @@
-# HANDOFF — MML Decomp session state (2026-07-12, 276 matched)
+# HANDOFF — MML Decomp session state (2026-07-14, 276 matched)
 
-> **Latest (2026-07-12 Opus session):** 276 matched (sub_scrn sort vein +4 →
+> **Latest (2026-07-14 Opus+Fable session):** GCC-source expedition Phase 1
+> **ANSWERED** — the 53B40/BB4C loop-hoist genus is **C-REACHABLE, not a toolchain
+> wall**. Fable read `move_movables` in the FSF gcc-2.7.2 source, cross-checked it
+> against the real cc1-27 `-dL` dump (no SN divergence in the loop pass), extracted
+> the exact hoist formula (now in `COMPILER_IDIOMS.md §4`), and compile-verified two
+> C levers that stop the bad constant-hoist. Full trail: `notes/wip/GCC_SOURCE_PROGRESS.md`
+> (teeth 1–4). **Next on 53B40:** apply the 3 verified edits to
+> `tools/decomp-permuter/mml_53B40/base.c` (reused-`pp` local for 0x1F800070;
+> pre-loop `setflag=0x40000000` local; extern `D_800BB9C8`=Moji_work+0x310) + settle
+> `$fp`→`$s7`, then permute/diff to a byte match. Match NOT yet hash-verified.
+> Also: cc1-27 is SN-patched `2.7.2.SN32.3.7` (FSF source = mechanism baseline only;
+> ground truth = the `-dL` dump). 276 matched (unchanged this session).
+>
+> **Prior (2026-07-12 Opus session):** 276 matched (sub_scrn sort vein +4 →
 > func_8001F6C4 scene +1). decomp-permuter FIXED & working (`pip install toml`
 > + patchasm build/test.s guard) — see `notes/PERMUTER_GUIDE.md`. New
-> `notes/PARTS_LIST.md` (tooling inventory). **Planned expedition:**
-> `notes/wip/GCC_SOURCE_EXPEDITION.md` — read GCC 2.7.2 source (Fable lane) to
-> resolve the parked compiler walls (53B40 pilot); has its own checkpoint
-> protocol. A transcript-archive + two-book textbook lives in the separate
-> `MML-decomp-journal` repo (private, GitHub JoshuaDav10).
+> `notes/PARTS_LIST.md` (tooling inventory). Expedition plan:
+> `notes/wip/GCC_SOURCE_EXPEDITION.md`. A transcript-archive + two-book textbook
+> lives in the separate `MML-decomp-journal` repo (private, GitHub JoshuaDav10).
 
 > **Read this first.** You are (probably) Claude Fable in Claude Code, resuming a
 > Mega Man Legends (PSX) matching decompilation. This file + `CLAUDE.md`

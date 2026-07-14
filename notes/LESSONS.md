@@ -823,3 +823,15 @@ match, so not hash-gated; the 53B40 verdict that uses these is still PENDING).
   ./bin/cc1-27 <CC_FLAGS from `make -n <obj>`> -dL -dg -dumpbase base.c base.i -o /dev/null
   # produces base.c.loop (movable text) and base.c.greg (reg alloc)
   ```
+
+- **VERDICT — the 53B40 / BB4C loop-hoist genus is C-REACHABLE, not a toolchain wall.**
+  Reading `move_movables`/`combine_movables` gave the exact hoist rule (now the full
+  formula lives in `COMPILER_IDIOMS.md §4`): hoist iff
+  `threshold*savings*lifetime >= insn_count`, and constants with identical source RTX
+  always merge (summing savings+lifetime). Two compile-verified C levers stop the bad
+  hoist: (1) route a constant's derefs through one REUSED local → multi-set pseudo →
+  never a movable → inline `lui/ori` at each site; (2) a constant the loop pass can't
+  hoist (too few uses) must be a PRE-LOOP local to land in a callee-saved reg. 53B40's
+  remaining work is ordinary register-placement matching (`$fp`→`$s7` via the extern
+  `D_800BB9C8` = Moji_work+0x310 spelling), NOT a compiler mystery. Match not yet
+  hash-verified — mechanism proven by compile, ritual pending.

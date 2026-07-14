@@ -148,16 +148,36 @@ section name.
 
 ## 4. Loop optimization (loop.c: `move_movables`, strength reduction)
 
-- **Loop-invariant hoist has a savings THRESHOLD (≈3).** A constant/address used
-  N times inside a loop, whose N uses CSE-MERGE into one invariant of "savings N",
-  is hoisted into a callee-saved reg iff N ≥ threshold. A rival constant with
-  fewer uses is left inline. If the ORIGINAL keeps constant A inline and hoists
-  the fewer-use constant B, the explanation is: **in the original A's uses did
-  NOT merge into one movable** (so its savings stayed below threshold), letting B
-  win the saved reg. The matching task is to STOP A's uses from CSE-merging (see
-  §3) without changing the per-site emission. *(This is MML's open 53B40 / BB4C
-  genus — the hardest single class; escalate to a stronger model + gcc-source
-  reading rather than trial-and-error.)*
+- **Loop-invariant hoist — the EXACT rule** (read from FSF loop.c, confirmed
+  against the real cc1-27 `-dL` dump; 53B40 provenance, 2026-07-14). A
+  loop-invariant `SET(reg)(src)` with `reg` set once becomes a *movable* with
+  `savings = n_times_used[regno]` (uses in the loop) and `lifetime =
+  luid(last_use) − luid(first_use)`. It is hoisted to the preheader iff:
+  ```
+  already_moved[regno]  ||  threshold * savings * lifetime  >=  insn_count
+  ```
+  where `threshold = (loop_has_call ? 1 : 2) * (1 + n_non_fixed_regs)` (MIPS: ≈25–30),
+  **decays −3 after each movable it hoists** (so earlier movables in insn order get
+  a fatter budget), and `insn_count` **doubles permanently** the moment any reg has
+  already been moved (dump prints "halved since already moved") — that mutation
+  persists for ALL later movables in the chain. So the old "≈3 threshold" was wrong;
+  it's this product test.
+- **The CSE-merge is `combine_movables` (`matches K` in the dump).** Movable M1
+  merges into an earlier M iff both regs are set once AND
+  `rtx_equal_for_loop_p(m->src, m1->src)` — **identical source RTX**. Two pseudos
+  loaded from the SAME `CONST_INT` in one loop therefore ALWAYS merge; the merge
+  SUMS their savings+lifetime and evaluates the combined movable at the earliest
+  site. This is why a constant used 3× (lives 3+3+24) sails over the threshold and
+  hoists into a callee-saved reg, starving a rival 2-use constant that can't.
+- **The two levers to stop a hoist from C** (both compile-verified on 53B40):
+  1. *Kill the merge* → route every deref through ONE reused local
+     (`pp = (T*)ADDR;` at each site). A multi-set pseudo is never a movable, so the
+     constant rematerializes inline (`lui/ori`) at every site — matches the target.
+  2. *A rival constant with too few uses simply cannot be loop-hoisted* — if the
+     target keeps it in a callee-saved reg, it must be a **pre-loop C local**
+     (`x = 0x40000000;` before the loop), not a loop-body constant.
+  *(This resolved MML's 53B40 / BB4C genus: it is C-REACHABLE, not a toolchain wall.
+  Regenerate the decision dump with the `-dL` recipe in LESSONS.md 2026-07-14.)*
 - **Strength reduction turns array indexing into a marching pointer.** Deriving
   an offset from the loop counter (`tbl[i*8]`) makes cc1 emit `la` once + `addu
   p,8` (pointer march). Keeping TWO induction variables in the source (`for(i=0;
