@@ -787,3 +787,39 @@ generalizable:
   D_800C356E[];`, use `[0]`), not the scalar `extern u8 D_800C356E;` (which emits
   `.extern ,1` and risks the small-scalar COMMON path). Applied to D_800C356E and
   D_800C356F (rock_neo.h decl flipped to `[]`; it was unused elsewhere).
+
+## 2026-07-14 (Opus/Fable) — GCC-source expedition: compiler identity + -dL is readable
+
+Toolchain-forensics facts (directly verified by running the tool — *not* a codegen
+match, so not hash-gated; the 53B40 verdict that uses these is still PENDING).
+
+- **cc1-27 is SN-patched, NOT stock FSF gcc-2.7.2.** `./bin/cc1-27` banner:
+  `GNU C 2.7.2.SN32.3.7 Build 0001 [AL 1.1, MM 40] BSD Mips` — an SN Systems /
+  PSY-Q build (path marker `/home/aaron/sn-2.7.2`), recompiled as a modern x86-64
+  Linux ELF. **Implication for source reading:** the public FSF `gcc-2.7.2` source
+  (`~/src/gcc-2.7.2/`) is a *baseline for the mechanism only*. Generic optimizer
+  passes (loop/cse/global) are usually untouched by SN (whose patches target
+  MIPS/PSX codegen + the assembler interface), but you CANNOT assume byte-identity.
+  **Ground truth = the actual `-dL`/`-dg` dumps from cc1-27**; where FSF source and
+  the dump disagree, trust the dump and suspect an SN patch. (Provenance: Phase 0 of
+  the GCC-source expedition, `notes/wip/GCC_SOURCE_PROGRESS.md`.)
+
+- **`-dL` (loop pass) prints movable decisions in PLAIN TEXT — the wall is legible.**
+  Adding `-dL` (and `-dg` for reg alloc) to the cc1-27 flags dumps `<base>.c.loop`
+  with human-readable per-insn verdicts, e.g.:
+  - `Insn 549: possible biv, reg 242, const = 528482416` (that's `0x1F800070`,
+    flagged as a candidate basic induction variable)
+  - `Insn N: regno R (life L), move-insn savings S not desirable` — rejected hoist
+  - `Insn N: regno R (life L), move-insn savings S  moved to M` — accepted hoist
+  - `Insn N: regno R (life L), done move-insn matches K` — **this movable was
+    MERGED into an earlier identical one (insn K)** — i.e. the value-merge the
+    53B40 analysis suspected, made visible. The accept rule keys on `move-insn
+    savings` vs desirability and register `life`.
+  **How to regenerate the dump for a permuter candidate** (must be the *candidate C*,
+  not the shipped TU — a nonmatching func ships as an INCLUDE_ASM stub, so its loop
+  pass never runs from the real TU):
+  ```
+  cpp <CPP_FLAGS from `make -n <obj>`> tools/decomp-permuter/mml_53B40/base.c > base.i
+  ./bin/cc1-27 <CC_FLAGS from `make -n <obj>`> -dL -dg -dumpbase base.c base.i -o /dev/null
+  # produces base.c.loop (movable text) and base.c.greg (reg alloc)
+  ```
