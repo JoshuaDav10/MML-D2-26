@@ -37,11 +37,12 @@
 # Phase 1 — move_movables / 53B40 (IN PROGRESS)
 
 ## RESUME FROM (single-line pointer — read this first each run)
-> Ground-truth dumps are BANKED (see below). Next: read `move_movables`
-> (`~/src/gcc-2.7.2/loop.c:1529`) for the mechanism, cross-check against the plain-text
-> verdicts in `base.c.loop`, and render the 53B40 verdict (C form that stops the
-> `0x1F800070` movables merging so `0x40000000` wins the reg, OR proof it's
-> C-unreachable + the alternate lever).
+> Phase 1 ANSWERED (teeth 2-4): 53B40 constants are C-reachable. Fixes verified by
+> compile: (1) reused `pp` local kills the 0x1F800070 hoist; (2) pre-loop
+> `setflag = 0x40000000` local wins a callee-saved reg; (3) use extern symbol
+> D_800BB9C8 (= Moji_work+0x310) instead of &Moji_work[4]/[5]. Next: apply the three
+> edits to tools/decomp-permuter/mml_53B40/base.c + fix the entry-check spelling so
+> the BB9C8 address stops hoisting ($fp→$s7), then permute/diff to full match.
 
 ## Ratchet tooth 1 (2026-07-14, Opus prep) — dumps banked, decision text is READABLE
 
@@ -145,3 +146,48 @@ Corollary: with that pseudo occupying a callee-saved slot, only 6 slots exist fo
 candidates; the loop-hoisted 0x1F800070 pseudo (REG_EQUIV const) should LOSE a hard reg
 and be rematerialized by reload as inline lui/ori — exactly the target pattern.
 Next (tooth 4): test that C form against the dumps/asm.
+
+## Ratchet tooth 4 (2026-07-14, Fable) — VERDICT: C-REACHABLE. Both constants fixed at source level (verified by compile)
+
+**Corrections to tooth 2** (source re-read): `n_times_used` is a bcopy of `n_times_set`
+(loop.c:597) — the `==1` merge precondition and `m->savings` init count SETS, not uses.
+Also `force_movables` (loop.c:1223) has the famous 2.7.2 bug `m1->savings += m1->savings`
+(self-doubling; explains dump savings of 2/4 on single-set regs).
+
+**Why blocking the merge is sufficient** (I was wrong earlier that insn 808 alone would
+still move): unmerged, insn 808 (life 24) is evaluated at ITS chain position — after the
+inner-loop re-move (insn 1121) has PERMANENTLY doubled insn_count to 798, and after ~4
+moves have decayed threshold by 12. 24*(T0-12) <= 24*18 = 432 < 798 → not desirable.
+The merge is what evaluates the combined movable at insn 392's EARLY position (product
+90*T vs 399). Threshold cascade note: each hoist you remove makes later movables MORE
+desirable (-3 decay not taken), so fixes must be applied together.
+
+**Verified C forms** (compiled with the tooth-1 recipe; asm inspected):
+1. `0x1F800070` — route every deref through ONE reused local pointer:
+   `u32 * volatile *pp;` then at EACH site `pp = (u32 * volatile *)0x1F800070;
+   prim = *pp; *pp = prim + 3;` etc. (4 sites incl. tail). The shared local makes
+   `n_times_set[pp] == 4 != 1` → scan_loop never creates a movable → no merge, no hoist;
+   cse is EBB-local so each site remats `lui/ori` inline — EXACTLY the target pattern
+   at all 4 sites (verified in scratchpad test2.s/test3.s).
+   Contrast: the anonymous `(*(u32 * volatile *)0x1F800070)` spelling gives each site a
+   FRESH single-set compiler temp → three mergeable movables → hoisted. The volatile
+   only protects the MEMORY access, not the address constant.
+2. `0x40000000` — pre-loop local: `setflag = 0x40000000;` before the loop, both
+   `m->flags |= setflag;` sites use it. Not a loop movable (set outside) → greg gives it
+   a callee-saved reg directly. Proven loop-unreachable in tooth 3 (product 4*T <= 120).
+   Currently lands in $fp instead of $s7 because one competitor hoist remains (below).
+3. Bonus discovery (target asm 449D4-449EC, 44A30): the original does NOT write
+   `&Moji_work[4]`/`&Moji_work[5]`. It references a SEPARATE extern symbol `D_800BB9C8`
+   (= Moji_work+0x310): `if (m != &D_800BB9C8)`, `t = ((u8*)m - ((u8*)&D_800BB9C8 -
+   0x310))/0xC4`, loop end `m < &(&D_800BB9C8)[1]` (sltu vs $a1+0xC4 with $a1 = lui/addiu
+   %hi/%lo(D_800BB9C8) inline). The `+784` constant movable never existed in the original.
+   Remaining delta in test3: the BB9C8 address expr still hoists ($23 = entry-check reg
+   - 196) because my entry-check spelling shares the pseudo with the loop-end check —
+   spelling work for the permuter thread (entry check in target is `m+0x3D4`-based,
+   i.e. Moji_work-relative, DIFFERENT from the BB9C8-based loop-end check).
+
+**Match-or-park:** not yet a byte match (register assignment $fp vs $s7 pending the
+BB9C8/entry-check spelling), but the compiler-wall question is ANSWERED: no toolchain
+patch, no maspsx lever, no accept-as-asm needed. This is ordinary C-form matching now.
+Test files: scratchpad test1.c/test2.c/test3.c (+ .s); regen trivial from base.c with
+the three edits above.
