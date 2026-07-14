@@ -75,3 +75,35 @@ cpp $CPPF tools/decomp-permuter/mml_53B40/base.c > base.i
 So the pilot no longer needs a `-dL` invocation figured out from scratch — it needs the
 `move_movables` source read to explain WHY these verdicts fire, then the 53B40 verdict.
 Also propagated to `notes/LESSONS.md` (2026-07-14 section) — SN-patch fact + -dL recipe.
+
+## Ratchet tooth 2 (2026-07-14, Fable) — move_movables/combine_movables rule EXTRACTED
+
+Source: FSF `~/src/gcc-2.7.2/loop.c` (baseline; SN divergence not yet observed in this pass).
+
+1. **Movable creation** (scan_loop, ~line 770-796): each loop-invariant `SET (reg) (src)`
+   with reg set once becomes a movable with:
+   - `savings = n_times_used[regno]` (number of uses of that pseudo in the loop)
+   - `lifetime = luid(last_use) - luid(first_use)`
+2. **Merge = `matches K`** (combine_movables, line 1232-1288): M1 merges into earlier M iff
+   - `n_times_used == 1` for BOTH regs (each set once), M1 not global, not partial,
+   - dest modes equal (or both MODE_INT with M's width >= M1's),
+   - `rtx_equal_for_loop_p (m->set_src, m1->set_src)` — **identical source RTX**.
+   Consequence: two pseudos each loaded from the same CONST_INT inside one loop ALWAYS
+   merge (constants are always rtx_equal). Merge does `m->lifetime += m1->lifetime;
+   m->savings += m1->savings; m1->done = 1; m1->match = m;` — all uses of M1's reg are
+   rewritten via reg_map to M's reg (move_movables line 1934-1948). This is the value-merge:
+   ONE register carries the constant for the whole (summed) lifetime.
+3. **Desirability = `moved to` vs `not desirable`** (move_movables line 1630):
+   moved iff `already_moved[regno] || (threshold * savings * lifetime) >= insn_count`.
+   - `threshold = (loop_has_call ? 1 : 2) * (1 + n_non_fixed_regs)` (loop.c:532)
+   - `threshold -= 3` after EACH moved insn (lines 1719/1904) — order matters, earlier
+     movables in insn order get a fatter threshold.
+   - `insn_count *= 2` if `moved_once[regno]` (reg already hoisted from another loop);
+     dump prints "halved since already moved".
+4. **`possible biv, const = C`** (record_biv, dump at line 4313): a bare `reg = CONST_INT`
+   in the loop is recorded as a degenerate biv (mult_val=0, inc_val=C). This is why
+   528482416 (0x1F800070) shows as "possible biv" — bookkeeping for strength_reduce,
+   not itself the hoist decision.
+
+Next: cross-check these predicates against base.c.loop verdict lines for
+528482416 (0x1F800070) and 1073741824 (0x40000000).
