@@ -7,12 +7,16 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 278 (verified 2026-07-14: full-binary sha1 OK after a CLEAN
+- rock_neo main: 279 (verified 2026-07-14: full-binary sha1 OK after a CLEAN
   rebuild — forced `rm` of the .c.o — see the func_800605DC note under
   "Last verified build"; census.py --matched reads the built .c.o intermediate,
-  so it must be run AFTER a fresh build or it under-counts. Mission %: 278/497
-  = 55.9% by function count, ~17.6% by instruction volume (remaining stubs
+  so it must be run AFTER a fresh build or it under-counts. Mission %: 279/497
+  = 56.1% by function count, ~17.6% by instruction volume (remaining stubs
   average ~115 insns each, hence the count/volume gap.)
+  - +1 (func_800155A4, game): matched + mutation-tested. UN-GATED a parked
+    `#else ACCEPT_REORDERING_BULLSHIT` draft — the game main loop. It was parked
+    BEFORE the patchasm reorder pass existed; that pass now makes it match as-is.
+    KEY: grep for other `ACCEPT_REORDERING_BULLSHIT` guards — likely more free wins.
   - +1 (func_8001D394, cd): matched + mutation-tested. Held-pointer idiom:
     `u8 *p = D_800AD140; ... CdMix(p + 0x14);` forces cc1 to KEEP the base in a
     reg (reused `addu a0,v1,0x14`) instead of folding `SYM+0x14` to an absolute

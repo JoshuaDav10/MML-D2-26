@@ -15,10 +15,6 @@
 
 // clang-format off
 
-#ifndef ACCEPT_REORDERING_BULLSHIT
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/game", func_800155A4);
-#else
-// clang-format on
 void func_800155A4(void) {
     GAME_WORK* gp;
 
@@ -34,8 +30,6 @@ void func_800155A4(void) {
         func_80012E98(1);
     }
 }
-// clang-format off
-#endif
 
 // https://decomp.me/scratch/OFeoF
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/game", func_80015634);
