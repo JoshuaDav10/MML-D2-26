@@ -1,12 +1,17 @@
-# HANDOFF — MML Decomp session state (2026-07-14, 280 matched)
+# HANDOFF — MML Decomp session state (2026-07-14, 273 matched — authoritative)
 
-> **Harvest update (2026-07-14 Opus):** 280 matched (+func_80016434 game,
-> +func_8001D394 cd, +func_800155A4 game, +func_8005EC80 sub_scrn — all
-> hash+mutation verified). Mission: **56.3%** by function count (280/497),
-> ~17.6% by instruction volume. VEIN FOUND: parked `#else
-> ACCEPT_REORDERING_BULLSHIT` drafts now match once un-gated (patchasm reorder
-> pass fixed them) — 2 landed this way; grep the guard for more (game 15734/15840/
-> 16528 still genuinely mismatch; Sub_screen_rb_parts_set untested). Overlays CONFIRMED 205/205 done
+> **Harvest update (2026-07-14 Opus):** AUTHORITATIVE count = **273 matched**
+> (`census.py --matched` after `rm -rf build`; hash OK + raw `cmp` identical).
+> Genuine new this session: **+2** — func_80016434 (game) + func_8001D394 (cd),
+> both real stubs I wrote C for and mutation-tested. Mission: 273/484 = **56.4%**
+> by function count, ~17.6% by volume.
+> ⚠️ **COUNT-CORRECTION / GOTCHA:** I earlier over-claimed 280 by "un-gating"
+> func_800155A4/8005EC80 (+3 more). PHANTOM: game.c AND sub_scrn.c carry
+> `#define ACCEPT_REORDERING_BULLSHIT` (since commit 957191c) so ALL their
+> `#ifndef ACCEPT_REORDERING_BULLSHIT` guards ALREADY take the body branch — those
+> bodies were matching all along; un-gating is a no-op. The naive `grep
+> INCLUDE_ASM` stub census can't see the define and overcounts. **Trust
+> `census.py --matched` only.** The prior HANDOFF "276" was also an overcount. Overlays CONFIRMED 205/205 done
 > (expedition complete; the "19 missing" note was stale). Banked the held-pointer
 > idiom (LESSONS) — the lever for the BB4C addressing-crux. 3 near-matches
 > (logic-solved, 1–2 insns off on cc1 scheduling) queued for the permuter in

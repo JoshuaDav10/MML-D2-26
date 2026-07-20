@@ -7,20 +7,19 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 280 (verified 2026-07-14: full-binary sha1 OK after a CLEAN
-  rebuild — forced `rm` of the .c.o — see the func_800605DC note under
-  "Last verified build"; census.py --matched reads the built .c.o intermediate,
-  so it must be run AFTER a fresh build or it under-counts. Mission %: 280/497
-  = 56.3% by function count, ~17.6% by instruction volume (remaining stubs
-  average ~115 insns each, hence the count/volume gap.)
-  - +1 (func_8005EC80, sub_scrn): matched + mutation-tested. UN-GATED a parked
-    `#else ACCEPT_REORDERING_BULLSHIT` draft (MojiTaskKill/Exec + param set +
-    `*arg0=1`). Same mechanism as func_800155A4.
-  - +1 (func_800155A4, game): matched + mutation-tested. UN-GATED a parked
-    `#else ACCEPT_REORDERING_BULLSHIT` draft — the game main loop. It was parked
-    BEFORE the patchasm reorder pass existed; that pass now makes it match as-is.
-    KEY: parked drafts fixed by the reorder pass. game.c's other 3 (15734/15840/
-    16528) still MISMATCH (real reorder issues); Sub_screen_rb_parts_set untested.
+- rock_neo main: **273** (AUTHORITATIVE — `census.py --matched` after a CLEAN
+  `rm -rf build` rebuild, 2026-07-14; hash OK + raw `cmp` byte-identical.
+  484 total, 211 active stubs, 273 matched. Mission %: 273/484 = **56.4%** by
+  function count, ~17.6% by instruction volume.)
+  - ⚠️ COUNT CORRECTION (2026-07-14): an earlier note in this session claimed
+    277→280 by "un-gating" func_800155A4 (game) + func_8005EC80 (sub_scrn) and
+    3 more game fns. THOSE WERE PHANTOM: game.c AND sub_scrn.c both carry
+    `#define ACCEPT_REORDERING_BULLSHIT` at the top (since commit 957191c), so
+    every `#ifndef ACCEPT_REORDERING_BULLSHIT` guard ALREADY takes the body
+    branch — those bodies were compiled + matching all along. Un-gating them is a
+    no-op. The naive `grep INCLUDE_ASM` stub census counts them as stubs (it can't
+    see the define) → overcount. ALWAYS trust `census.py --matched` (reads .o),
+    never the grep. Genuine NEW matches this session = only the 2 below.
   - +1 (func_8001D394, cd): matched + mutation-tested. Held-pointer idiom:
     `u8 *p = D_800AD140; ... CdMix(p + 0x14);` forces cc1 to KEEP the base in a
     reg (reused `addu a0,v1,0x14`) instead of folding `SYM+0x14` to an absolute

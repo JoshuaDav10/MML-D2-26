@@ -1,15 +1,16 @@
 # Activity Log
 
 ## 2026-07-14 (Opus) — harvest restart + overlay/expedition reconciliation
-- **func_800155A4 (game) + func_8005EC80 (sub_scrn) MATCHED** (278→280), both
-  clean rebuild + sha1 OK + mutation test. DISCOVERY: parked
-  `#else ACCEPT_REORDERING_BULLSHIT` drafts — written/parked BEFORE the
-  tools/patchasm.py reorder pass existed — now MATCH as-is once un-gated (the
-  pass moves deferred C bodies to their .globl markers). Un-gate recipe: replace
-  the whole `#ifndef ACCEPT_REORDERING_BULLSHIT / INCLUDE_ASM / #else / body /
-  #endif` block with just the body. NOT universal: game.c's func_80015734/15840/
-  16528 still mismatch (genuine reorder/scheduling issues, historically re-gated);
-  Sub_screen_rb_parts_set untested. Grep all files for the guard for more.
+- ⚠️ **COUNT CORRECTION**: I briefly claimed func_800155A4/func_8005EC80 (+3 more)
+  as new matches (278→280→283). RETRACTED — all PHANTOM. game.c AND sub_scrn.c
+  carry `#define ACCEPT_REORDERING_BULLSHIT` at the top (since commit 957191c),
+  so every `#ifndef ACCEPT_REORDERING_BULLSHIT` guard ALREADY compiles the body
+  branch. Those bodies were matching all along; "un-gating" them is a no-op that
+  doesn't change the binary or the count. AUTHORITATIVE `census.py --matched` =
+  273 (verified: rm -rf build, hash OK, raw cmp identical). Genuine new this
+  session = 2: func_80016434 (game) + func_8001D394 (cd) — real INCLUDE_ASM
+  stubs I wrote C for + mutation-tested. LESSON: never count from `grep
+  INCLUDE_ASM` (blind to the define); only `census.py --matched` is truth.
 - **func_8001D394 MATCHED** (277→278), clean rebuild + sha1 OK + mutation test.
   cd.c CD-volume re-arm. NEW IDIOM (LESSONS): assign a symbol address to a local
   pointer (`u8 *p = D_800AD140;`) and pass `p + off` — forces cc1 to hold the

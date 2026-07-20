@@ -20,6 +20,23 @@ iteration teaches something; this file is how the project gets smarter.
 - `progress.md` / `activity.md` — counters and per-session narrative.
 - Git history on `dev` — each commit message records what matched and why.
 
+## Counting matched functions — GOTCHA (2026-07-14)
+
+**`#define ACCEPT_REORDERING_BULLSHIT` at the top of game.c AND sub_scrn.c**
+(since commit 957191c) makes every `#ifndef ACCEPT_REORDERING_BULLSHIT` guard in
+those files take the `#else` **body** branch. So a function that LOOKS stubbed
+(`INCLUDE_ASM(...)` visible under `#ifndef`) is actually compiling its C body and
+may already be matching. Consequences:
+- A naive `grep INCLUDE_ASM` stub census **overcounts stubs** (it can't see the
+  define) and makes "un-gating" such a body look like a new match when it's a
+  NO-OP. This cost a session a false +5 count (277→280→283 claimed; real = 273).
+- **The ONLY authoritative matched count is `tools/census.py --matched`** (it
+  reads the built `.c.o` intermediates) run AFTER `rm -rf build && make`.
+  Corroborate with `make check_rock_neo_only` (OK) + `cmp disks/us/ROCK_NEO.EXE
+  build/rock_neo.exe`. Never claim a count from a source grep.
+- To find genuinely-stubbed functions, a stub must be BOTH `INCLUDE_ASM` AND not
+  shadowed by an active `#else` body (i.e. not under a satisfied `#ifndef`).
+
 ## cc1-27 (GCC 2.7.2) codegen facts — verified byte-for-byte
 
 **Held-pointer vs constant-folded absolute address** (func_8001D394, cd.c,
