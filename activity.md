@@ -1,5 +1,19 @@
 # Activity Log
 
+## 2026-07-14 (Opus) — harvest restart + overlay/expedition reconciliation
+- **func_80016434 MATCHED** (276→277), clean rebuild + full-binary sha1 OK +
+  mutation test (0x18→0x19 broke the hash; restore → OK). 27-insn game.c global
+  initializer gated on `if (arg0 == 2)`. Trap avoided: `D_800C356F` was already
+  declared `u8[]` in rock_neo.h (reused it as `[0]`, didn't redefine); grep the
+  TU for pre-existing decls BEFORE adding externs (batch-12 false-pass lesson).
+- **Overlays confirmed DONE**: 205/205 CDDATA/DAT .BIN byte-identical on dev
+  (all 19 formerly-"missing" files present + cmp-clean). OVERLAY_EXPEDITION.md
+  was stale; marked COMPLETE. No agent needed — checked before acting.
+- **53B40 expedition tooth 5**: reproduced + re-verified the 3 levers (worker's
+  scratch died with its session), found prior permuter runs used a lever-less
+  base, re-seeded it, re-launched permuter. Residual = $fp-vs-$s7 allocno only.
+- **Mission %**: 277/497 = 55.7% by function count; 17.5% by instruction volume.
+
 ## 2026-07-12 (Opus) — scene momentum + permuter fix
 - **func_8001F6C4 MATCHED** (275→276), clean rebuild + full-binary sha1 OK +
   mutation test (`p[f+1]`→`p[f+2]` broke the hash; restore → OK). 28-insn scene

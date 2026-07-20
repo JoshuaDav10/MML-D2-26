@@ -7,11 +7,17 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 276 (verified 2026-07-12: full-binary sha1 OK after a CLEAN
+- rock_neo main: 277 (verified 2026-07-14: full-binary sha1 OK after a CLEAN
   rebuild — forced `rm` of the .c.o — see the func_800605DC note under
   "Last verified build"; census.py --matched reads the built .c.o intermediate,
-  so it must be run AFTER a fresh build or it under-counts. 276 matched:
-  moji 106/145, player 42/91, scene 36/59, sound 18/34, sub_scrn 20/44)
+  so it must be run AFTER a fresh build or it under-counts. Mission %: 277/497
+  = 55.7% by function count, 17.5% by instruction volume (5404/30903 insns —
+  remaining stubs average ~115 insns each, hence the count/volume gap.)
+  - +1 (func_80016434, game): matched + mutation-tested (0x18→0x19 broke hash,
+    restore→OK). Straight-line global initializer under `if (arg0 == 2)`.
+    Knobs: D_800C356F pre-declared in rock_neo.h as `u8[]` (use `[0]`); the
+    other D_800C35xx are fresh per-width scalar externs; Game_work+0x79/0x7A =
+    `Game_work.x78[1]`/`[2]`; the trailing `=1` store lets cc1 hoist its `li`.
   - +1 (func_8001F6C4, scene): matched + mutation-tested; reused-variable call
     arg + delay-slot load hoist (see LESSONS 2026-07-12 Opus scene entry).
   - +4 this session (f2e025e): Sub_screen_sort_{attack,energy,range,rapid} —

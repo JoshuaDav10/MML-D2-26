@@ -1,3 +1,10 @@
+> ## ✅ COMPLETE (verified 2026-07-14) — DO NOT re-run this expedition.
+> All **205/205** CDDATA/DAT .BIN files build byte-identical on `dev`
+> (`config/overlay/` has 205 configs; `make CPP=cpp check_overlays` → 205/205;
+> the 19 formerly-missing files — FONT, KAIFONT, MAP_A*, BS16VAB1, ST19B, ST17B,
+> ST0B_*, ST1E_06, GAUGE, GAMEOVER, EXIT_* — all `cmp`-clean). The mission below
+> is finished; the text is kept only as a historical record of how it was done.
+
 # Overlay Expedition — plan for a delegated agent (Cursor)
 
 Written 2026-07-05 by the main decomp session (Claude). This is a

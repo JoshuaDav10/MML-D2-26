@@ -112,7 +112,30 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/game", func_80015FE8);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/game", func_80016160);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/game", func_80016434);
+extern s16 D_800C3560;
+extern s16 D_800C3562;
+extern s16 D_800C3564;
+extern s16 D_800C356A;
+extern u8 D_800C356C;
+extern u8 D_800C356D;
+extern u8 D_800C356E;
+extern u8 D_800C3570;
+
+void func_80016434(s32 arg0) {
+    if (arg0 == 2) {
+        D_800C356C = 3;
+        D_800C356E = 0x18;
+        D_800C3562 = -1;
+        D_800C3570 = 0xFF;
+        Game_work.x78[1] = 0x1B;
+        D_800C356F[0] = 0;
+        D_800C3560 = 0;
+        D_800C3564 = 0;
+        D_800C356A = 0;
+        D_800C356D = 0;
+        Game_work.x78[2] = 1;
+    }
+}
 
 s32 func_800665FC(s32);
 void func_80015DB4(void);
