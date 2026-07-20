@@ -254,8 +254,7 @@ void func_80053B40(void) {
         last = &D_800BB9C8;
         if (m != last) {
             mb = (MOJI_TASK *)((u8 *)last - 0x310);
-            t = m - mb;
-            D_80098B2C |= (s32)m->x71 << (t << 3);
+            D_80098B2C |= (s32)m->x71 << ((s32)(m - mb) << 3);
         }
         m->flags &= 0xAF7FFFFF;
         m++;
