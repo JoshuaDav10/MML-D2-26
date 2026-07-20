@@ -27,7 +27,15 @@
   Reading x8 early into a local didn't break the address CSE. This is the
   register/addressing-allocation genus (same family as BB4C/53B40). Revisit with
   the permuter or a -dg allocno pass; the draft is in this session's git history.
-- **Mission %**: 277/497 = 55.7% by function count; 17.5% by instruction volume.
+- **Harvest run (build-runner-offload → sync builds)**: 3 more small functions
+  attempted — func_8001E4C4 (scene), func_8001AE6C (sound), func_8001F158 (scene).
+  ALL solved on LOGIC, ALL missed on a single cc1 scheduling/allocation nit
+  (allocno reg-tie / delay-slot / basic-block tail ordering). Saved as 1–2-insn
+  permuter last-mile candidates in notes/wip/HARVEST_NEARMATCHES.md.
+  DISCOVERY: the easy wins (16434, D394) were straight-line stores; control-flow
+  small fns are scheduling-hard. Plan split: hand-match straight-line stores;
+  route branch/loop near-matches to the permuter. Don't hand-grind the nits.
+- **Mission %**: 278/497 = 55.9% by function count; ~17.6% by instruction volume.
 
 ## 2026-07-12 (Opus) — scene momentum + permuter fix
 - **func_8001F6C4 MATCHED** (275→276), clean rebuild + full-binary sha1 OK +

@@ -1,4 +1,15 @@
-# HANDOFF — MML Decomp session state (2026-07-14, 276 matched)
+# HANDOFF — MML Decomp session state (2026-07-14, 278 matched)
+
+> **Harvest update (2026-07-14 Opus):** 278 matched (+func_80016434 game,
+> +func_8001D394 cd — both hash+mutation verified). Mission: **55.9%** by function
+> count (278/497), ~17.6% by instruction volume. Overlays CONFIRMED 205/205 done
+> (expedition complete; the "19 missing" note was stale). Banked the held-pointer
+> idiom (LESSONS) — the lever for the BB4C addressing-crux. 3 near-matches
+> (logic-solved, 1–2 insns off on cc1 scheduling) queued for the permuter in
+> `notes/wip/HARVEST_NEARMATCHES.md`. DISCOVERY: remaining sub-60 fns split into
+> straight-line stores (fast hand-match) vs branch/loop bodies (scheduling-hard →
+> route to permuter). 53B40 permuter re-seeded with the levers (stalled at 9745,
+> stopped — needs the -dg $s7 hand-fix, then permuter last-mile).
 
 > **Latest (2026-07-14 Opus+Fable session):** GCC-source expedition Phase 1
 > **ANSWERED** — the 53B40/BB4C loop-hoist genus is **C-REACHABLE, not a toolchain
