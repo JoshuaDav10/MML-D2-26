@@ -139,7 +139,7 @@ void func_80053B40(void) {
             if (!(m->flags & 0x8000000) && (m->xB8 & 0x1000)
                 && (m->flags & tst) && func_8001D878()) {
                 m->flags &= 0xFFFBFFFF;
-                m->flags = func_8001D494(0, 1, 0);
+                func_8001D494(0, 1, 0);
             }
         loop1:
             op = m->script2[0];
@@ -266,9 +266,12 @@ tail_env:
     t = GetTPage(0, 0, 0x3C0, 0x100);
     SetDrawMode(pt, 0, 0, t & 0xFFFF, 0);
     {
-        DRAWCTX *dc = D_80098934;
-        pt[0] = (pt[0] & 0xFF000000) | (dc->x7C & 0xFFFFFF);
+        DRAWCTX *dc;
+        u32 ww;
+        ww = 0xFFFFFF;
+        dc = D_80098934;
+        pt[0] = (pt[0] & 0xFF000000) | (dc->x7C & ww);
         D_80098960 += 1;
-        dc->x7C = (dc->x7C & 0xFF000000) | ((u32)pt & 0xFFFFFF);
+        dc->x7C = (dc->x7C & 0xFF000000) | ((u32)pt & ww);
     }
 }
