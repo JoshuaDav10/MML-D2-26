@@ -17,6 +17,16 @@
 - **53B40 expedition tooth 5**: reproduced + re-verified the 3 levers (worker's
   scratch died with its session), found prior permuter runs used a lever-less
   base, re-seeded it, re-launched permuter. Residual = $fp-vs-$s7 allocno only.
+- **func_8001F158 PARKED** (scene) with findings — don't re-grind blind. Logic
+  fully solved (held ptr `p = Scene_work.xA4`; advance `xA4 = p+8`; copy `p[8]`→x8,
+  `p[9]`→x9 with `x18/x1C/x10` zeroing on inequality). SCENE_WORK struct verified
+  correct via cc1-27 offsetof probe (x8@0x8, xA4@0xA4, size 0xA8). Sole blocker:
+  cc1 CSE's `&Scene_work.xA4` into ONE held register (read+write via `0(v1)`);
+  the target re-materializes the xA4 address ABSOLUTELY at both the read and the
+  write (`lw a0,%lo(...)` then `sw v0,%lo(...)`), keeping only the xA4 VALUE in a0.
+  Reading x8 early into a local didn't break the address CSE. This is the
+  register/addressing-allocation genus (same family as BB4C/53B40). Revisit with
+  the permuter or a -dg allocno pass; the draft is in this session's git history.
 - **Mission %**: 277/497 = 55.7% by function count; 17.5% by instruction volume.
 
 ## 2026-07-12 (Opus) — scene momentum + permuter fix

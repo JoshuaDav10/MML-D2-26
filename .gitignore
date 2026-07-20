@@ -20,3 +20,4 @@ venv/
 
 # third-party tool clone (documented in SETUP.md; carries a local objdump.py patch)
 tools/decomp-permuter/
+notes/wip/permuter_53b40.log
