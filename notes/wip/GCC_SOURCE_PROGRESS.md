@@ -356,3 +356,24 @@ h. Small branch-sense flip in the inner loop head (beqz vs bnez to the far block
   member-store cluster reg-birth (script-reload $a2 vs $a1), pb-cluster
   x10/x12 store order (false-dep from reg reuse), glyph/tail dc + mask reg
   mirrors, 0x80000000-vs-0x10000 delay-slot choice at loop top.
+
+## Ratchet tooth 9 (2026-07-19/20, Fable cont.) — TOOLCHAIN BUG FOUND: macro.inc li drops low halves
+
+- Preparing the moji.c landing exposed an environment split: the same draft body
+  compiled via tree headers lost the `ori $s6,0x6187` of the 0x86186187 magic —
+  `lui $s6,0x8618` only. Bisection: cc1 emits the full `li $22,-2045222521` in
+  BOTH environments; maspsx/gprel/patchasm pass it through; **GAS truncates it —
+  but only when `.include "macro.inc"` is in the TU** (injected by include_asm.h
+  into every in-tree TU). macro.inc OVERRIDES GAS's builtin `li` with a macro
+  whose big-constant branches emit `lui %hi(num)` ONLY — the low half is
+  silently dropped. Every existing match survived because no cc1 output had
+  emitted a big-constant li with nonzero low half until 53B40's magic divisor.
+- FIX (include/macro.inc): new branches for `(num & 0xFFFF) != 0` emit
+  `lui (num>>16)&0xFFFF; ori num&0xFFFF` (raw shift, NOT %hi — %hi carry-rounds
+  when low >= 0x8000). All previously-exercised branches byte-identical.
+  Full audit_count.sh re-run after the change (hash + 205 overlays + census).
+- Landing TU (scratchpad landing.c) verified at FULL PARITY with the standalone
+  draft: tree adaptations are (u8) casts on the two m->x3F reads, (s8) cast on
+  the m->x71 read (tree types u8 x71 / s8 x3F are opposite the draft's),
+  `(DR_MODE *)pt` for SetDrawMode, local `void SetDrawArea(u32 *, RECT *);`
+  decl (libgpu.h lacks it), DRAWCTX typedef + externs added to moji.c.
