@@ -20,6 +20,18 @@ iteration teaches something; this file is how the project gets smarter.
 - `progress.md` / `activity.md` — counters and per-session narrative.
 - Git history on `dev` — each commit message records what matched and why.
 
+## Permuter score-0 is NOT a guaranteed byte match (2026-07-14)
+
+The decomp-permuter's scorer **normalizes jump/branch targets**, so a candidate with
+the WRONG control flow (a `j`/branch to the wrong label) can score **0** while being
+byte-different. Real example: func_8001AE6C — permuter reported score 0 for a version
+that moved `ret=0` to the wrong arm (`j .L1aee8` instead of `.L1aee4`); it was a FALSE
+match (raw `cmp` differed at the `j` target). func_8001E4C4's score-0, by contrast, was
+a TRUE match. **Rule: a permuter score-0 is a CANDIDATE, not a match.** Always land it
+and gate on `tools/audit_count.sh` (full hash + raw `cmp` byte-identical); REVERT the
+false ones. Never commit a permuter result on the score alone. (Same family as the
+count-integrity gotcha below: verify the claim, not a proxy.)
+
 ## Counting matched functions — GOTCHA (2026-07-14)
 
 **`#define ACCEPT_REORDERING_BULLSHIT` at the top of game.c AND sub_scrn.c**
