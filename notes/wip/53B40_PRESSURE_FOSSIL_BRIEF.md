@@ -110,3 +110,41 @@ DRAWCTX typedef + externs pasted into moji.c, INCLUDE_ASM line replaced) → cle
 (break a constant, hash MUST fail, restore, OK) → `tools/audit_count.sh` must
 print **275** → update progress.md/activity.md/HANDOFF.md/LESSONS.md → commit dev.
 NEVER claim the match from bytecmp alone.
+
+## Forensics session notes (2026-07-20, appended live — read before starting)
+
+**Crunch points identified** (from `-dg` on the 192-state base; "Need reg" lines):
+- insn 91 = the HEAD division's `reg112 = LO >> 2` (REG_EQUAL div 196): MIPS can't
+  shift from LO, reload needs a GR scratch → **spills hard reg 8 ($t0)**. In the
+  target this is `mflo $t0; sra $a0,$t0,2`.
+- insn 716 = the glyph `umulsi3_highpart` (multu, %/÷ 0x15): needs HI/MD scratch
+  → **spills hard reg 64 (HI)**.
+- These spills are intrinsic to the instruction shapes — the ORIGINAL had the
+  same ones. The fossil = at those moments the original had pseudo(s) LIVING in
+  $t0/HI whose retry found no free reg → memory slots 0x20/0x24. In our compile
+  nobody occupies $t0/HI (pressure below threshold) → no slots → frame 0x48.
+- Observed unified-theory candidate: in the target, $a0 holds 0x80000000 ACROSS
+  the head division (born in the loop-top bgez slot — this is also the [39-50]
+  slot cluster). Probe VE (named `hb = 0x80000000;` local at arm top) was
+  NEUTRAL: 495/192, frame unchanged, slot unchanged.
+
+**Probes already tried on the 192-state — all NEUTRAL or WORSE (do not repeat):**
+- VA: `t = (s16)m->x6;` at the head cond → 494/326 ✗
+- VB: render-site `rp = &D_80097F50[…]` interleave between pr-load and prim-copy
+  → 495/192 neutral (was 37-worse three bases ago — base evolution changes probe
+  outcomes; re-testing old failures is legitimate)
+- VC: named `t = m->script[0]` in the glyph %-/÷ pair → 493/360 ✗
+- VD: re-split tail `t = m - mb` → 495/196 ✗
+- VE: `hb = 0x80000000` named local → 495/192 neutral, frame still 0x48
+
+**Next moves (in order):**
+1. Read the ORIGINAL's live-set at the crunch directly from the target asm
+   (44 3D0-44 414): enumerate every register carrying a value across the head
+   div and match each to our dump's pseudo at that point; the VALUE with no
+   home in our compile is the fossil variable. Do the same at the glyph multu
+   (44 780-44 7C8).
+2. Combination probes: single additions were neutral — try hb + sh6 + (a
+   glyph-region extra) TOGETHER; the crunch needs ~2 more live values, not 1.
+3. If frame flips to 0x50 but hard count rises: keep it anyway if the RISE is
+   the prologue/epilogue offsets snapping (they'd now MATCH — check indices
+   0-13 first) — the net after the cascade is what matters.
