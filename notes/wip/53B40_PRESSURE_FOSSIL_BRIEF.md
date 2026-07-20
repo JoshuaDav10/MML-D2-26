@@ -163,3 +163,19 @@ and z3-era variants are NEUTRAL — naming doesn't change refs/length enough to
 reorder; the lever must change dc's or the masks' RANGE endpoints (birth/death
 insn positions) or free $a0 earlier. All stats regenerate via the tooth-1
 recipe with -dl; grep "Register 51[0-9]" in .lreg, block 49.
+
+**Tail-mask mirror — 6 knobs now ruled out (2026-07-20 late), cluster is
+knob-proof at source level.** Neutral or byte-identical: named ww / named
+ww+vv (either order) / fully anonymous / embedded `(ww = 0xFFFFFF)` birth /
+stmt1 operand swap (cse canonicalizes it away — output byte-identical).
+dc IS already in $a0 and the whole tail head (pp=$v1, GetTPage/SetDrawMode
+choreography) is byte-exact; ONLY the two mask constants sit mirrored
+(FFFFFF a2↔a1 FF000000). Since source knobs don't reach it, the assignment
+is decided by quantity NUMBERS (pseudo creation order function-wide — the
+tie-break) or qty_sugg; the fix likely comes for free from any upstream
+change that shifts pseudo numbering (fossil work, or a permuter
+numbering-nudge — the folded-if device exists for exactly this).
+**OPERATIONAL GOTCHA that cost ~1h of grinding: launching the permuter
+without the venv active dies instantly on `import toml`, while stale
+forkserver processes keep `pgrep permuter` alive — the watch loop must also
+verify `grep "base score" permuter.log` after (re)launch.**
