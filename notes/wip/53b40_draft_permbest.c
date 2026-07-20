@@ -432,6 +432,7 @@ void func_80053B40(void)
   u32 *pr;
   u32 **pp;
   u32 setflag;
+  int new_var9;
   u32 tst;
   int new_var3;
   u32 fff;
@@ -535,6 +536,7 @@ void func_80053B40(void)
       prim = pr;
       *pp = prim + 3;
       SetDrawArea(prim, &D_80097F50[*((u8 *) 0x1F800000)]);
+      new_var9 = 0x80;
       {
         DRAWCTX *dc = D_80098934;
         if (Moji_flag)
@@ -548,7 +550,7 @@ void func_80053B40(void)
           dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
         }
       }
-      m->x78 = 0x80;
+      m->x78 = new_var9;
       m->script = m->x48;
       m->x10 = m->x8;
       m->x73 = 0;
