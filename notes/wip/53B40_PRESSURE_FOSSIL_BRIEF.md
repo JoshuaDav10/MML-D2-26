@@ -88,10 +88,17 @@ bytes:
   (already patched — see PERMUTER_GUIDE.md gotcha).
 - Launch: `cd tools/decomp-permuter && nohup python3 permuter.py mml_53B40 -j8
   --best-only --stop-on-zero > mml_53B40/permuter.log 2>&1 &` (venv active).
-- Harvest cycle: on a new `output-<score>-*`, apply the POSITIONAL GATE. If it
-  passes, semantic-diff its source.c vs base.c (whitespace-normalized difflib),
-  re-express the mutation cleanly, verify again, `cp` to base.c, `rm -rf output-*`,
-  relaunch, commit the banked copy to notes/wip/53b40_draft_permbest.c.
+- Harvest cycle — ORDER MATTERS (a race once cost a sub-900 candidate):
+  (1) `pkill -f "permuter.py mml_53B40"` FIRST, (2) gate-check EVERY remaining
+  `output-*` (new ones can land between your check and any cleanup), (3) adopt
+  the best passer: `cp` to base.c + to notes/wip/53b40_draft_permbest.c, commit,
+  (4) `rm -rf output-*`, (5) relaunch. Never `rm` while the permuter is running.
+- Adoption rule: adopt candidates that IMPROVE the positional count, and also
+  ones that are positionally NEUTRAL (495/495, hard count equal) but improve the
+  weighted score — the latter reposition the search for free. Two proven device
+  families to recognize in diffs: added always-true folded-ifs with an identical
+  else copy (pseudo-numbering nudge, folds away entirely) and `x = m;` alias
+  temps. REJECT anything at 494 words regardless of score (alignment traps).
 - Its useful finds so far came as: added constant locals (tst/setflag family),
   statement moves, and alias temps (`mv = m`) — expect more of the same.
 
