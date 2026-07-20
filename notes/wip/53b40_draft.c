@@ -99,13 +99,14 @@ void func_80053B40(void) {
     u32 *pr;
     u32 **pp;
     u32 setflag;
+    u32 tst;
+    u32 fff;
     RECT rect;
     s32 c;
     s32 t;
     s32 op;
     u32 *pt;
     MOJI_TASK *mb;
-    DRAWCTX *dc;
     u32 f;
     u32 w;
     if ((*(u32*)Moji_flag & 0x400000) || D_80098824) {
@@ -114,16 +115,18 @@ void func_80053B40(void) {
     m = Moji_work;
     *(u32*)Moji_flag &= 0x3043FFFF;
     D_80098B2C = 0;
-    setflag = 0x40000000;
     if (m >= &Moji_work[5]) {
         goto tail_env;
     }
     do {
+        tst = 0x40000;
+        setflag = 0x40000000;
+        fff = 0xFFFFFF;
         if ((s32)m->flags < 0) {
             c = m - Moji_work;
             f = *(u32*)Moji_flag | 0x80000000;
             *(u32*)Moji_flag = f | (0x8000000 >> c);
-            if ((*(u32*)Moji_flag & 0x40000) == 0
+            if ((*(u32*)Moji_flag & tst) == 0
                 && (*(u32*)Moji_flag & (0x10000 >> (s16)m->x6)) == 0) {
                 w = D_800C0C26;
                 m->xB8 = w;
@@ -134,7 +137,7 @@ void func_80053B40(void) {
                 m->xBA = 0;
             }
             if (!(m->flags & 0x8000000) && (m->xB8 & 0x1000)
-                && (m->flags & 0x40000) && func_8001D878()) {
+                && (m->flags & tst) && func_8001D878()) {
                 m->flags &= 0xFFFBFFFF;
                 m->flags = func_8001D494(0, 1, 0);
             }
@@ -145,14 +148,14 @@ void func_80053B40(void) {
                 if ((s16)m->x4 > 0) {
                 } else {
                     if (!(m->flags & 0x8000000) && (m->xB8 & 0x1000)
-                        && !(m->flags & 0x40000)) {
+                        && !(m->flags & tst)) {
                         m->x4 = m->x3F >> 1;
                     } else {
                         m->x4 = m->x3F;
                     }
                     m->script2 += 1;
                     if (!(m->flags & 0x60000000)) {
-                        if (!(m->flags & 0x40000)) {
+                        if (!(m->flags & tst)) {
                             Sound_call(0x84, 0, 0x64);
                         }
                         m->flags |= setflag;
@@ -175,10 +178,12 @@ void func_80053B40(void) {
             prim = pr;
             *pp = prim + 3;
             SetDrawArea(prim, &D_80097F50[(*(u8 *)0x1F800000)]);
-            dc = D_80098934;
-            prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & 0xFFFFFF);
-            dc->x70[m->x3D] =
-                (dc->x70[m->x3D] & 0xFF000000) | ((u32)prim & 0xFFFFFF);
+            {
+                DRAWCTX *dc = D_80098934;
+                prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
+                dc->x70[m->x3D] =
+                    (dc->x70[m->x3D] & 0xFF000000) | ((u32)prim & fff);
+            }
             m->x78 = 0x80;
             m->script = m->x48;
             m->x10 = m->x8;
@@ -189,7 +194,7 @@ void func_80053B40(void) {
             if (m->script != m->script2) {
                 do {
                     op = m->script[0];
-                    if ((u32)op >= 0x84) {
+                    if ((u32)op < 0x84) {
                         if (!(m->flags & 0x100000)) {
                             u32 *p;
                             u8 *pb;
@@ -209,12 +214,14 @@ void func_80053B40(void) {
                             *(s16 *)(pb + 0xE) = D_80097F30[m->x3E];
                             pb[0xC] = ((u8)(m->script[0] % 0x15)) * 0xC;
                             pb[0xD] = ((u8)(m->script[0] / 0x15)) * 0xC;
-                            dc = D_80098934;
-                            p[0] = (p[0] & 0xFF000000)
-                                 | (dc->x70[m->x3D] & 0xFFFFFF);
-                            dc->x70[m->x3D] =
-                                (dc->x70[m->x3D] & 0xFF000000)
-                                | ((u32)p & 0xFFFFFF);
+                            {
+                                DRAWCTX *dc = D_80098934;
+                                p[0] = (p[0] & 0xFF000000)
+                                     | (dc->x70[m->x3D] & fff);
+                                dc->x70[m->x3D] =
+                                    (dc->x70[m->x3D] & 0xFF000000)
+                                    | ((u32)p & fff);
+                            }
                             m->x10 += D_8008AE7C[m->script[0]];
                         }
                         m->script += 1;
@@ -232,10 +239,12 @@ void func_80053B40(void) {
             rect.h = m->x7F * 0xC;
             *(u32 **)0x1F800070 = prim + 3;
             SetDrawArea(prim, &rect);
-            dc = D_80098934;
-            prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & 0xFFFFFF);
-            dc->x70[m->x3D] =
-                (dc->x70[m->x3D] & 0xFF000000) | ((u32)prim & 0xFFFFFF);
+            {
+                DRAWCTX *dc = D_80098934;
+                prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
+                dc->x70[m->x3D] =
+                    (dc->x70[m->x3D] & 0xFF000000) | ((u32)prim & fff);
+            }
             if (m->flags & 0x4000000) {
                 D_8008AAE4[m->x7C](m);
             }
@@ -256,8 +265,10 @@ tail_env:
     *(u32 **)0x1F800070 = pt + 3;
     t = GetTPage(0, 0, 0x3C0, 0x100);
     SetDrawMode(pt, 0, 0, t & 0xFFFF, 0);
-    dc = D_80098934;
-    pt[0] = (pt[0] & 0xFF000000) | (dc->x7C & 0xFFFFFF);
-    D_80098960 += 1;
-    dc->x7C = (dc->x7C & 0xFF000000) | ((u32)pt & 0xFFFFFF);
+    {
+        DRAWCTX *dc = D_80098934;
+        pt[0] = (pt[0] & 0xFF000000) | (dc->x7C & 0xFFFFFF);
+        D_80098960 += 1;
+        dc->x7C = (dc->x7C & 0xFF000000) | ((u32)pt & 0xFFFFFF);
+    }
 }

@@ -300,3 +300,36 @@ h. Small branch-sense flip in the inner loop head (beqz vs bnez to the far block
 
 **Tools**: scratchpad sdiff.py (structural aligner, mipsel-elf-objdump vs splat .s)
 — rebuild it from this file's description if lost; it made every tooth above cheap.
+
+## Ratchet tooth 7 (2026-07-19, Fable cont.) — preheader SOLVED: three body-top locals
+
+- **Inner-loop SEMANTIC BUG found and fixed**: original renders glyphs for op < 0x84
+  and calls D_8008AAC4 for >= 0x84 — every prior draft had the arms inverted
+  (physically same layout, ONE branch word differs: beqz vs bnez). All prior "logic
+  verified" claims were off by this word.
+- **Preheader EXACT MATCH achieved** (slot=giv addiu $s0,$s2,0x71; li $s5 0x40000;
+  li $s7 0x40000000; li/ori $s3 0xFFFFFF; li $s4 0xFF000000; li/ori $s6 0x86186187):
+  1. `setflag = 0x40000000;` must be INSIDE the do-body top (unconditional), NOT
+     pre-loop: as a body-top single-set invariant it is hoisted by move_movables;
+     pre-loop it sits before the guard branch and dbr steals it for the delay slot
+     (ref slot = the giv init, which dbr picks when NOTHING sits between the guard
+     sltu and the branch).
+  2. Conditional-arm sets are NEVER hoisted (verified P1/P2 probes + dump: an
+     in-arm `setflag=` compiles to inline li ×2). Only body-top works.
+  3. Movable emission order = in-loop first-set order ⇒ the ORDER of the three
+     body-top statements dictates preheader li order: `tst = 0x40000;` then
+     `setflag = 0x40000000;` then `fff = 0xFFFFFF;` (+ anonymous 0xFF000000 and
+     0x86186187 from their first sites) reproduces the target exactly.
+     The four `& 0x40000` sites use `tst`; the six in-loop `& 0xFFFFFF` sites use
+     `fff`; tail_env keeps ANONYMOUS masks (target reloads fresh lui/ori there).
+  4. The mask-operand order inside the tag statements stays UNSWAPPED
+     (`(prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff)`) — site and-order and
+     preheader li-order are decoupled by the fff local (swapping operands fixes one
+     and breaks the other; the third local fixes both).
+- dc = per-site BLOCK-locals (`{DRAWCTX *dc = D_80098934; ...}`) — one function-wide
+  dc is a single pseudo = one reg everywhere; target uses different regs per site.
+- Structural gap now 91/495 words (from 426 mismatches at session start). Draft is
+  v5 = notes/wip/53b40_draft.c. Remaining blocks: 0x80000000-slot choreography,
+  D494 sw-in-jal-slot, sw-in-j-slot at the x4==0 tail, prim load-copy (reload
+  artifact, 2 sites), member-store cluster scheduling, glyph pb cluster order,
+  mflo latency fill at tail div, tail_env mask/reg naming, glyph dc reg naming.
