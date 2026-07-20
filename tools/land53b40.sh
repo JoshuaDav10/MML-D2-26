@@ -21,7 +21,18 @@ import sys, re
 cand, moji_path = sys.argv[1], sys.argv[2]
 src = open(cand).read()
 i = src.index('void func_80053B40')
-body = src[i:]
+# candidates may be FULL TUs (permuter tree-objective bases): extract just the
+# function by brace matching from its opening brace.
+b = src.index('{', i)
+depth = 0
+j = b
+while True:
+    if src[j] == '{': depth += 1
+    elif src[j] == '}':
+        depth -= 1
+        if depth == 0: break
+    j += 1
+body = src[i:j+1] + '\n'
 # tree-environment decls the function needs beyond moji.c's existing ones
 decls = '''/* --- func_80053B40 support decls (landed) --- */
 extern s32 D_80098B2C;
