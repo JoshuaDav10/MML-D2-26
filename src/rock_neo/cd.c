@@ -182,7 +182,28 @@ void func_8001D324(u8 com) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001D394);
+extern u8 D_800AD140[];
+extern u8 D_800AD154;
+extern u8 D_800AD155;
+extern u8 D_800AD156;
+extern u8 D_800AD157;
+void CdMix(u8*);
+
+void func_8001D394(u8 arg0) {
+    u8 *p = D_800AD140;
+    if (D_800AD142[0] & 1) {
+        D_800AD154 = arg0;
+        D_800AD155 = arg0;
+        D_800AD156 = arg0;
+        D_800AD157 = arg0;
+    } else {
+        D_800AD154 = arg0;
+        D_800AD155 = 0;
+        D_800AD156 = arg0;
+        D_800AD157 = 0;
+    }
+    CdMix(p + 0x14);
+}
 
 void func_8001D414(s32 arg0, s32 arg1) {
     CD_CMD *p = unknown_Cd_strucptr;

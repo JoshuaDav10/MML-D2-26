@@ -1,6 +1,11 @@
 # Activity Log
 
 ## 2026-07-14 (Opus) — harvest restart + overlay/expedition reconciliation
+- **func_8001D394 MATCHED** (277→278), clean rebuild + sha1 OK + mutation test.
+  cd.c CD-volume re-arm. NEW IDIOM (LESSONS): assign a symbol address to a local
+  pointer (`u8 *p = D_800AD140;`) and pass `p + off` — forces cc1 to hold the
+  base in a register (`addu a0,v1,0x14`) rather than constant-fold `SYM+off` into
+  an absolute `&D_800AD154`. Directly relevant to the BB4C addressing-crux genus.
 - **func_80016434 MATCHED** (276→277), clean rebuild + full-binary sha1 OK +
   mutation test (0x18→0x19 broke the hash; restore → OK). 27-insn game.c global
   initializer gated on `if (arg0 == 2)`. Trap avoided: `D_800C356F` was already

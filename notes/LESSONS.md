@@ -22,6 +22,20 @@ iteration teaches something; this file is how the project gets smarter.
 
 ## cc1-27 (GCC 2.7.2) codegen facts — verified byte-for-byte
 
+**Held-pointer vs constant-folded absolute address** (func_8001D394, cd.c,
+2026-07-14). Writing `CdMix(D_800AD140 + 0x14)` makes cc1 constant-fold the
+symbol+offset into a single absolute address and emit `lui/addiu %hi/%lo(SYM+0x14)`
+(here it even re-resolved to the neighbor symbol `&D_800AD154`). To instead make
+cc1 HOLD the base symbol in a register and add the offset at runtime
+(`addu a0, v1, 0x14` reusing a base loaded early and kept live across a branch),
+assign the symbol to a local pointer first and offset THAT:
+`u8 *p = D_800AD140; ... CdMix(p + 0x14);`. The local becomes a pseudo that reload
+keeps in a register. **This is the lever for the parked BB4C addressing-crux**
+(draft emits absolute `sh $v1, D_800...`; reference reuses a held `$s1`=r pointer)
+— try a held local pointer for `r` there. Contrast: a bare `SYM + off` used once
+gets folded to absolute.
+
+
 1. **Function emission order**: at -O1+ all compiled C bodies are deferred to
    the end of the TU, after every top-level `__asm__` block. Fixed by the
    reorder pass in `tools/patchasm.py` (moves bodies to their in-place

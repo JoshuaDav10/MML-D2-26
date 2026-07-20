@@ -7,12 +7,16 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: 277 (verified 2026-07-14: full-binary sha1 OK after a CLEAN
+- rock_neo main: 278 (verified 2026-07-14: full-binary sha1 OK after a CLEAN
   rebuild — forced `rm` of the .c.o — see the func_800605DC note under
   "Last verified build"; census.py --matched reads the built .c.o intermediate,
-  so it must be run AFTER a fresh build or it under-counts. Mission %: 277/497
-  = 55.7% by function count, 17.5% by instruction volume (5404/30903 insns —
-  remaining stubs average ~115 insns each, hence the count/volume gap.)
+  so it must be run AFTER a fresh build or it under-counts. Mission %: 278/497
+  = 55.9% by function count, ~17.6% by instruction volume (remaining stubs
+  average ~115 insns each, hence the count/volume gap.)
+  - +1 (func_8001D394, cd): matched + mutation-tested. Held-pointer idiom:
+    `u8 *p = D_800AD140; ... CdMix(p + 0x14);` forces cc1 to KEEP the base in a
+    reg (reused `addu a0,v1,0x14`) instead of folding `SYM+0x14` to an absolute
+    `&D_800AD154` address. Same genus as the BB4C addressing-crux — see LESSONS.
   - +1 (func_80016434, game): matched + mutation-tested (0x18→0x19 broke hash,
     restore→OK). Straight-line global initializer under `if (arg0 == 2)`.
     Knobs: D_800C356F pre-declared in rock_neo.h as `u8[]` (use `[0]`); the
