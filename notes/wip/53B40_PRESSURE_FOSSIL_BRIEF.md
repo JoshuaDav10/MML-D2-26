@@ -86,8 +86,9 @@ bytes:
 ## Permuter protocol (fixed infra — do not rediscover)
 - Workdir `tools/decomp-permuter/mml_53B40/`; compile.sh MUST cd to repo root
   (already patched — see PERMUTER_GUIDE.md gotcha).
-- Launch: `cd tools/decomp-permuter && nohup python3 permuter.py mml_53B40 -j8
-  --best-only --stop-on-zero > mml_53B40/permuter.log 2>&1 &` (venv active).
+- Launch: `tools/permuter53b40.sh` ONLY (managed: venv check, pidfile,
+  startup verification — see PERMUTER_GUIDE.md for why hand-launching is
+  banned). Watchdog = pidfile kill -0 + log-growth, never pgrep.
 - Harvest cycle — ORDER MATTERS (a race once cost a sub-900 candidate):
   (1) `pkill -f "permuter.py mml_53B40"` FIRST, (2) gate-check EVERY remaining
   `output-*` (new ones can land between your check and any cleanup), (3) adopt

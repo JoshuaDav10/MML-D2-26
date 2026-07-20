@@ -137,3 +137,14 @@ on 60k of pair penalties and length-dropping still scored down. The length-
 delta fence penalizes exactly the unlandable states and nothing else.
 The positional gate (bytecmp words+hard count) remains the authoritative
 accept/reject check for harvested candidates.
+
+
+## Launching (2026-07-20): use tools/permuter53b40.sh, NEVER launch by hand
+
+A hand-launch without the venv dies instantly on `import toml` while stale
+forkserver processes keep `pgrep permuter` alive — this masked a dead permuter
+for AN HOUR. The launcher kills stale runs (pidfile + pattern), proves the venv
+imports, launches, writes `mml_53B40/permuter.pid`, and BLOCKS until
+"base score" appears in the log (fails loudly otherwise). Watchdogs must check
+(1) the pidfile PID via `kill -0` and (2) LOG GROWTH between checks — never
+process-name greps. Adapt the script's workdir line for other targets.
