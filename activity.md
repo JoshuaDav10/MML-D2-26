@@ -1,5 +1,10 @@
 # Activity Log
 
+## 2026-07-14 (Opus) — 2nd permuter win
+- **func_80062C6C (debug) MATCHED** (275->276) — audit_count.sh census 276, hash OK,
+  raw cmp identical, mutation-tested. 2nd true permuter win (register-mirror, like
+  E4C4). Lever: init `i=0` before `fp=D_8008DBE0`. Debug fn-table dispatch loop.
+
 ## 2026-07-14 (Opus) — first permuter near-miss win
 - **func_8001E4C4 (scene) MATCHED** (274→275) — AUTHORITATIVE: audit_count.sh
   census 274→275, full hash OK, raw cmp identical, mutation-tested. FIRST win of

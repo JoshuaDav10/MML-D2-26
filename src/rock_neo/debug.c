@@ -28,7 +28,26 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/debug", func_80062A50);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/debug", func_80062B04);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/debug", func_80062C6C);
+extern void (*D_8008DBE0[])();
+
+s32 func_80062C6C(void *arg0) {
+    void (**fp)();
+    s32 i;
+    *(s32 *)((u8 *)arg0 + 0x0) = 0;
+    *(s32 *)((u8 *)arg0 + 0x8) = 0;
+    *(s32 *)((u8 *)arg0 + 0xC) = 0;
+    ((u8 *)arg0)[0x10] = 3;
+    ((u8 *)arg0)[0x18] = 3;
+    ((u8 *)arg0)[0x20] = 3;
+    ((u8 *)arg0)[0x28] = 3;
+    ((u8 *)arg0)[0x30] = 3;
+    i = 0;
+    fp = D_8008DBE0;
+    do {
+        (*fp++)(arg0);
+    } while (++i < 5);
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/debug", func_80062CF0);
 

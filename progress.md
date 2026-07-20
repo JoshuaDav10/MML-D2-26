@@ -7,10 +7,13 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: **275** (AUTHORITATIVE — `tools/audit_count.sh`: clean
-  `rm -rf build`, hash OK, raw `cmp` byte-identical, `census.py --matched` = 275.
-  484 total, 209 active stubs. Mission %: 275/484 = **56.8%** by function count,
-  ~17.6% by instruction volume.)
+- rock_neo main: **276** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
+  hash OK, raw cmp byte-identical, census 276. 484 total, 208 active stubs.
+  Mission %: 276/484 = **57.0%** by function count, ~17.6% by instruction volume.)
+  - +1 (func_80062C6C, debug): matched + hash + mutation-tested. 2nd permuter
+    win (mml_62C6C). Register-mirror: fn-ptr vs counter in swapped $s1/$s2;
+    lever = init `i=0` BEFORE `fp=D_8008DBE0` (reorders pseudo alloc). fn-table
+    dispatch loop, `(*fp++)(arg0)` x5, return 1.
   - +1 (func_8001E4C4, scene): matched + hash-verified + mutation-tested. FIRST
     PERMUTER WIN of the near-miss lane. Hand analysis got it to a 1-diff
     register-mirror (i↔arg1 in $s1/$s2 — allocno tie, unforceable by hand); set up

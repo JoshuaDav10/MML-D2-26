@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-14, 275 matched — authoritative)
+# HANDOFF — MML Decomp session state (2026-07-14, 276 matched — authoritative)
 
 > **53B40 session (2026-07-19/20 Fable, max-effort single-target):** count
 > UNCHANGED at **274** (audit_count.sh verified at start AND after the
@@ -24,10 +24,10 @@
 > tooth 9 (needs (u8)x3F/(s8)x71 casts + DRAWCTX+externs in moji.c). Landing
 > gate: audit_count.sh must print 275.
 
-> **Harvest update (2026-07-14 Opus):** AUTHORITATIVE count = **275 matched**
+> **Harvest update (2026-07-14 Opus):** AUTHORITATIVE count = **276 matched**
 > (`census.py --matched` after `rm -rf build`; hash OK + raw `cmp` identical).
 > Genuine new this session: **+3** — func_80016434 (game), func_8001D394 (cd), func_8001A63C (sound),
-> both real stubs I wrote C for and mutation-tested. Mission: 275/484 = **56.8%**
+> both real stubs I wrote C for and mutation-tested. Mission: 276/484 = **57.0%**
 > by function count, ~17.6% by volume.
 > ⚠️ **COUNT-CORRECTION / GOTCHA:** I earlier over-claimed 280 by "un-gating"
 > func_800155A4/8005EC80 (+3 more). PHANTOM: game.c AND sub_scrn.c carry
