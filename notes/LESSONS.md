@@ -866,3 +866,45 @@ match, so not hash-gated; the 53B40 verdict that uses these is still PENDING).
   remaining work is ordinary register-placement matching (`$fp`→`$s7` via the extern
   `D_800BB9C8` = Moji_work+0x310 spelling), NOT a compiler mystery. Match not yet
   hash-verified — mechanism proven by compile, ritual pending.
+
+## 2026-07-19/20 (Fable, 53B40 campaign) — proven by structure/dumps (match pending)
+
+- **`include/macro.inc`'s `li` macro DROPPED the low half of big constants**
+  (`lui %hi(num)` with no ori) — every in-tree TU inherits it via include_asm.h's
+  `.include "macro.inc"`. First hit: cc1-emitted `li $22,-2045222521` (0x86186187
+  magic divisor). Now fixed (raw-shift lui + ori branch); full hash + 205/205
+  overlays re-verified. Symptom to recognize: scratch-TU (no include) bytes
+  differ from in-tree bytes on a lui/ori pair for the same C.
+- **MOJI_TASK* pointer subtraction is EXACT division** — magic 0x1A1F58D1
+  (196*M ≡ 4 mod 2^32) + `mflo; sra 2`. If target division shows mflo (not
+  mfhi+sign-fix), write it as pointer subtraction, never (bytes)/(sizeof).
+- **A hoisted address constant occupying a callee-saved reg is killed with a
+  per-iteration local** whose movable fails the product test (late chain
+  position, savings 1): `last = &SYM;` inside the loop tail — the address
+  rematerializes as per-iteration lui/addiu in a CALLER-saved reg.
+- **Preheader li order == in-loop first-set order of the movables**, and
+  body-top locals are the knob: unconditional single-set locals at the top of
+  the do-body (`tst = 0x40000; setflag = 0x40000000; fff = 0xFFFFFF;`) hoist in
+  STATEMENT order and decouple site operand order from preheader li order.
+  Conditional-arm sets are NEVER hoisted (P1/P2 probes). A pre-loop local
+  instead lands before the guard branch and dbr steals it for the delay slot
+  (target's slot held the strength-reduce giv init = nothing between the guard
+  sltu and branch in the original).
+- **combine_movables merges by identical src RTX only for single-set pseudos**:
+  a 2-set pp local (assigned at exactly the two hot sites) blocks the merge
+  while keeping per-site block-local regs — the anonymous form at ALL sites
+  re-merges and re-hoists (verified both directions).
+- **The moji inner glyph loop renders for op < 0x84** and calls D_8008AAC4 for
+  >= 0x84 — all prior 53B40 drafts had the arms inverted (identical layout,
+  ONE branch word differs). And func_8001D494's result is DISCARDED in 53B40
+  (the &= store sits in the jal slot; no post-call store). Byte-diff-invisible
+  semantic bugs: check branch SENSE against the compare+target, not just arms.
+- **Structural-alignment diffing beats raw word-diffing for big functions**:
+  scratchpad sdiff.py (SequenceMatcher over normalized opcode+regs of
+  mipsel-elf-objdump vs splat .s) turns a 400-mismatch cascade into ~10
+  actionable blocks. Rebuild it from GCC_SOURCE_PROGRESS tooth 6 if lost.
+- **decomp-permuter workdirs must cd to repo root in compile.sh** (gprel census
+  reads asm/rock_neo/**/*.s relative to CWD) — see PERMUTER_GUIDE.md. With a
+  correct base its finds are HARVESTABLE (diff its output-*/source.c vs base,
+  re-express cleanly, verify, reseed): x12 statement position and an m-alias
+  (`mv = m; ... mv->x10 += ...`) each fixed whole scheduling clusters.
