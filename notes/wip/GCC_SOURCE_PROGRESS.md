@@ -333,3 +333,26 @@ h. Small branch-sense flip in the inner loop head (beqz vs bnez to the far block
   D494 sw-in-jal-slot, sw-in-j-slot at the x4==0 tail, prim load-copy (reload
   artifact, 2 sites), member-store cluster scheduling, glyph pb cluster order,
   mflo latency fill at tail div, tail_env mask/reg naming, glyph dc reg naming.
+
+## Ratchet tooth 8 (2026-07-19, Fable cont.) — two more semantic fixes; 56/495; permuter re-launched on fixed infra
+
+- **SEMANTIC FIX #2**: the original DISCARDS func_8001D494's result —
+  `m->flags &= 0xFFFBFFFF; func_8001D494(0,1,0);` (the &= store sits in the jal
+  delay slot; there is NO post-call store). The draft's
+  `m->flags = func_8001D494(...)` emitted a phantom sw. m2c-era carry-over bug.
+- Tail div: fold `t` — `D_80098B2C |= (s32)m->x71 << ((s32)(m - mb) << 3);`
+  (62→56; the separate `t = m - mb;` statement pinned mflo before the lb/lw pair;
+  folded, sched fills the mult latency like the target).
+- tail_env: `u32 ww = 0xFFFFFF;` BLOCK-local (fresh var, NOT the function-wide
+  `w` — reusing w linked pseudos across sites and moved the xB8/xBA block to $a2)
+  + separate `pt` var → pt lands in $s0 like target.
+- sdiff.py normalizer now canonicalizes li/move aliases (real gap was 62, not 87).
+- **Permuter re-seeded** with the 56-word base (score 2595 vs stalled 9745) after
+  fixing the compile.sh cwd/gprel-census bug (see PERMUTER_GUIDE.md). Running
+  -j8 --best-only --stop-on-zero.
+- Remaining hand-clusters (~56 words): prim load-copy artifact at render+post
+  (`lw $v0; addu $s1,$v0` — cse copy-props every spelling tried; suspected
+  reload/pressure artifact tied to the target's 8 dead stack bytes),
+  member-store cluster reg-birth (script-reload $a2 vs $a1), pb-cluster
+  x10/x12 store order (false-dep from reg reuse), glyph/tail dc + mask reg
+  mirrors, 0x80000000-vs-0x10000 delay-slot choice at loop top.

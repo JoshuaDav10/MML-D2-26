@@ -109,3 +109,14 @@ The permuter only searches the space of **semantics-preserving C rewrites**. So:
 is register allocation or scheduling — usually one that just came off the
 momentum lane and won't fall to a couple of hand knobs. Don't resurrect the known
 parked genera; those are why they're parked.
+
+## GOTCHA (2026-07-19): compile.sh must cd to the repo root
+
+`tools/gprel.py` decides gp-vs-lui by a census of `asm/rock_neo/**/*.s`
+**relative to CWD**. The permuter invokes `compile.sh` from its own workdir, so
+the census came up empty and every small extern (incl. Moji_flag, D_80098B2C,
+D_80098960) was left non-gp — inflating every candidate's score with phantom
+lui/lw pairs (the stalled-at-9745 run suffered this on top of the lever-less
+base). Fix (applied to mml_53B40/compile.sh, gitignored — reapply for new
+workdirs): `realpath` the INPUT/OUTPUT args, then `cd $ROOT` before the
+pipeline. With the tooth-6/7 base this dropped the 53B40 base score to 2595.
