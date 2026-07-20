@@ -123,13 +123,17 @@ pipeline. With the tooth-6/7 base this dropped the 53B40 base score to 2595.
 
 ## LOCAL PATCH (2026-07-20): scorer length-change penalties raised
 
-`src/scorer.py` PENALTY_INSERTION/PENALTY_DELETION raised 100 → 10000 (local,
-uncommittable — permuter clone is gitignored; REAPPLY after any re-clone).
-Rationale: at 100, deleting one instruction that incidentally "fixes" >20
-register-allocation diffs (5 points each) scores as a net improvement, and near
-the endgame the search migrates into 494-word states that can never reach the
-byte match (observed repeatedly on 53B40: weighted 770 with 314 positional
-mismatches vs the honest base's 193). With 10000 the maximum possible regalloc
-credit can never pay for a length change, confining the search to the correct
-instruction count. The positional gate (bytecmp words+hard count) remains the
-authoritative accept/reject check for harvested candidates.
+`src/scorer.py` (local, uncommittable — the permuter clone is gitignored;
+REAPPLY after any re-clone): `final_score += abs(len(cand_seq) -
+len(self.target_seq)) * 100000` appended at the end of Scorer.score().
+Rationale: a byte match requires exact instruction-count parity, but the stock
+scorer lets a deletion (100) pay for itself by "fixing" >20 regalloc diffs
+(5 each) — near the endgame the search migrates into 494-word states that can
+never reach 0 (observed repeatedly on 53B40: weighted 770 at 314 positional
+mismatches vs the honest base's 193). First attempt raised
+PENALTY_INSERTION/DELETION to 10000 — WRONG: the differ also classifies
+same-length MOVED instructions as insert+delete pairs, so the base itself sat
+on 60k of pair penalties and length-dropping still scored down. The length-
+delta fence penalizes exactly the unlandable states and nothing else.
+The positional gate (bytecmp words+hard count) remains the authoritative
+accept/reject check for harvested candidates.
