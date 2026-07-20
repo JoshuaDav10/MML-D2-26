@@ -148,3 +148,17 @@ imports, launches, writes `mml_53B40/permuter.pid`, and BLOCKS until
 "base score" appears in the log (fails loudly otherwise). Watchdogs must check
 (1) the pidfile PID via `kill -0` and (2) LOG GROWTH between checks — never
 process-name greps. Adapt the script's workdir line for other targets.
+
+## LOCAL PATCH v2 (2026-07-20): POSITIONAL scorer for the 53B40 endgame
+
+The length-fence alone still let the annealer trade positional mismatches for
+alignment credit (fenced run kept finding 495-word candidates that were 7-40
+rows WORSE positionally). scorer.py now short-circuits `Scorer.score()` with:
+same-index row comparison ×10 + length-delta ×100000. "New best" now equals
+the authoritative gate metric. CAVEATS: (1) local, uncommittable — reapply
+after re-clone; remove the `if True:` block to restore stock scoring for
+NORMAL (non-endgame) targets — stock's partial credit is a better gradient
+when the candidate is still far away; (2) scratch-env reloc rows that can
+never match may put the reachable floor slightly above 0 — when the score
+plateaus low, bytecmp the candidate (exit 0 = the real match) rather than
+waiting for --stop-on-zero.
