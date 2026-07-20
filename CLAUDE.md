@@ -55,6 +55,25 @@ Goal: C source that recompiles to a byte-for-byte identical binary.
 - Map functions in ascending address order when adding to the splat yaml.
 - Update progress.md and activity.md when a function is matched.
 
+## Progress-counting integrity (MANDATORY — a 2026-07-14 session over-claimed +5 by violating these)
+- **The ONLY authoritative matched count is `tools/audit_count.sh`** (clean
+  `rm -rf build` + hash + raw cmp + `census.py --matched`, which reads the built
+  `.c.o`). NEVER report or reason about the count from a `grep INCLUDE_ASM` — it
+  is blind to `#ifdef` guards. game.c and sub_scrn.c `#define
+  ACCEPT_REORDERING_BULLSHIT`, so their `#ifndef`-guarded `INCLUDE_ASM` stubs are
+  actually compiling the `#else` body and may already match. See LESSONS
+  "Counting matched functions — GOTCHA".
+- **A "+1 matched" claim requires an authoritative count DELTA**, not "check
+  prints OK". Record the baseline count at session start; a gain is
+  `end_count − start_count` from `audit_count.sh`. "check OK after my edit" only
+  proves the current binary matches — NOT that your change caused it (it may have
+  already matched). Un-gating a define-active body is a NO-OP, not a match.
+- **When asked to confirm/verify a claim, verify the CLAIM, not an easier
+  proxy.** For a match claim, the falsifying question is "would it match WITHOUT
+  my change / did it already match?" — check THAT, not just "does it match now?"
+- Do not let pressure to show progress lower the verification bar. No number
+  ships without `audit_count.sh` behind it.
+
 ## Delegation
 - Route mechanical work (grep, stub creation, builds, diff runs) to the Haiku
   subagents in .claude/agents/ (function-mapper, build-runner).
