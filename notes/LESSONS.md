@@ -908,3 +908,35 @@ match, so not hash-gated; the 53B40 verdict that uses these is still PENDING).
   correct base its finds are HARVESTABLE (diff its output-*/source.c vs base,
   re-express cleanly, verify, reseed): x12 statement position and an m-alias
   (`mv = m; ... mv->x10 += ...`) each fixed whole scheduling clusters.
+
+## 2026-07-20 (Fable, 53B40 endgame) — permuter epistemology + reload forensics
+
+- **The permuter's weighted score DIVERGES from byte-truth near the endgame.**
+  Its differ gives partial credit for alignment, so deleting an instruction that
+  incidentally "fixes" >20 register diffs scores as an improvement — the search
+  migrates into wrong-LENGTH states that can never reach a byte match, while
+  announcing new bests. THE POSITIONAL GATE IS AUTHORITATIVE for accepting any
+  candidate: `bytecmp` must show exact word-count parity AND a lower hard count.
+  Local scorer patch (length-delta × 100000 fence) + the harvest protocol
+  (stop the permuter BEFORE any output cleanup — a race cost a candidate) are in
+  PERMUTER_GUIDE.md. First fenced run immediately produced a genuine positional
+  improvement after hours of trap-chasing.
+- **Permuter device families worth hand-adopting when seen in its diffs** (all
+  byte-verified on 53B40): (1) named-constant locals at block tops (the
+  tst/setflag/fff family — reorders preheader/li emission); (2) `x = m;` alias
+  temps (force a reload/defeat CSE at one site); (3) always-true folded ifs
+  with two IDENTICAL arms (`if (Moji_flag) {X} else {X}`) — fold away entirely
+  but shift pseudo NUMBERING, which breaks allocno priority ties; (4) statement
+  interleaves between a load and a copy (`pr = *X; rect.x = m->x8; prim = pr;`)
+  — the intervening statement keeps cse from folding the copy.
+- **Probe outcomes are BASE-RELATIVE: a C shape that regressed on an older draft
+  can be neutral or a win later.** (The rp-precompute interleave went 37-worse →
+  neutral across three base evolutions.) Blacklist probes per-base, not forever.
+- **Dead stack bytes are a reload fossil, and the dump names the birthplace.**
+  `-dg`'s "Need 1 reg of class X (for insn N)" lines identify the exact insns
+  (here: an exact-div's LO→GR shift and a umulsi3_highpart's HI need) where
+  reload spills hard regs; a frame reserving untouched slots means the ORIGINAL
+  compile had pseudos evicted TO MEMORY at those insns (accesses later removed
+  by inheritance). Matching such a frame is about recreating simultaneous-live
+  PRESSURE at those insns, not about any single statement — single added locals
+  measured neutral five different ways on 53B40 (see the fossil brief).
