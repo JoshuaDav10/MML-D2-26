@@ -427,6 +427,7 @@ void func_80053B40(void)
   u8 (*new_var6)[];
   MOJI_TASK *last;
   MOJI_TASK *new_var5;
+  u32 new_var8;
   u32 *prim;
   u32 *pr;
   u32 **pp;
@@ -529,7 +530,7 @@ void func_80053B40(void)
       {
         goto loop1;
       }
-      pp = (u32 **) 0x1F800070;
+      pp = 0x1F800070;
       pr = *pp;
       prim = pr;
       *pp = prim + 3;
@@ -581,12 +582,13 @@ void func_80053B40(void)
               *((s16 *) (pb + 0x10)) = 0xC;
               *((s16 *) (pb + new_var3)) = 0xC;
               *((s16 *) (pb + 0xE)) = D_80097F30[m->x3E];
+              f = p[0];
               pb[0xC] = ((u8) (m->script[0] % 0x15)) * 0xC;
               new_var5 = m;
               pb[0xD] = ((u8) (m->script[0] / 0x15)) * 0xC;
               {
                 DRAWCTX *dc = D_80098934;
-                p[0] = (p[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
+                p[0] = (f & 0xFF000000) | (dc->x70[m->x3D] & fff);
                 dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) p) & fff);
               }
               mv->x10 += (*(new_var6 = &D_8008AE7C))[new_var5->script[0]];
@@ -620,7 +622,8 @@ void func_80053B40(void)
         else
         {
           prim[0] = (prim[0] & 0xFF000000) | ((*dc).x70[m->x3D] & fff);
-          dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
+          new_var8 = (u32) prim;
+          dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (new_var8 & fff);
         }
       }
       if (m->flags & 0x4000000)
