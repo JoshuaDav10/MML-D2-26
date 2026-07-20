@@ -1,5 +1,29 @@
 # HANDOFF — MML Decomp session state (2026-07-14, 274 matched — authoritative)
 
+> **53B40 session (2026-07-19/20 Fable, max-effort single-target):** count
+> UNCHANGED at **274** (audit_count.sh verified at start AND after the
+> macro.inc fix; 53B40 NOT yet landed — no fake progress). But the function
+> moved from 426 mismatched words to **40/495 structurally-unaligned**, with
+> every lever banked in `notes/wip/53b40_draft.c` + GCC_SOURCE_PROGRESS.md
+> teeth 6-9. Highlights: THE $s7/$fp swap is SOLVED (the intruder was the
+> hoisted &D_800BB9C8 — killed by a per-iteration `last` local); preheader
+> is EXACT (tst/setflag/fff body-top locals); TWO semantic bugs in all prior
+> drafts found (inner-loop glyph arms inverted for op<0x84; D494 result is
+> discarded, not stored); divisions are MOJI_TASK* pointer subtraction
+> (exact-div 0x1A1F58D1 mflo, NOT signed /0xC4); DRAWCTX is
+> `{pad[0x70]; u32 x70[3]; u32 x7C;}` indexed x3D (dc block-locals per site);
+> SetDrawMode takes 5 args. **TOOLCHAIN BUG FIXED**: include/macro.inc's li
+> macro dropped low halves of big constants (first hit: 0x86186187) — fixed +
+> full audit + 205/205 overlays re-verified. decomp-permuter re-seeded (base
+> score 2595→sub-1600 and falling; earlier 9745 stall was a lever-less base +
+> a compile.sh cwd bug breaking gprel's census — both fixed, see
+> PERMUTER_GUIDE.md). A detached permuter (-j8 --stop-on-zero) may still be
+> running in tools/decomp-permuter/; harvest `mml_53B40/output-*` (lowest
+> score), verify via `CPP=cpp tools/bytecmp.sh func_80053B40 <source.c>`,
+> land via the prepared tree-adapted TU recipe in GCC_SOURCE_PROGRESS.md
+> tooth 9 (needs (u8)x3F/(s8)x71 casts + DRAWCTX+externs in moji.c). Landing
+> gate: audit_count.sh must print 275.
+
 > **Harvest update (2026-07-14 Opus):** AUTHORITATIVE count = **274 matched**
 > (`census.py --matched` after `rm -rf build`; hash OK + raw `cmp` identical).
 > Genuine new this session: **+3** — func_80016434 (game), func_8001D394 (cd), func_8001A63C (sound),
