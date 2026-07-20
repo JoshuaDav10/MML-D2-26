@@ -148,3 +148,18 @@ NEVER claim the match from bytecmp alone.
 3. If frame flips to 0x50 but hard count rises: keep it anyway if the RISE is
    the prologue/epilogue offsets snapping (they'd now MATCH — check indices
    0-13 first) — the net after the cascade is what matters.
+
+**Tail-mask mirror (cluster #6) — now fully computable (2026-07-20, late).**
+local-alloc.c qty_compare_1: priority = `floor_log2(refs) × refs × size ÷
+(death − birth)`, ties → lower qty number (earlier birth). Measured on the
+192-state (.lreg block 49): dc=q515 (4 refs/15 insns, pri≈2.13) allocates
+FIRST, then ww=q516 (3/16, ≈0.75), then FF-temp=q519 (3/26, ≈0.46). So the
+a1/a2 mirror is a THREE-body ordering — dc's pick cascades into the masks'.
+Target wants dc=$a0, FFFFFF=$a1, FF000000=$a2. Work the formula: to move dc to
+$a0, find what occupies/blocks $a0 at dc's allocation moment (find_free_reg
+scans REG_ALLOC_ORDER; check what's live-in at q515's birth — likely the
+SetDrawMode arg regs' death positions). Probes VF (both masks named, ww first)
+and z3-era variants are NEUTRAL — naming doesn't change refs/length enough to
+reorder; the lever must change dc's or the masks' RANGE endpoints (birth/death
+insn positions) or free $a0 earlier. All stats regenerate via the tooth-1
+recipe with -dl; grep "Register 51[0-9]" in .lreg, block 49.
