@@ -120,3 +120,16 @@ lui/lw pairs (the stalled-at-9745 run suffered this on top of the lever-less
 base). Fix (applied to mml_53B40/compile.sh, gitignored — reapply for new
 workdirs): `realpath` the INPUT/OUTPUT args, then `cd $ROOT` before the
 pipeline. With the tooth-6/7 base this dropped the 53B40 base score to 2595.
+
+## LOCAL PATCH (2026-07-20): scorer length-change penalties raised
+
+`src/scorer.py` PENALTY_INSERTION/PENALTY_DELETION raised 100 → 10000 (local,
+uncommittable — permuter clone is gitignored; REAPPLY after any re-clone).
+Rationale: at 100, deleting one instruction that incidentally "fixes" >20
+register-allocation diffs (5 points each) scores as a net improvement, and near
+the endgame the search migrates into 494-word states that can never reach the
+byte match (observed repeatedly on 53B40: weighted 770 with 314 positional
+mismatches vs the honest base's 193). With 10000 the maximum possible regalloc
+credit can never pay for a length change, confining the search to the correct
+instruction count. The positional gate (bytecmp words+hard count) remains the
+authoritative accept/reject check for harvested candidates.
