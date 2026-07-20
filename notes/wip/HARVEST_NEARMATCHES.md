@@ -40,7 +40,7 @@ permuter for the last instruction. Don't hand-grind the scheduling nits.
 
 ---
 
-## func_8001E4C4 (scene) — ONE register-swap from a match
+## func_8001E4C4 (scene) — LANDED 2026-07-14 (permuter mml_E4C4, score 0 -> 275). Was:
 
 Logic + structure 100% match. Sole delta: `i`↔`arg1` land in swapped saved regs
 (reference: `i`=$s1, `arg1`=$s2; mine: reversed). Allocno tie-break genus (same as

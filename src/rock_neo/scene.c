@@ -225,7 +225,23 @@ void func_8001E460(s32 n, s32 on, s32 b) {
     Sce_flag_off(n + 0x7C0);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E4C4);
+void func_8001E4C4(u8 *arg0, u8 *arg1) {
+    s32 i;
+    long c;
+    for (i = 0; i < 8; i++, arg1++, arg0++) {
+        if (i) {
+            c = *arg0;
+        } else {
+            c = *arg0;
+        }
+        if (c == 0) {
+            break;
+        }
+        if (*arg1 != 0xFF) {
+            func_8001E460(c, *arg1 & 1, (*arg1 >> 1) & 1);
+        }
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E550);
 

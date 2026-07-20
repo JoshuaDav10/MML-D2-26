@@ -1,5 +1,15 @@
 # Activity Log
 
+## 2026-07-14 (Opus) — first permuter near-miss win
+- **func_8001E4C4 (scene) MATCHED** (274→275) — AUTHORITATIVE: audit_count.sh
+  census 274→275, full hash OK, raw cmp identical, mutation-tested. FIRST win of
+  the "hand near-match → permuter finishes" lane: hand-work reached a 1-diff
+  register-mirror (allocno tie, unforceable by hand); permuter (mml_E4C4, a "good
+  target" per the guide) hit score 0 at ~19k iters; landed + full-audit-verified.
+  Winning lever: `long c;` + redundant `if(i){c=*arg0;}else{c=*arg0;}`. Proves the
+  Lane-B strategy. Watcher/notify caveat learned: launch permuter AS the tracked
+  background command (not `nohup&` inside it) or --stop-on-zero won't notify.
+
 ## 2026-07-14 (Opus) — harvest continued (post-correction, disciplined)
 - **func_8001A63C (sound) MATCHED** — AUTHORITATIVE: census 273→274, full hash OK,
   raw cmp identical, mutation-tested. Magic-div-by-12 volume lookup. Genuine +1.

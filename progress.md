@@ -7,10 +7,18 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: **274** (AUTHORITATIVE — `tools/audit_count.sh`: clean
-  `rm -rf build`, hash OK, raw `cmp` byte-identical, `census.py --matched` = 274.
-  484 total, 210 active stubs. Mission %: 274/484 = **56.6%** by function count,
+- rock_neo main: **275** (AUTHORITATIVE — `tools/audit_count.sh`: clean
+  `rm -rf build`, hash OK, raw `cmp` byte-identical, `census.py --matched` = 275.
+  484 total, 209 active stubs. Mission %: 275/484 = **56.8%** by function count,
   ~17.6% by instruction volume.)
+  - +1 (func_8001E4C4, scene): matched + hash-verified + mutation-tested. FIRST
+    PERMUTER WIN of the near-miss lane. Hand analysis got it to a 1-diff
+    register-mirror (i↔arg1 in $s1/$s2 — allocno tie, unforceable by hand); set up
+    `tools/decomp-permuter/mml_E4C4` (recipe in HARVEST_NEARMATCHES.md), permuter
+    hit score 0 at iter ~19k. Winning lever: `long c;` + a redundant
+    `if(i){c=*arg0;}else{c=*arg0;}` that flips the allocno tie. Scratch score-0 was
+    then LANDED + verified by full audit (scratch-match != full hash — always gate
+    on audit_count.sh).
   - +1 (func_8001A63C, sound): matched + hash-verified + mutation-tested (census
     273→274, hash OK). Magic-div-by-12 volume table lookup: `q=|arg0|/12` shifts
     0x1000 (`<<` pos / `>>` neg), `D_80082C70/CA0[|arg0|%12]` table, return
