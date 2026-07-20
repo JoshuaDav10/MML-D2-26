@@ -1,5 +1,26 @@
 # Harvest near-matches — permuter last-mile candidates (2026-07-14)
 
+## PROVEN permuter-workdir setup recipe (2026-07-14, verified on mml_E4C4)
+Per PERMUTER_GUIDE "good targets": reg-mirror / scheduling near-misses are the
+RIGHT permuter targets (NOT 53B40 — that's a value-CSE wall, guide-verified futile).
+To wire a near-miss (example func_8001E4C4, scene):
+1. `D=tools/decomp-permuter/mml_<TAG>; mkdir $D; cp tools/decomp-permuter/mml_53B40/compile.sh $D/`
+2. `printf 'func_name = "func_XXXX"\ncompiler_type = "gcc"\n' > $D/settings.toml`
+3. target.s = macro include + the splat asm; assemble with the build's as flags:
+   `printf '.include "macro.inc"\n' > $D/target.s; cat asm/rock_neo/nonmatchings/<mod>/func_XXXX.s >> $D/target.s`
+   `mipsel-elf-as -Iinclude -march=r3000 -mtune=r3000 -no-pad-sections -O1 -G0 $D/target.s -o $D/target.o`
+   (VERIFY: `objdump -d $D/target.o` insn count == the function's size, else the
+   macro.inc include was missing and target.o is empty/wrong.)
+4. base.c = self-contained near-match TU (typedefs + externs inlined, no #include),
+   from the draft below for that function.
+5. LAUNCH tracked so --stop-on-zero notifies: run `python3 permuter.py mml_<TAG>
+   -j4 --stop-on-zero --best-only` AS the background command (NOT `nohup ... &`
+   inside it — that detaches and kills the completion notification).
+6. VERIFY base score is small/finite before trusting (mml_E4C4 base = 80).
+Status: mml_E4C4 set up + running (base 80). TODO same for AE6C, F188 (good
+targets); map_screen_set/F158 are borderline (held-base/CSE — may not converge).
+
+
 These functions have **byte-correct logic** (verified against the target asm) and
 are **1–2 instructions from a match**, blocked only on cc1 scheduling/allocation
 nits. That makes them IDEAL decomp-permuter targets (the tool's actual sweet spot,
