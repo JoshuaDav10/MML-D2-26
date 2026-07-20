@@ -1,8 +1,12 @@
-# HANDOFF — MML Decomp session state (2026-07-14, 278 matched)
+# HANDOFF — MML Decomp session state (2026-07-14, 280 matched)
 
-> **Harvest update (2026-07-14 Opus):** 278 matched (+func_80016434 game,
-> +func_8001D394 cd — both hash+mutation verified). Mission: **55.9%** by function
-> count (278/497), ~17.6% by instruction volume. Overlays CONFIRMED 205/205 done
+> **Harvest update (2026-07-14 Opus):** 280 matched (+func_80016434 game,
+> +func_8001D394 cd, +func_800155A4 game, +func_8005EC80 sub_scrn — all
+> hash+mutation verified). Mission: **56.3%** by function count (280/497),
+> ~17.6% by instruction volume. VEIN FOUND: parked `#else
+> ACCEPT_REORDERING_BULLSHIT` drafts now match once un-gated (patchasm reorder
+> pass fixed them) — 2 landed this way; grep the guard for more (game 15734/15840/
+> 16528 still genuinely mismatch; Sub_screen_rb_parts_set untested). Overlays CONFIRMED 205/205 done
 > (expedition complete; the "19 missing" note was stale). Banked the held-pointer
 > idiom (LESSONS) — the lever for the BB4C addressing-crux. 3 near-matches
 > (logic-solved, 1–2 insns off on cc1 scheduling) queued for the permuter in
