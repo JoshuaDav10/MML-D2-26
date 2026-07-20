@@ -1,4 +1,5 @@
-__asm__(".include \"macro.inc\"\n");
+
+asm(".include \"macro.inc\"\n");;
 typedef char int8_t;
 typedef short int16_t;
 typedef int int32_t;
@@ -19,19 +20,19 @@ typedef unsigned long long u64;
 typedef float f32;
 typedef double f64;
 typedef int unknown_t;
-extern void InitHeap(unsigned long*, unsigned long);
-extern long Load(char*, struct EXEC*);
-extern long Exec(struct EXEC*, long, char**);
+extern void InitHeap(unsigned long *, unsigned long);
+extern long Load(char *, struct EXEC *);
+extern long Exec(struct EXEC *, long, char **);
 extern void _bu_init(void);
-extern long open(char*, unsigned long);
+extern long open(char *, unsigned long);
 extern long lseek(long, long, long);
-extern long read(long, void*, long);
-extern long write(long, void*, long);
+extern long read(long, void *, long);
+extern long write(long, void *, long);
 extern long close(long);
-extern long format(char*);
-extern struct DIRENTRY* firstfile(char*, struct DIRENTRY*);
-extern struct DIRENTRY* nextfile(struct DIRENTRY*);
-extern long erase(char*);
+extern long format(char *);
+extern struct DIRENTRY *firstfile(char *, struct DIRENTRY *);
+extern struct DIRENTRY *nextfile(struct DIRENTRY *);
+extern long erase(char *);
 extern long Krom2RawAdd(unsigned long);
 extern void ChangeClearPAD(long);
 extern void StopPAD(void);
@@ -42,166 +43,267 @@ extern long OpenEvent(unsigned long, long, long, long (*func)());
 extern long EnableEvent(long);
 extern void _96_remove(void);
 extern void exit();
-extern void puts(char*);
-extern char* strcat(char*, char*);
-extern char* strcpy(char*, char*);
-extern int strlen(char*);
-extern void* memcpy(unsigned char*, unsigned char*, int);
-extern void* memset(unsigned char*, unsigned char, int);
+extern void puts(char *);
+extern char *strcat(char *, char *);
+extern char *strcpy(char *, char *);
+extern int strlen(char *);
+extern void *memcpy(unsigned char *, unsigned char *, int);
+extern void *memset(unsigned char *, unsigned char, int);
 extern int rand(void);
 extern void srand(unsigned int);
-extern void* malloc(size_t);
-extern void free(void*);
-int printf(char*, ...);
-typedef struct {
-    short x, y;
-    short w, h;
+extern void *malloc(size_t);
+extern void free(void *);
+int printf(char *, ...);
+typedef struct 
+{
+  short x;
+  short y;
+  short w;
+  short h;
 } RECT;
-typedef struct {
-    unsigned long tag;
-    unsigned long code[15];
+typedef struct 
+{
+  unsigned long tag;
+  unsigned long code[15];
 } DR_ENV;
-typedef struct {
-    unsigned long* tag;
-    unsigned long code[2];
+typedef struct 
+{
+  unsigned long *tag;
+  unsigned long code[2];
 } DR_MODE;
-typedef struct {
-    unsigned long tag;
-    unsigned char r0, g0, b0, code;
-    short x0, y0;
-    unsigned char u0, v0;
-    unsigned short clut;
-    unsigned char r1, g1, b1, p1;
-    short x1, y1;
-    unsigned char u1, v1;
-    unsigned short tpage;
-    unsigned char r2, g2, b2, p2;
-    short x2, y2;
-    unsigned char u2, v2;
-    unsigned short pad2;
+typedef struct 
+{
+  unsigned long tag;
+  unsigned char r0;
+  unsigned char g0;
+  unsigned char b0;
+  unsigned char code;
+  short x0;
+  short y0;
+  unsigned char u0;
+  unsigned char v0;
+  unsigned short clut;
+  unsigned char r1;
+  unsigned char g1;
+  unsigned char b1;
+  unsigned char p1;
+  short x1;
+  short y1;
+  unsigned char u1;
+  unsigned char v1;
+  unsigned short tpage;
+  unsigned char r2;
+  unsigned char g2;
+  unsigned char b2;
+  unsigned char p2;
+  short x2;
+  short y2;
+  unsigned char u2;
+  unsigned char v2;
+  unsigned short pad2;
 } POLY_GT3;
-typedef struct {
-    unsigned long tag;
-    unsigned char r0, g0, b0, code;
-    short x0, y0;
-    unsigned char r1, g1, b1, pad1;
-    short x1, y1;
-    unsigned char r2, g2, b2, pad2;
-    short x2, y2;
-    unsigned char r3, g3, b3, pad3;
-    short x3, y3;
+typedef struct 
+{
+  unsigned long tag;
+  unsigned char r0;
+  unsigned char g0;
+  unsigned char b0;
+  unsigned char code;
+  short x0;
+  short y0;
+  unsigned char r1;
+  unsigned char g1;
+  unsigned char b1;
+  unsigned char pad1;
+  short x1;
+  short y1;
+  unsigned char r2;
+  unsigned char g2;
+  unsigned char b2;
+  unsigned char pad2;
+  short x2;
+  short y2;
+  unsigned char r3;
+  unsigned char g3;
+  unsigned char b3;
+  unsigned char pad3;
+  short x3;
+  short y3;
 } POLY_G4;
-typedef struct {
-    unsigned long tag;
-    unsigned char r0, g0, b0, code;
-    short x0, y0;
-    unsigned char u0, v0;
-    unsigned short clut;
-    unsigned char r1, g1, b1, p1;
-    short x1, y1;
-    unsigned char u1, v1;
-    unsigned short tpage;
-    unsigned char r2, g2, b2, p2;
-    short x2, y2;
-    unsigned char u2, v2;
-    unsigned short pad2;
-    unsigned char r3, g3, b3, p3;
-    short x3, y3;
-    unsigned char u3, v3;
-    unsigned short pad3;
+typedef struct 
+{
+  unsigned long tag;
+  unsigned char r0;
+  unsigned char g0;
+  unsigned char b0;
+  unsigned char code;
+  short x0;
+  short y0;
+  unsigned char u0;
+  unsigned char v0;
+  unsigned short clut;
+  unsigned char r1;
+  unsigned char g1;
+  unsigned char b1;
+  unsigned char p1;
+  short x1;
+  short y1;
+  unsigned char u1;
+  unsigned char v1;
+  unsigned short tpage;
+  unsigned char r2;
+  unsigned char g2;
+  unsigned char b2;
+  unsigned char p2;
+  short x2;
+  short y2;
+  unsigned char u2;
+  unsigned char v2;
+  unsigned short pad2;
+  unsigned char r3;
+  unsigned char g3;
+  unsigned char b3;
+  unsigned char p3;
+  short x3;
+  short y3;
+  unsigned char u3;
+  unsigned char v3;
+  unsigned short pad3;
 } POLY_GT4;
-typedef struct {
-    unsigned long tag;
-    unsigned char r0, g0, b0, code;
-    short x0, y0;
-    unsigned char u0, v0;
-    unsigned short clut;
-    short w, h;
+typedef struct 
+{
+  unsigned long tag;
+  unsigned char r0;
+  unsigned char g0;
+  unsigned char b0;
+  unsigned char code;
+  short x0;
+  short y0;
+  unsigned char u0;
+  unsigned char v0;
+  unsigned short clut;
+  short w;
+  short h;
 } SPRT;
-typedef struct {
-    unsigned long tag;
-    unsigned char r0, g0, b0, code;
-    short x0, y0;
-    unsigned char u0, v0;
-    unsigned short clut;
+typedef struct 
+{
+  unsigned long tag;
+  unsigned char r0;
+  unsigned char g0;
+  unsigned char b0;
+  unsigned char code;
+  short x0;
+  short y0;
+  unsigned char u0;
+  unsigned char v0;
+  unsigned short clut;
 } SPRT_16;
-typedef struct {
-    unsigned long tag;
-    unsigned char r0, g0, b0, code;
-    short x0, y0;
-    unsigned char u0, v0;
-    unsigned short clut;
+typedef struct 
+{
+  unsigned long tag;
+  unsigned char r0;
+  unsigned char g0;
+  unsigned char b0;
+  unsigned char code;
+  short x0;
+  short y0;
+  unsigned char u0;
+  unsigned char v0;
+  unsigned short clut;
 } SPRT_8;
-typedef struct {
-    RECT clip;
-    short ofs[2];
-    RECT tw;
-    unsigned short tpage;
-    unsigned char dtd;
-    unsigned char dfe;
-    unsigned char isbg;
-    unsigned char r0, g0, b0;
-    DR_ENV dr_env;
+typedef struct 
+{
+  RECT clip;
+  short ofs[2];
+  RECT tw;
+  unsigned short tpage;
+  unsigned char dtd;
+  unsigned char dfe;
+  unsigned char isbg;
+  unsigned char r0;
+  unsigned char g0;
+  unsigned char b0;
+  DR_ENV dr_env;
 } DRAWENV;
-typedef struct {
-    RECT disp;
-    RECT screen;
-    unsigned char isinter;
-    unsigned char isrgb24;
-    unsigned char pad0, pad1;
+typedef struct 
+{
+  RECT disp;
+  RECT screen;
+  unsigned char isinter;
+  unsigned char isrgb24;
+  unsigned char pad0;
+  unsigned char pad1;
 } DISPENV;
-extern void SetShadeTex(void* p, int tge);
-extern void SetPolyGT3(POLY_GT3* p);
-extern void SetPolyG4(POLY_G4* p);
-extern void SetPolyGT4(POLY_GT4* p);
-extern void SetSprt(SPRT* p);
-extern void SetSprt16(SPRT_16* p);
-extern void SetSprt8(SPRT_8* p);
+extern void SetShadeTex(void *p, int tge);
+extern void SetPolyGT3(POLY_GT3 *p);
+extern void SetPolyG4(POLY_G4 *p);
+extern void SetPolyGT4(POLY_GT4 *p);
+extern void SetSprt(SPRT *p);
+extern void SetSprt16(SPRT_16 *p);
+extern void SetSprt8(SPRT_8 *p);
 extern int ResetGraph(int mode);
 extern int SetGraphReverse(int mode);
 extern int SetGraphQueue(int mode);
 extern unsigned long DrawSyncCallback(void (*func)());
 extern void SetDispMask(int mask);
 extern int DrawSync(int mode);
-extern int ClearImage(RECT* rect, unsigned char r, unsigned char g,
-                      unsigned char b);
-extern int LoadImage(RECT* rect, unsigned long* p);
-extern int StoreImage(RECT* rect, unsigned long* p);
-extern int MoveImage(RECT* rect, int x, int y);
-extern unsigned long* ClearOTag(unsigned long* ot, int n);
-extern unsigned long* ClearOTagR(unsigned long* ot, int n);
-extern void DrawOTag(unsigned long* p);
-extern DRAWENV* PutDrawEnv(DRAWENV* env);
-extern DISPENV* PutDispEnv(DISPENV* env);
-void AddPrim(void*, void*);
+extern int ClearImage(RECT *rect, unsigned char r, unsigned char g, unsigned char b);
+extern int LoadImage(RECT *rect, unsigned long *p);
+extern int StoreImage(RECT *rect, unsigned long *p);
+extern int MoveImage(RECT *rect, int x, int y);
+extern unsigned long *ClearOTag(unsigned long *ot, int n);
+extern unsigned long *ClearOTagR(unsigned long *ot, int n);
+extern void DrawOTag(unsigned long *p);
+extern DRAWENV *PutDrawEnv(DRAWENV *env);
+extern DISPENV *PutDispEnv(DISPENV *env);
+void AddPrim(void *, void *);
 u16 GetClut(int, int);
 u16 GetTPage(int, int, int, int);
-typedef struct {
-    unsigned char tag[4];
-    unsigned char r0, g0, b0, code;
-    short x0, y0;
-    unsigned char u0, v0;
-    unsigned short clut;
-    short x1, y1;
-    unsigned char u1, v1;
-    unsigned short tpage;
-    short x2, y2;
-    unsigned char u2, v2;
-    unsigned short pad2;
-    short x3, y3;
-    unsigned char u3, v3;
-    unsigned short pad3;
+typedef struct 
+{
+  unsigned char tag[4];
+  unsigned char r0;
+  unsigned char g0;
+  unsigned char b0;
+  unsigned char code;
+  short x0;
+  short y0;
+  unsigned char u0;
+  unsigned char v0;
+  unsigned short clut;
+  short x1;
+  short y1;
+  unsigned char u1;
+  unsigned char v1;
+  unsigned short tpage;
+  short x2;
+  short y2;
+  unsigned char u2;
+  unsigned char v2;
+  unsigned short pad2;
+  short x3;
+  short y3;
+  unsigned char u3;
+  unsigned char v3;
+  unsigned short pad3;
 } POLY_FT4;
-typedef struct {
-    unsigned long *tag;
-    unsigned char r0, g0, b0;
-    unsigned char code;
-    short x0, y0;
-    short x1, y1;
-    short x2, y2;
-    short x3, y3;
+typedef struct 
+{
+  unsigned long *tag;
+  unsigned char r0;
+  unsigned char g0;
+  unsigned char b0;
+  unsigned char code;
+  short x0;
+  short y0;
+  short x1;
+  short y1;
+  short x2;
+  short y2;
+  short x3;
+  short y3;
 } POLY_F4;
-void SetDrawMode(DR_MODE* p, int dfe, int dtd, int tpage, RECT* tw);
+void SetDrawMode(DR_MODE *p, int dfe, int dtd, int tpage, RECT *tw);
 unknown_t func_80063FC0(unknown_t, unknown_t);
 unknown_t func_8001D7AC(unknown_t);
 unknown_t func_80012E98(unknown_t);
@@ -230,60 +332,64 @@ extern DR_MODE D_80098A10[];
 extern s16 D_80098A70;
 extern s16 D_80098A72;
 extern u8 D_80098788;
-typedef struct unkst_80098A28 {
-    s8 xe0[3];
-    s8 unk3;
-    s8 unk4[3];
-    s8 unk7;
-    s16 unk8, unkA;
-    s16 unkC, unkE;
+typedef struct unkst_80098A28
+{
+  s8 xe0[3];
+  s8 unk3;
+  s8 unk4[3];
+  s8 unk7;
+  s16 unk8;
+  s16 unkA;
+  s16 unkC;
+  s16 unkE;
 } unkst_80098A28;
 extern unkst_80098A28 D_80098A28;
-extern void (*D_80080894[])(s8*);
+extern void (*D_80080894[])(s8 *);
 extern s8 D_80098B1C;
 extern s8 D_80098B1D;
-typedef struct MOJI_TASK {
-    u32 flags;
-    u16 x4;
-    u16 x6;
-    u16 x8;
-    u16 xA;
-    u16 xC;
-    u16 xE;
-    u16 x10;
-    s16 x12;
-    u8* script;
-    u8* stack[8];
-    u16 x38;
-    u8 x3A;
-    u8 x3B;
-    u8 x3C;
-    s8 x3D;
-    u8 x3E;
-    s8 x3F;
-    s32 x40;
-    u8* x44;
-    u8* x48;
-    u8* stack2[8];
-    u8* script2;
-    u8 x70;
-    u8 x71;
-    s8 x72;
-    s8 x73;
-    u8 x74[0x78 - 0x74];
-    u8 x78;
-    u8 x79[0x7C - 0x79];
-    u8 x7C;
-    u8 x7D;
-    u8 x7E;
-    u8 x7F;
-    u8 x80[0xB8 - 0x80];
-    u16 xB8;
-    u16 xBA;
-    u16 xBC;
-    u16 xBE;
-    u16 xC0;
-    u16 xC2;
+typedef struct MOJI_TASK
+{
+  u32 flags;
+  u16 x4;
+  u16 x6;
+  u16 x8;
+  u16 xA;
+  u16 xC;
+  u16 xE;
+  u16 x10;
+  s16 x12;
+  u8 *script;
+  u8 *stack[8];
+  u16 x38;
+  u8 x3A;
+  u8 x3B;
+  u8 x3C;
+  s8 x3D;
+  u8 x3E;
+  s8 x3F;
+  s32 x40;
+  u8 *x44;
+  u8 *x48;
+  u8 *stack2[8];
+  u8 *script2;
+  u8 x70;
+  u8 x71;
+  s8 x72;
+  s8 x73;
+  u8 x74[0x78 - 0x74];
+  u8 x78;
+  u8 x79[0x7C - 0x79];
+  u8 x7C;
+  u8 x7D;
+  u8 x7E;
+  u8 x7F;
+  u8 x80[0xB8 - 0x80];
+  u16 xB8;
+  u16 xBA;
+  u16 xBC;
+  u16 xBE;
+  u16 xC0;
+  u16 xC2;
 } MOJI_TASK;
 s32 MojiTaskExec();
 s32 MojiTaskKill();
@@ -297,10 +403,11 @@ extern s32 D_80098960;
 extern s32 D_80098B2C;
 extern u16 D_800C0C26;
 extern u16 D_800C0C2A;
-typedef struct DRAWCTX {
-    u8 pad[0x70];
-    u32 x70[3];
-    u32 x7C;
+typedef struct DRAWCTX
+{
+  u8 pad[0x70];
+  u32 x70[3];
+  u32 x7C;
 } DRAWCTX;
 extern DRAWCTX *D_80098934;
 extern RECT D_80097F50[];
@@ -365,8 +472,7 @@ void func_80053B40(void)
       {
         w = D_800C0C26;
         m->xB8 = w;
-        w = D_800C0C2A;
-        m->xBA = w;
+        w = (m->xBA = D_800C0C2A);
       }
       else
       {
@@ -380,6 +486,7 @@ void func_80053B40(void)
       }
       loop1:
       op = m->script2[0];
+
       if (((u32) op) < 0x84)
       {
         m->x4 -= 1;
@@ -390,11 +497,11 @@ void func_80053B40(void)
         {
           if (((!(m->flags & 0x8000000)) && (m->xB8 & 0x1000)) && (!(m->flags & tst)))
           {
-            m->x4 = (u8)m->x3F >> 1;
+            m->x4 = ((u8) m->x3F) >> 1;
           }
           else
           {
-            m->x4 = (u8)m->x3F;
+            m->x4 = (u8) m->x3F;
           }
           m->script2 += 1;
           if (!(m->flags & 0x60000000))
@@ -418,7 +525,7 @@ void func_80053B40(void)
         goto loop1;
       }
       new_var4 = 0x10000000;
-      if (((u8)m->x3F == 0) && (!(m->flags & new_var4)))
+      if ((((u8) m->x3F) == 0) && (!(m->flags & new_var4)))
       {
         goto loop1;
       }
@@ -452,7 +559,7 @@ void func_80053B40(void)
         do
         {
           op = m->script[0];
-          if (((u32) op) < 0x84)
+          if ((((u32) op) + 1) < (0x84 + 1))
           {
             if (!(m->flags & 0x100000))
             {
@@ -495,6 +602,7 @@ void func_80053B40(void)
       }
       post_render:
       pr = *((u32 **) 0x1F800070);
+
       rect.x = m->x8;
       rect.y = m->xA + ((*((u8 *) 0x1F800000)) << 8);
       prim = pr;
@@ -528,7 +636,7 @@ void func_80053B40(void)
     if (m != last)
     {
       mb = (MOJI_TASK *) (((u8 *) last) - 0x310);
-      D_80098B2C |= ((s32)(s8) m->x71) << (((s32) (m - mb)) << 3);
+      D_80098B2C |= ((s32) ((s8) m->x71)) << (((s32) (m - mb)) << 3);
     }
     m->flags &= 0xAF7FFFFF;
     m++;
@@ -536,9 +644,10 @@ void func_80053B40(void)
   while (m < (&last[1]));
   tail_env:
   pt = *((u32 **) 0x1F800070);
+
   *((u32 **) 0x1F800070) = pt + 3;
   t = GetTPage(0, 0, 0x3C0, 0x100);
-  SetDrawMode((DR_MODE *)pt, 0, 0, t & 0xFFFF, 0);
+  SetDrawMode((DR_MODE *) pt, 0, 0, t & 0xFFFF, 0);
   {
     DRAWCTX *dc;
     u32 ww;
