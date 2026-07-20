@@ -180,3 +180,16 @@ numbering-nudge — the folded-if device exists for exactly this).
 without the venv active dies instantly on `import toml`, while stale
 forkserver processes keep `pgrep permuter` alive — the watch loop must also
 verify `grep "base score" permuter.log` after (re)launch.**
+
+**Live-set synthesis + probe results (2026-07-20, late).** A 5-agent liveness
+map of the target confirmed: the only values matching the "spilled + remat"
+signature are 0x1A1F58D1 (remat 2x) and 0x1F800070 (remat 4x); full timeline
+in the workflow transcript (w5ygyk7rj). HOWEVER the naive source forms are
+FALSIFIED by compile: named `inv = 0x1A1F58D1` + manual exact-div → 435 hard
+(shape breaks); single function-wide `pp` init → the old movable hoist returns
+(492 words). The fossil pseudos were NOT plain function-scope locals; whatever
+created them must produce constant-valued pseudos that global-alloc FAILS on
+without loop.c hoisting them first. Meanwhile the positional-scorer permuter
+has taken the state 183→98 hard WITHOUT the frame fix — suggesting most slots
+I attributed to the fossil-echo are permuter-reachable; if it plateaus near
+~16-20 (the prologue/epilogue offset block), the fossil is the sole remainder.
