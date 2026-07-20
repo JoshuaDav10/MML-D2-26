@@ -274,7 +274,7 @@ void func_80016DAC(void) {
     v0->r0 = 0x80;
     v0->g0 = 0x80;
     v0->b0 = 0x80;
-    AddPrim(&D_80098934->x78, v0);
+    AddPrim(&D_80098934->x70[2], v0);
 }
 
 void func_80016E90(void) {
@@ -298,7 +298,7 @@ void func_80016E90(void) {
     temp_s0->unk5 = 0;
     temp_s0->unk6 = 0;
     temp_s0->code &= 0xFD;
-    AddPrim(&D_80098934->x74, temp_s0++);
+    AddPrim(&D_80098934->x70[1], temp_s0++);
     temp_s0->tag[3] = 5;
     temp_s0->code = 40;
     temp_s0->unk8 = 0;
@@ -313,6 +313,6 @@ void func_80016E90(void) {
     temp_s0->unk5 = 0;
     temp_s0->unk6 = 0;
     temp_s0->code = temp_s0->code & 0xFD;
-    AddPrim(&D_80098934->x74, temp_s0++);
+    AddPrim(&D_80098934->x70[1], temp_s0++);
     (*(UNK_PRIM_1** )0x1F800070) = temp_s0;
 }

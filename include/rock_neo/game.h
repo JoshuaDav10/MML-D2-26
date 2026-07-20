@@ -55,9 +55,10 @@ typedef struct {
 
 typedef struct {
     int x0;
-    s8 x4[0x74 - 0x4];
-    void* x74;
-    void* x78;
+    s8 x4[0x70 - 0x4];
+    u32 x70[3]; // OT list heads; [1]/[2] were the old x74/x78 (func_80053B40
+                // indexes this array by MOJI_TASK.x3D — sll 2, verified)
+    u32 x7C;    // fourth head, used by func_80053B40's tail
 } UnkStruc_80098934;
 extern UnkStruc_80098934* D_80098934;
 
