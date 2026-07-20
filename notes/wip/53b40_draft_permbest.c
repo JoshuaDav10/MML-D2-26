@@ -107,6 +107,7 @@ void func_80053B40(void)
   int new_var;
   s32 new_var2;
   MOJI_TASK *m;
+  u8 (*new_var6)[];
   MOJI_TASK *last;
   MOJI_TASK *new_var5;
   u32 *prim;
@@ -124,6 +125,7 @@ void func_80053B40(void)
   int new_var4;
   u32 *pt;
   MOJI_TASK *mb;
+  MOJI_TASK *new_var7;
   u32 f;
   u32 w;
   if (((*((u32 *) Moji_flag)) & 0x400000) || D_80098824)
@@ -139,6 +141,7 @@ void func_80053B40(void)
   }
   do
   {
+    new_var7 = m;
     tst = 0x40000;
     setflag = 0x40000000;
     fff = 0xFFFFFF;
@@ -201,7 +204,7 @@ void func_80053B40(void)
         }
       }
       else
-        if (D_8008A91C[op](m))
+        if (D_8008A91C[op](new_var7))
       {
         goto loop1;
       }
@@ -270,7 +273,7 @@ void func_80053B40(void)
                 p[0] = (p[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
                 dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) p) & fff);
               }
-              mv->x10 += D_8008AE7C[new_var5->script[0]];
+              mv->x10 += (*(new_var6 = &D_8008AE7C))[new_var5->script[0]];
             }
             m->script += 1;
           }
@@ -300,7 +303,7 @@ void func_80053B40(void)
         }
         else
         {
-          prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
+          prim[0] = (prim[0] & 0xFF000000) | ((*dc).x70[m->x3D] & fff);
           dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
         }
       }
