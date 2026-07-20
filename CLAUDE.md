@@ -73,6 +73,12 @@ Goal: C source that recompiles to a byte-for-byte identical binary.
   my change / did it already match?" — check THAT, not just "does it match now?"
 - Do not let pressure to show progress lower the verification bar. No number
   ships without `audit_count.sh` behind it.
+- **GENERALIZED (any claim, not just counts):** before asserting that ANYTHING
+  works — a match, a script, a watcher/notifier, a tool, a build step — DEMONSTRATE
+  it working (run it, trigger its condition, show the output). "I set it up / fixed
+  it" is not "I verified it fires." The 2026-07-14 count-inflation and a silently
+  broken permuter-watcher were the SAME root cause: asserting a claim instead of
+  testing it. Test the claim, then state it.
 
 ## Delegation
 - Route mechanical work (grep, stub creation, builds, diff runs) to the Haiku
