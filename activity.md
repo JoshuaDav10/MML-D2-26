@@ -1,6 +1,15 @@
 # Activity Log
 
 ## 2026-07-14 (Opus) — harvest restart + overlay/expedition reconciliation
+- **func_800155A4 (game) + func_8005EC80 (sub_scrn) MATCHED** (278→280), both
+  clean rebuild + sha1 OK + mutation test. DISCOVERY: parked
+  `#else ACCEPT_REORDERING_BULLSHIT` drafts — written/parked BEFORE the
+  tools/patchasm.py reorder pass existed — now MATCH as-is once un-gated (the
+  pass moves deferred C bodies to their .globl markers). Un-gate recipe: replace
+  the whole `#ifndef ACCEPT_REORDERING_BULLSHIT / INCLUDE_ASM / #else / body /
+  #endif` block with just the body. NOT universal: game.c's func_80015734/15840/
+  16528 still mismatch (genuine reorder/scheduling issues, historically re-gated);
+  Sub_screen_rb_parts_set untested. Grep all files for the guard for more.
 - **func_8001D394 MATCHED** (277→278), clean rebuild + sha1 OK + mutation test.
   cd.c CD-volume re-arm. NEW IDIOM (LESSONS): assign a symbol address to a local
   pointer (`u8 *p = D_800AD140;`) and pass `p + off` — forces cc1 to hold the

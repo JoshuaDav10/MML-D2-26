@@ -16,9 +16,6 @@ void func_8005EC34(void) {
     D_8008DBB0[D_800A38F0.routine_0](&D_800A38F0);
 }
 
-#ifndef ACCEPT_REORDERING_BULLSHIT
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_8005EC80);
-#else
 s32 func_8005EC80(s32* arg0) {
     MojiTaskKill();
     MojiTaskExec(0, D_8008CB94, -1);
@@ -27,7 +24,6 @@ s32 func_8005EC80(s32* arg0) {
     *arg0 = 1;
     return 0;
 }
-#endif
 
 // clang-format off
 
