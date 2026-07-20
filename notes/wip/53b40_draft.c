@@ -208,9 +208,9 @@ void func_80053B40(void) {
                             pb[5] = m->x78;
                             pb[6] = m->x78;
                             *(s16 *)(pb + 8) = m->x10;
+                            *(s16 *)(pb + 0xA) = m->x12;
                             *(s16 *)(pb + 0x10) = 0xC;
                             *(s16 *)(pb + 0x12) = 0xC;
-                            *(s16 *)(pb + 0xA) = m->x12;
                             *(s16 *)(pb + 0xE) = D_80097F30[m->x3E];
                             pb[0xC] = ((u8)(m->script[0] % 0x15)) * 0xC;
                             pb[0xD] = ((u8)(m->script[0] / 0x15)) * 0xC;
