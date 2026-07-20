@@ -105,6 +105,7 @@ void func_80053B40(void) {
     s32 c;
     s32 t;
     s32 op;
+    MOJI_TASK *mv;
     u32 *pt;
     MOJI_TASK *mb;
     u32 f;
@@ -188,9 +189,9 @@ void func_80053B40(void) {
             m->script = m->x48;
             m->x10 = m->x8;
             m->x73 = 0;
+            m->x12 = m->xA + m->x38;
             m->xBE = 0;
             m->x3E = m->x3C;
-            m->x12 = m->xA + m->x38;
             if (m->script != m->script2) {
                 do {
                     op = m->script[0];
@@ -205,6 +206,7 @@ void func_80053B40(void) {
                             pb[3] = 4;
                             pb[7] = 0x64;
                             pb[4] = m->x78;
+                            mv = m;
                             pb[5] = m->x78;
                             pb[6] = m->x78;
                             *(s16 *)(pb + 8) = m->x10;
@@ -222,7 +224,7 @@ void func_80053B40(void) {
                                     (dc->x70[m->x3D] & 0xFF000000)
                                     | ((u32)p & fff);
                             }
-                            m->x10 += D_8008AE7C[m->script[0]];
+                            mv->x10 += D_8008AE7C[m->script[0]];
                         }
                         m->script += 1;
                     } else {
