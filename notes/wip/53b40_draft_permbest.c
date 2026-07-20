@@ -217,8 +217,16 @@ void func_80053B40(void)
       SetDrawArea(prim, &D_80097F50[*((u8 *) 0x1F800000)]);
       {
         DRAWCTX *dc = D_80098934;
-        prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
-        dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
+        if (Moji_flag)
+        {
+          prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
+          dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
+        }
+        else
+        {
+          prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
+          dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
+        }
       }
       m->x78 = 0x80;
       m->script = m->x48;
