@@ -26,8 +26,9 @@ sleep 1
 source "$ROOT/.venv/bin/activate"
 python3 -c "import toml" || { echo "FATAL: venv broken (toml missing)"; exit 1; }
 
-# 3. launch
+# 3. launch (PERMUTER_ONLY_FUNC: score just this function out of a full-TU base)
 cd "$WD"
+export PERMUTER_ONLY_FUNC=func_80053B40
 nohup python3 permuter.py mml_53B40 -j"${JOBS:-8}" --best-only --stop-on-zero \
     > "$LOG" 2>&1 &
 pid=$!

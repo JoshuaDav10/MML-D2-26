@@ -162,3 +162,18 @@ when the candidate is still far away; (2) scratch-env reloc rows that can
 never match may put the reachable floor slightly above 0 — when the score
 plateaus low, bytecmp the candidate (exit 0 = the real match) rather than
 waiting for --stop-on-zero.
+
+## FULL-TU objective (2026-07-20, the decisive setup for 53B40's endgame)
+
+The single-function scratch TU and the real moji.c TU compile DIFFERENTLY
+(register pressure, pseudo numbering, even whether a mutation folds: the
+op+1<0x85 device saved a word standalone and COST one in-tree; the fossil's
+0x50 frame appears FOR FREE in-tree). Measured: 75-hard scratch == 77-hard
+in-tree with a DIFFERENT slot profile. Fix: base.c = `cpp` of the REAL
+src/rock_neo/moji.c with the candidate spliced over its INCLUDE_ASM line
+(strip # lines and blanks), plus a local objdump.py patch that slices the
+candidate disassembly to one function via the PERMUTER_ONLY_FUNC env var
+(exported by tools/permuter53b40.sh). target.o unchanged. Iterations are
+~3x slower but the score is now the number that ships. Verify any adopted
+candidate with tools/land53b40.sh (splice+build+hash dry-run) — cmp -l of
+the linked exe is the FINAL word (77 words counted that way today).

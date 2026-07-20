@@ -193,3 +193,15 @@ without loop.c hoisting them first. Meanwhile the positional-scorer permuter
 has taken the state 183→98 hard WITHOUT the frame fix — suggesting most slots
 I attributed to the fossil-echo are permuter-reachable; if it plateaus near
 ~16-20 (the prologue/epilogue offset block), the fossil is the sole remainder.
+
+**ENVIRONMENT DISCOVERY (2026-07-20, late) — changes this brief's priorities.**
+In-tree (real moji.c TU) compile of the 75-state: the FRAME IS 0x50 ALREADY
+(the fossil's prologue/epilogue footprint VANISHES — the big TU's own pressure
+produces the spill slots for free) and the tail-mask mirror mostly resolves.
+The true in-tree residual was 77 words with a different profile (biggest
+cluster: the head flag-update block, slots 47-68). CONSEQUENCE: the fossil
+hunt as framed (frame 0x48→0x50 in a scratch TU) is MOOT — do not pursue it in
+a standalone TU. The permuter now runs on the FULL-TU objective (see
+PERMUTER_GUIDE "FULL-TU objective"); remaining work is whatever ITS positional
+score says. cmp -l of the linked exe (via tools/land53b40.sh splice) is the
+authoritative residual census.
