@@ -120,6 +120,7 @@ void func_80053B40(void)
   s32 t;
   s32 op;
   MOJI_TASK *mv;
+  int new_var4;
   u32 *pt;
   MOJI_TASK *mb;
   u32 f;
@@ -203,7 +204,8 @@ void func_80053B40(void)
       {
         goto loop1;
       }
-      if ((m->x3F == 0) && (!(m->flags & 0x10000000)))
+      new_var4 = 0x10000000;
+      if ((m->x3F == 0) && (!(m->flags & new_var4)))
       {
         goto loop1;
       }
