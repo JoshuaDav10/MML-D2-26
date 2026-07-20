@@ -63,8 +63,7 @@ typedef struct MOJI_TASK {
 } MOJI_TASK;
 typedef struct DRAWCTX {
     u8 pad[0x70];
-    u32 x70;
-    u8 pad2[0x7C - 0x74];
+    u32 x70[3];
     u32 x7C;
 } DRAWCTX;
 typedef struct PRIM {
@@ -91,16 +90,24 @@ extern s32 func_8001D878();
 extern s32 func_8001D494(s32, s32, s32);
 extern void Sound_call(s32, s32, s32);
 extern void SetDrawArea(u32 *, RECT *);
-extern void SetDrawMode(u32 *, s32, s32, s32);
+extern void SetDrawMode(u32 *, s32, s32, s32, void *);
 extern s32 GetTPage(s32, s32, s32, s32);
 void func_80053B40(void) {
     MOJI_TASK *m;
+    MOJI_TASK *last;
     u32 *prim;
-    u32 * volatile *pp;
+    u32 *pr;
+    u32 **pp;
     u32 setflag;
     RECT rect;
     s32 c;
     s32 t;
+    s32 op;
+    u32 *pt;
+    MOJI_TASK *mb;
+    DRAWCTX *dc;
+    u32 f;
+    u32 w;
     if ((*(u32*)Moji_flag & 0x400000) || D_80098824) {
         return;
     }
@@ -113,12 +120,15 @@ void func_80053B40(void) {
     }
     do {
         if ((s32)m->flags < 0) {
-            c = ((s32)((u8 *)m - (u8 *)Moji_work) / 0xC4);
-            *(u32*)Moji_flag = (*(u32*)Moji_flag | 0x80000000) | (0x8000000 >> c);
+            c = m - Moji_work;
+            f = *(u32*)Moji_flag | 0x80000000;
+            *(u32*)Moji_flag = f | (0x8000000 >> c);
             if ((*(u32*)Moji_flag & 0x40000) == 0
-                && (*(u32*)Moji_flag & (0x10000 >> m->x6)) == 0) {
-                m->xB8 = D_800C0C26;
-                m->xBA = D_800C0C2A;
+                && (*(u32*)Moji_flag & (0x10000 >> (s16)m->x6)) == 0) {
+                w = D_800C0C26;
+                m->xB8 = w;
+                w = D_800C0C2A;
+                m->xBA = w;
             } else {
                 m->xB8 = 0;
                 m->xBA = 0;
@@ -129,12 +139,8 @@ void func_80053B40(void) {
                 m->flags = func_8001D494(0, 1, 0);
             }
         loop1:
-            c = m->script2[0];
-            if ((u32)c >= 0x84) {
-                if (D_8008A91C[c](m)) {
-                    goto loop1;
-                }
-            } else {
+            op = m->script2[0];
+            if ((u32)op < 0x84) {
                 m->x4 -= 1;
                 if ((s16)m->x4 > 0) {
                 } else {
@@ -156,19 +162,25 @@ void func_80053B40(void) {
                     m->flags |= setflag;
                     goto loop1;
                 }
+            } else {
+                if (D_8008A91C[op](m)) {
+                    goto loop1;
+                }
             }
             if (m->x3F == 0 && !(m->flags & 0x10000000)) {
                 goto loop1;
             }
-            pp = (u32 * volatile *)0x1F800070;
-            prim = *pp;
+            pp = (u32 **)0x1F800070;
+            pr = *pp;
+            prim = pr;
             *pp = prim + 3;
             SetDrawArea(prim, &D_80097F50[(*(u8 *)0x1F800000)]);
-            prim[0] = (prim[0] & 0xFF000000) | (D_80098934[m->x3D].x70 & 0xFFFFFF);
-            D_80098934[m->x3D].x70 =
-                (D_80098934[m->x3D].x70 & 0xFF000000) | ((u32)prim & 0xFFFFFF);
-            m->script = m->x48;
+            dc = D_80098934;
+            prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & 0xFFFFFF);
+            dc->x70[m->x3D] =
+                (dc->x70[m->x3D] & 0xFF000000) | ((u32)prim & 0xFFFFFF);
             m->x78 = 0x80;
+            m->script = m->x48;
             m->x10 = m->x8;
             m->x73 = 0;
             m->xBE = 0;
@@ -176,12 +188,12 @@ void func_80053B40(void) {
             m->x12 = m->xA + m->x38;
             if (m->script != m->script2) {
                 do {
-                    c = m->script[0];
-                    if ((u32)c >= 0x84) {
+                    op = m->script[0];
+                    if ((u32)op >= 0x84) {
                         if (!(m->flags & 0x100000)) {
                             u32 *p;
                             u8 *pb;
-                            pp = (u32 * volatile *)0x1F800070;
+                            pp = (u32 **)0x1F800070;
                             p = *pp;
                             pb = (u8 *)p;
                             *pp = (u32 *)((u8 *)p + 0x14);
@@ -197,51 +209,55 @@ void func_80053B40(void) {
                             *(s16 *)(pb + 0xE) = D_80097F30[m->x3E];
                             pb[0xC] = ((u8)(m->script[0] % 0x15)) * 0xC;
                             pb[0xD] = ((u8)(m->script[0] / 0x15)) * 0xC;
+                            dc = D_80098934;
                             p[0] = (p[0] & 0xFF000000)
-                                 | (D_80098934[m->x3D].x70 & 0xFFFFFF);
-                            D_80098934[m->x3D].x70 =
-                                (D_80098934[m->x3D].x70 & 0xFF000000)
+                                 | (dc->x70[m->x3D] & 0xFFFFFF);
+                            dc->x70[m->x3D] =
+                                (dc->x70[m->x3D] & 0xFF000000)
                                 | ((u32)p & 0xFFFFFF);
                             m->x10 += D_8008AE7C[m->script[0]];
                         }
                         m->script += 1;
                     } else {
-                        D_8008AAC4[c](m);
+                        D_8008AAC4[op](m);
                     }
                 } while (m->script != m->script2);
             }
         post_render:
-            pp = (u32 * volatile *)0x1F800070;
-            prim = *pp;
+            pr = *(u32 **)0x1F800070;
+            prim = pr;
             rect.x = m->x8;
             rect.y = m->xA + ((*(u8 *)0x1F800000) << 8);
             rect.w = m->x7E * 0xC;
             rect.h = m->x7F * 0xC;
-            *pp = prim + 3;
+            *(u32 **)0x1F800070 = prim + 3;
             SetDrawArea(prim, &rect);
-            prim[0] = (prim[0] & 0xFF000000) | (D_80098934[m->x3D].x70 & 0xFFFFFF);
-            D_80098934[m->x3D].x70 =
-                (D_80098934[m->x3D].x70 & 0xFF000000) | ((u32)prim & 0xFFFFFF);
+            dc = D_80098934;
+            prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & 0xFFFFFF);
+            dc->x70[m->x3D] =
+                (dc->x70[m->x3D] & 0xFF000000) | ((u32)prim & 0xFFFFFF);
             if (m->flags & 0x4000000) {
                 D_8008AAE4[m->x7C](m);
             }
         } else {
-            *(u32*)Moji_flag &= ~(0x10000 >> m->x6);
+            *(u32*)Moji_flag &= ~(0x10000 >> (s16)m->x6);
         }
-        if (m != &D_800BB9C8) {
-            t = ((s32)((u8 *)m - ((u8 *)&D_800BB9C8 - 0x310)) / 0xC4);
+        last = &D_800BB9C8;
+        if (m != last) {
+            mb = (MOJI_TASK *)((u8 *)last - 0x310);
+            t = m - mb;
             D_80098B2C |= (s32)m->x71 << (t << 3);
         }
         m->flags &= 0xAF7FFFFF;
         m++;
-    } while (m < &(&D_800BB9C8)[1]);
+    } while (m < &last[1]);
 tail_env:
-    pp = (u32 * volatile *)0x1F800070;
-    prim = *pp;
-    *pp = prim + 3;
+    pt = *(u32 **)0x1F800070;
+    *(u32 **)0x1F800070 = pt + 3;
     t = GetTPage(0, 0, 0x3C0, 0x100);
-    SetDrawMode(prim, 0, 0, t & 0xFFFF);
-    prim[0] = (prim[0] & 0xFF000000) | (D_80098934->x7C & 0xFFFFFF);
+    SetDrawMode(pt, 0, 0, t & 0xFFFF, 0);
+    dc = D_80098934;
+    pt[0] = (pt[0] & 0xFF000000) | (dc->x7C & 0xFFFFFF);
     D_80098960 += 1;
-    D_80098934->x7C = (D_80098934->x7C & 0xFF000000) | ((u32)prim & 0xFFFFFF);
+    dc->x7C = (dc->x7C & 0xFF000000) | ((u32)pt & 0xFFFFFF);
 }

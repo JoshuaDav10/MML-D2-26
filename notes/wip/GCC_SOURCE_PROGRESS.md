@@ -218,3 +218,85 @@ since the permuter dir is gitignored). Permuter re-launched from the correct str
 over target (505 vs 495), entirely the $fp/$s7 cascade. Next lever if permuter stalls:
 the -dg allocno-priority arithmetic (LESSONS "MojiTaskExec" recipe) to bump the
 0x40000000 pseudo's priority above $fp's allocation slot.
+
+## Ratchet tooth 6 (2026-07-19, Fable) — $s7 SOLVED + 6 more structural teeth; 426→~100 unaligned
+
+**THE $s7/$fp SWAP IS FIXED.** -dg forensics on the lever'd draft: the intruder was
+pseudo 417 = `&D_800BB9C8` hoisted by move_movables (insn 1131) — it ranked 8th in
+allocno order and took $s7; setflag(75) fell to $fp. Draft ranking matched the
+target EXACTLY through $s6 otherwise. Kill 417's hoist → setflag lands in $s7 with
+no other perturbation. All verified via bytecmp + fresh dumps (draft now emits
+`li $23,0x40000000` = lui $s7).
+
+**Landed levers (all in notes/wip/53b40_draft.c, structurally verified):**
+1. **Tail `last` local**: `last = &D_800BB9C8;` per-iteration inside the loop tail;
+   entry-check `m != last`, `mb = (MOJI_TASK*)((u8*)last - 0x310); t = m - mb;`,
+   loop-end `m < &last[1]`. Movable rejected (savings 1, late chain position) →
+   per-iteration `lui/addiu $a1` exactly like target. The separate `mb` statement
+   pins `addiu $v0,$a1,-0x310; subu` (writing the expression inline reassociates to
+   (m+0x310)-last — wrong).
+2. **Pointer-subtraction divisions**: target's magic constant is 0x1A1F58D1 with
+   `mflo; sra 2` = gcc EXACT division (196*M ≡ 4 mod 2^32) from MOJI_TASK* pointer
+   subtraction. `c = m - Moji_work;` and `t = m - mb;` — NOT the byte-diff/0xC4
+   signed-division form (0x5397829D, mfhi, sign-fix — 2 insns fatter each site).
+3. **SetDrawMode takes 5 args** (PSYQ: p,dfe,dtd,tpage,tw): `SetDrawMode(pt,0,0,
+   t&0xFFFF,0)` — the 5th arg is `sw $zero,0x10($sp)` in the jal slot and grows the
+   outgoing-args area to 0x18 → rect moves to 0x18($sp) → frame 0x50 region. Fixed.
+4. **DRAWCTX shape**: tag slots are `D_80098934->x70[m->x3D]` — u32 x70[3] array at
+   +0x70 indexed by x3D (sll 2), NOT stride-0x80 struct indexing. Struct is
+   `{u8 pad[0x70]; u32 x70[3]; u32 x7C;}` with a LOCAL `dc = D_80098934;` per site
+   (pointer loaded once, held across the prim[0] store; x3D and the slot reload).
+5. **loop1 layout**: `if ((u32)op < 0x84) {small-op arm} else {dispatch}` puts the
+   dispatch block at the end (target layout). Inner glyph loop wants the opposite
+   sense (`>= 0x84` fall-through) — still 1 branch-sense off (bnez vs beqz, minor).
+6. **Separate `op` variable** for the two script-byte loops (not `c`) — c stays the
+   div quotient ($a0 family), op gets $v1 like target.
+7. **OR-chain split** (MojiTaskExec idiom): `f = *(u32*)Moji_flag | 0x80000000;`
+   then `*(u32*)Moji_flag = f | (0x8000000 >> c);` — kills the reassociation.
+8. **xB8/xBA serialization**: one shared temp `w` for both lhu→sh pairs (WAW on the
+   single pseudo forces load,nop,sh,load,sh like target; two temps let sched pair
+   the loads).
+9. **(s16)m->x6** casts at both `0x10000 >> x6` sites → signed lh like target.
+10. **pp hybrid** (replaces the volatile device): ONE `u32 **pp` var assigned at
+    the render + glyph sites ONLY (2 sets → multi-set → no movable, combine can't
+    fold); post_render and tail_env use the ANONYMOUS `*(u32**)0x1F800070` form
+    (post_render's lone movable fails threshold; tail is outside the loop).
+    This reproduces the target's per-site regs ($v1/$v1/$a2/$v1). Anonymous at ALL
+    sites re-hoists (verified — $fp comes back); volatile pins the *pp store too
+    early (target has it in the jal delay slot).
+11. **tail_env uses its own pointer var** (`pt`) — loop `prim` conflicts with the
+    $s0 giv so it sits in $s1; the tail pseudo doesn't conflict → $s0 like target.
+
+**Metric**: structural-unaligned (new tools: scratchpad sdiff.py aligning opcode+reg
+streams) 495-ref vs draft: start ~190 → now ~100; words 495 vs 492 (draft 3 short).
+bytecmp hard mismatches are cascade-noise (~407) — most of the body is
+register-name/scheduling identical after alignment.
+
+**OPEN (the remaining ~100, in blocks):**
+a. Preheader order: target = giv($s0 addiu, in beqz slot), 0x40000($s5),
+   0x40000000($s7 - the setflag STATEMENT insn), 0xFFFFFF($s3), 0xFF000000($s4),
+   0x86186187($s6). Draft = setflag(slot), s5, s4, s3, s6, giv. Two puzzles: giv
+   emitted FIRST (before movables — strength_reduce emits after move_movables, so
+   sched/dbr must have moved it), and FFFFFF-before-FF000000 movable order (first-
+   use order should be FF000000 first given `(prim[0]&0xFF000000)|(slot&0xFFFFFF)`
+   — maybe the original wrote the operands SWAPPED; probe pending).
+b. `prim = *pp` load lands DIRECTLY in $s1 in draft; target does `lw $v0` + `addu
+   $s1,$v0` (copy) at render AND post_render (both $v0). Multi-set intermediate var
+   + copy spelling did NOT survive (cse copy-propagates it away). Target also has
+   8 DEAD stack bytes (0x20-0x27 never touched) = 2 reload spill slots → the copies
+   are likely RELOAD/pressure artifacts (orig compile spilled where draft doesn't).
+   Draft frame 0x48 vs target 0x50 is exactly these 8 bytes.
+c. D494 call block: `m->flags &= 0xFFFBFFFF` store should land in the jal delay
+   slot (target) — draft emits it 2 insns early.
+d. Sound-region `j loop1` should carry `sw $v0,0($s2)` in its slot — draft leaves
+   the sw before the j (nop in slot).
+e. Member-store cluster (x78/script/x10/x73/xBE/x3E/x12): statement order now
+   matches ref store order but sched pulls x3E's sb early + x3C's lbu early;
+   ref keeps x12's sh in the beq slot.
+f. Glyph pb-store cluster: +0x8/+0xA vs +0x10/+0x12 store order differs.
+g. mflo timing at tail div (ref fills mult latency with lb x71 + lw gp; draft
+   mflo's immediately).
+h. Small branch-sense flip in the inner loop head (beqz vs bnez to the far block).
+
+**Tools**: scratchpad sdiff.py (structural aligner, mipsel-elf-objdump vs splat .s)
+— rebuild it from this file's description if lost; it made every tooth above cheap.
