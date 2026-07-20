@@ -191,3 +191,30 @@ BB9C8/entry-check spelling), but the compiler-wall question is ANSWERED: no tool
 patch, no maspsx lever, no accept-as-asm needed. This is ordinary C-form matching now.
 Test files: scratchpad test1.c/test2.c/test3.c (+ .s); regen trivial from base.c with
 the three edits above.
+
+## Ratchet tooth 5 (2026-07-14, Opus foreground) — levers RE-VERIFIED + permuter re-seeded
+
+Reproduced the three levers from scratch (worker's scratch test files were lost with
+its session). All three confirmed against the target asm via `tools/bytecmp.sh`:
+- **setflag** (`u32 setflag=0x40000000;` pre-loop): 0x40000000 now hoists into a
+  callee-saved reg (`lui $fp,0x4000`) instead of inline `li` — the intended effect.
+- **reused-pp** (`u32 * volatile *pp;` reused at all 4 sites): 0x1F800070 stays inline
+  as `lui/ori` at exactly 4 sites (verified — the 6 `lui 0x1f80` are 4×0x70 + 2×0x00,
+  matching target which also has 2× the 0x1F800000 byte-read).
+- **D_800BB9C8**: ground-truthed the tail from the asm — target's entry check
+  `beq $s2,$a1` and loop-end `addiu $v0,$a1,0xC4` BOTH reuse `$a1=&D_800BB9C8`, while
+  the INITIAL guard stays Moji_work-relative (`addiu $v0,$s2,0x3D4` = &Moji_work[5]).
+  Draft: keep line-107 guard as `&Moji_work[5]`; do-while continuation as
+  `m < &(&D_800BB9C8)[1]`; `t = ((u8*)m - ((u8*)&D_800BB9C8 - 0x310))/0xC4`.
+
+**THE gap that stalled prior permuter runs:** the committed permuter `base.c` (dated
+Jul 12) was LEVER-LESS — every one of the ~dozens of `output-*` runs searched from the
+wrong structure, which is why none converged. Now FIXED: `tools/decomp-permuter/mml_53B40/base.c`
+seeded with all three levers (also persisted to the tracked `notes/wip/53b40_draft.c`
+since the permuter dir is gitignored). Permuter re-launched from the correct structure.
+
+**Sole residual:** allocno priority — 0x40000000 lands in `$fp`, target wants `$s7`
+(Moji_work base takes $s7 in the draft; target holds it in $s2). Draft is +10 insns
+over target (505 vs 495), entirely the $fp/$s7 cascade. Next lever if permuter stalls:
+the -dg allocno-priority arithmetic (LESSONS "MojiTaskExec" recipe) to bump the
+0x40000000 pseudo's priority above $fp's allocation slot.
