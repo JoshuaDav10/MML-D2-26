@@ -435,10 +435,11 @@ void func_80053B40(void)
   int new_var9;
   u32 tst;
   char new_var10;
+  volatile unsigned short new_var11;
   int new_var3;
   u32 fff;
   RECT rect;
-  s32 c;
+  unsigned char c;
   s32 t;
   s32 op;
   MOJI_TASK *mv;
@@ -547,7 +548,7 @@ void func_80053B40(void)
         }
         else
         {
-          prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
+          prim[0] = (prim[0] & 0xFF000000) | ((*dc).x70[m->x3D] & fff);
           dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
         }
       }
@@ -557,6 +558,7 @@ void func_80053B40(void)
       m->x73 = 0;
       m->x12 = m->xA + m->x38;
       m->xBE = 0;
+      new_var11 = m->flags & 0x100000;
       m->x3E = m->x3C;
       if (m->script != m->script2)
       {
@@ -565,14 +567,14 @@ void func_80053B40(void)
           op = m->script[0];
           if ((((u32) op) + 1) < (0x84 + 1))
           {
-            if (!(m->flags & 0x100000))
+            if (!new_var11)
             {
               u32 *p;
               u8 *pb;
               pp = (u32 **) 0x1F800070;
               p = *pp;
               pb = (u8 *) p;
-              *pp = (u32 *) (((u8 *) p) + 0x14);
+              *((u32 **) 0x1F800070) = (u32 *) (((u8 *) p) + 0x14);
               ((u8 *) p)[3] = 4;
               ((u8 *) p)[new_var = 7] = 0x64;
               ((u8 *) p)[4] = m->x78;
