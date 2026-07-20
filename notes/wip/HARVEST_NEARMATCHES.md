@@ -67,6 +67,19 @@ s32 func_8001AE6C(s32 arg0, u16 *arg1) {
 }
 ```
 
+## map_screen_set (sub_scrn) — logic solved, word-store scheduling hoist
+
+Prim-fill via the `0x1F800070` scratchpad + held prim base (same genus as 53B40
+render). All field values/offsets verified correct against the target. Sole residual:
+cc1 hoists the `0x4` word store (`sw a0,4(a1)` = 0x2C808080) AND the `D_80098934`
+load (AddPrim's arg) to EARLY (right after `p[0]`), while the target keeps both LATE
+(after the 0x1c store / near AddPrim). Tried: writing the 0x4 store late in source,
+aliasing it through the `s16*` base (`*(u32*)(h+2)`) to break word-store grouping —
+cc1 hoists regardless. Word-store-grouping + arg-load scheduling genus → permuter
+last-mile candidate. Draft (use `((s16*)p)[k]` fields + `AddPrim((u8*)D_80098934+0x78,p)`;
+advance `*(u32* volatile*)0x1F800070 = p + 0xA`) in this session's git history.
+NOTE: `D_80098934` is `UnkStruc_80098934*` in game.h — cast, don't redeclare.
+
 ## func_8001F158 (scene) — parked earlier this session (see activity.md 2026-07-14)
 
 xA4 address-CSE genus; logic solved. Draft in git history.
