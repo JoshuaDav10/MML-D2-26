@@ -434,6 +434,7 @@ void func_80053B40(void)
   u32 setflag;
   int new_var9;
   u32 tst;
+  char new_var10;
   int new_var3;
   u32 fff;
   RECT rect;
@@ -572,17 +573,17 @@ void func_80053B40(void)
               p = *pp;
               pb = (u8 *) p;
               *pp = (u32 *) (((u8 *) p) + 0x14);
-              pb[3] = 4;
-              pb[new_var = 7] = 0x64;
-              pb[4] = m->x78;
+              ((u8 *) p)[3] = 4;
+              ((u8 *) p)[new_var = 7] = 0x64;
+              ((u8 *) p)[4] = m->x78;
               mv = m;
-              pb[5] = m->x78;
-              pb[6] = m->x78;
-              *((s16 *) (pb + 8)) = m->x10;
+              ((u8 *) p)[5] = m->x78;
+              ((u8 *) p)[6] = m->x78;
+              *((s16 *) (((u8 *) p) + 8)) = m->x10;
               new_var3 = 0x12;
-              *((s16 *) (pb + 0xA)) = m->x12;
-              *((s16 *) (pb + 0x10)) = 0xC;
-              *((s16 *) (pb + new_var3)) = 0xC;
+              *((s16 *) (((u8 *) p) + 0xA)) = m->x12;
+              *((s16 *) (((u8 *) p) + 0x10)) = 0xC;
+              *((s16 *) (((u8 *) p) + new_var3)) = 0xC;
               *((s16 *) (pb + 0xE)) = D_80097F30[m->x3E];
               f = p[0];
               pb[0xC] = ((u8) (m->script[0] % 0x15)) * 0xC;
@@ -659,7 +660,8 @@ void func_80053B40(void)
     ww = 0xFFFFFF;
     dc = D_80098934;
     pt[0] = (pt[0] & 0xFF000000) | (dc->x7C & ww);
+    new_var10 = ((u32) pt) & ww;
     D_80098960 += 1;
-    dc->x7C = (dc->x7C & 0xFF000000) | (((u32) pt) & ww);
+    dc->x7C = (dc->x7C & 0xFF000000) | new_var10;
   }
 }
