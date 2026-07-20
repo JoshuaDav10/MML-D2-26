@@ -1,9 +1,9 @@
-# HANDOFF — MML Decomp session state (2026-07-14, 273 matched — authoritative)
+# HANDOFF — MML Decomp session state (2026-07-14, 274 matched — authoritative)
 
-> **Harvest update (2026-07-14 Opus):** AUTHORITATIVE count = **273 matched**
+> **Harvest update (2026-07-14 Opus):** AUTHORITATIVE count = **274 matched**
 > (`census.py --matched` after `rm -rf build`; hash OK + raw `cmp` identical).
-> Genuine new this session: **+2** — func_80016434 (game) + func_8001D394 (cd),
-> both real stubs I wrote C for and mutation-tested. Mission: 273/484 = **56.4%**
+> Genuine new this session: **+3** — func_80016434 (game), func_8001D394 (cd), func_8001A63C (sound),
+> both real stubs I wrote C for and mutation-tested. Mission: 274/484 = **56.6%**
 > by function count, ~17.6% by volume.
 > ⚠️ **COUNT-CORRECTION / GOTCHA:** I earlier over-claimed 280 by "un-gating"
 > func_800155A4/8005EC80 (+3 more). PHANTOM: game.c AND sub_scrn.c carry

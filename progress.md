@@ -7,10 +7,18 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: **273** (AUTHORITATIVE — `census.py --matched` after a CLEAN
-  `rm -rf build` rebuild, 2026-07-14; hash OK + raw `cmp` byte-identical.
-  484 total, 211 active stubs, 273 matched. Mission %: 273/484 = **56.4%** by
-  function count, ~17.6% by instruction volume.)
+- rock_neo main: **274** (AUTHORITATIVE — `tools/audit_count.sh`: clean
+  `rm -rf build`, hash OK, raw `cmp` byte-identical, `census.py --matched` = 274.
+  484 total, 210 active stubs. Mission %: 274/484 = **56.6%** by function count,
+  ~17.6% by instruction volume.)
+  - +1 (func_8001A63C, sound): matched + hash-verified + mutation-tested (census
+    273→274, hash OK). Magic-div-by-12 volume table lookup: `q=|arg0|/12` shifts
+    0x1000 (`<<` pos / `>>` neg), `D_80082C70/CA0[|arg0|%12]` table, return
+    `(a1*v0)>>16`. Knobs: positive branch is the fall-through (`bltz` to neg);
+    compute the table lookup BEFORE the shift (schedules the sllv/srav last);
+    reassign `a1 = a1*v0` so cc1 reuses $a1 for the mflo result (not $a2).
+    NOTE: census counts a function matched from its .o even when a register nit
+    fails the FULL hash — always gate on `audit_count.sh` (hash), not census alone.
   - ⚠️ COUNT CORRECTION (2026-07-14): an earlier note in this session claimed
     277→280 by "un-gating" func_800155A4 (game) + func_8005EC80 (sub_scrn) and
     3 more game fns. THOSE WERE PHANTOM: game.c AND sub_scrn.c both carry

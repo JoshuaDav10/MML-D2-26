@@ -234,7 +234,23 @@ s32 func_8001A238(s32 key) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A274);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A63C);
+extern s32 D_80082C70[];
+extern s32 D_80082CA0[];
+
+s32 func_8001A63C(s32 arg0) {
+    s32 a1 = 0x1000;
+    s32 v0;
+    if (arg0 >= 0) {
+        v0 = D_80082C70[arg0 % 12];
+        a1 <<= arg0 / 12;
+    } else {
+        arg0 = -arg0;
+        v0 = D_80082CA0[arg0 % 12];
+        a1 >>= arg0 / 12;
+    }
+    a1 = a1 * v0;
+    return a1 >> 16;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A6DC);
 

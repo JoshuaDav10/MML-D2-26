@@ -1,5 +1,15 @@
 # Activity Log
 
+## 2026-07-14 (Opus) — harvest continued (post-correction, disciplined)
+- **func_8001A63C (sound) MATCHED** — AUTHORITATIVE: census 273→274, full hash OK,
+  raw cmp identical, mutation-tested. Magic-div-by-12 volume lookup. Genuine +1.
+  Levers: pos branch = fall-through; table lookup before the shift; `a1=a1*v0`
+  reassign to reuse $a1 for mflo. Caught a subtle trap: census showed 274 while
+  the FULL hash still FAILED (a $a1-vs-$a2 register nit in the tail) — census
+  reads per-.o and misses link/register nits. Only `audit_count.sh` (hash) is the
+  real gate. Fixed the reg nit → hash OK. Baseline this session was 271
+  (authoritative); genuine matches = func_80016434, func_8001D394, func_8001A63C.
+
 ## 2026-07-14 (Opus) — harvest restart + overlay/expedition reconciliation
 - ⚠️ **COUNT CORRECTION**: I briefly claimed func_800155A4/func_8005EC80 (+3 more)
   as new matches (278→280→283). RETRACTED — all PHANTOM. game.c AND sub_scrn.c
