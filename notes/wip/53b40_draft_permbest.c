@@ -108,6 +108,7 @@ void func_80053B40(void)
   s32 new_var2;
   MOJI_TASK *m;
   MOJI_TASK *last;
+  MOJI_TASK *new_var5;
   u32 *prim;
   u32 *pr;
   u32 **pp;
@@ -254,13 +255,14 @@ void func_80053B40(void)
               *((s16 *) (pb + new_var3)) = 0xC;
               *((s16 *) (pb + 0xE)) = D_80097F30[m->x3E];
               pb[0xC] = ((u8) (m->script[0] % 0x15)) * 0xC;
+              new_var5 = m;
               pb[0xD] = ((u8) (m->script[0] / 0x15)) * 0xC;
               {
                 DRAWCTX *dc = D_80098934;
                 p[0] = (p[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
                 dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) p) & fff);
               }
-              mv->x10 += D_8008AE7C[m->script[0]];
+              mv->x10 += D_8008AE7C[new_var5->script[0]];
             }
             m->script += 1;
           }
@@ -283,8 +285,16 @@ void func_80053B40(void)
       SetDrawArea(prim, &rect);
       {
         DRAWCTX *dc = D_80098934;
-        prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
-        dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
+        if (tst)
+        {
+          prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
+          dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
+        }
+        else
+        {
+          prim[0] = (prim[0] & 0xFF000000) | (dc->x70[m->x3D] & fff);
+          dc->x70[m->x3D] = (dc->x70[m->x3D] & 0xFF000000) | (((u32) prim) & fff);
+        }
       }
       if (m->flags & 0x4000000)
       {
