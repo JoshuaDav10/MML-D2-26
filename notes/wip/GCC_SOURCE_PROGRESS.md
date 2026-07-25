@@ -628,3 +628,47 @@ the target has 495 words of real code. **We are exactly ONE real instruction sho
 it is almost certainly the render-site copy `addu $s1,$v0,$zero`.** Land that one
 instruction honestly and the padding can be deleted in the same edit (tooth 11's
 combined-edit rule). That single instruction is now the whole remaining problem.
+
+## Tooth 15 (2026-07-25, Opus) — VERDICT on the render copy: it is a RELOAD artifact, not source-reachable
+
+Read the actual gcc-2.7 source that governs this copy. There is no `regmove.c` in 2.7;
+register-to-register copies are eliminated by **local-alloc.c `combine_regs`** (line 1722).
+
+**The exact rule** (combine_regs, tail):
+```c
+if (reg_qty[sreg] >= -1 ...) return 0;          /* (A) sreg already has a quantity */
+if ((already_dead || find_regno_note (insn, REG_DEAD, ureg))   /* (B) ureg DEAD here */
+    && reg_meets_class_p (sreg, qty_min_class[reg_qty[ureg]]))
+  { ...tie sreg into ureg's quantity -> THE COPY DISAPPEARS... }
+else
+  return 0;                                      /* copy SURVIVES */
+```
+For our `prim = pr`: ureg=`pr`, sreg=`prim`. `block_alloc` scans **FORWARD**
+(local-alloc.c:1090), so at the copy `prim` has no quantity yet -> (A) cannot save us.
+That leaves exactly one gate: **the copy survives only if `pr` is NOT dead at the copy.**
+
+**Why every source-level attempt is doomed:** `cse` runs BEFORE local-alloc and folds
+`prim = pr` — it proves the two hold the same value and rewrites later uses, which makes
+`pr` dead at the copy, which makes combine_regs tie them, which deletes the copy.
+Verified empirically: substituting `pr` for `prim` at downstream uses inside the render
+block (semantically identical, intended to keep `pr` live) changes NOTHING —
+`((u32) pr)` in the casts -> 70; `pr[0]` read as well -> 70. cse folds them both times.
+
+**Therefore:** the target's `addu $s1,$v0,$zero` is **not** produced by any source shape.
+It is a **reload live-range split** — the same reload episode that reserved the untouched
+0x20-0x27 spill slots (tooth 14). Copy and fossil are ONE phenomenon, emitted by reload
+under register pressure, invisible to C.
+
+**Consequence for the endgame — the honest options are now only these three:**
+1. Reproduce the original's *reload state* (pressure high enough to split ranges, but
+   with inheritance eliminating the spill accesses). No source lever found in ~20
+   attempts across teeth 10-15; would need reload1.c study, not C experiments.
+2. Accept the padded base: keep the `volatile` (buys the correct 0x50 frame for +1 word)
+   and treat the ~70 rows as the floor for source-level work.
+3. Declare this genus C-UNREACHABLE for 53B40 and accept-as-asm — which is a legitimate
+   expedition outcome (the original Phase-1 brief lists "proof it's unreachable" as a win).
+
+**Recommendation: stop source-form experiments on the render copy.** Every remaining
+avenue has been enumerated and closed above. The next session should either study
+reload1.c inheritance directly, or make the accept-as-asm call and redirect the effort
+to BB4C / the small-function lanes where levers still work.
