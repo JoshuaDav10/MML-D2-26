@@ -115,3 +115,17 @@ Residual: the target computes `&Sce_flag[f>>3]` as base-then-index into a held r
 (`lui/addiu` base, `srl` index, `addu a0,v0,a0`); every ordering tried (array index, held
 pointer, explicit `base` local) permutes the operand order / register pair. Draft saved as
 notes/wip/sce_flag_off_draft.c — good permuter candidate (addressing/register genus).
+
+## func_80042154 (player) — logic solved, needs the v1=v0 copy (2026-07-25)
+Symmetric accel/decel on `pl->xB4` gated by `pl->x11C & keymask`; returns 1 (key set)
+or 2 (clear); clamps to +/-limit; writes step (or -step) to +0xB6; tail does
+`pl->x56 = (pl->x56 + pl->xB4) & 0xFFF`. Draft: notes/wip/func_80042154_draft.c.
+SOLVED so far: the target allocates a **dead 0x10 frame** (nothing is ever stored to
+it) — reproduced with `u8 pad[16]; (void)&pad;` (the tooth-16 idiom; `Sce_flag_test`
+uses the same trick with `u8 buf[8]`). That fixed the `addiu $sp,-0x10`.
+RESIDUAL: both branches load xB4 into $v0 for the sign test but do the ARITHMETIC on
+$v1 (`move v1,v0` in each branch's delay slot, then `addu v0,v1,a1` / `subu v0,v1,a1`).
+That is the live-range-split copy genus (LESSONS: cse folds any plain `b = a`), plus
+the shared zero-block layout. Also note `xB4` is `u16` in PL_WORK but the asm uses
+`lh` -> access via `*(s16 *)&pl->xB4`; `xB6` sits in a pad array -> byte-offset cast.
+Good permuter candidate.
