@@ -576,3 +576,19 @@ the live-range split; and find the 2 non-rematerializable values the original he
 that spilled to 0x20-0x27. These are almost certainly the same phenomenon: if two more
 values are live across the render call, s1 cannot be recycled for the m-copy, prim gets
 its own range, and 2 pseudos overflow to the stack.
+
+### Tooth 13 addendum — the pressure mechanism is CONFIRMED (right idea, wrong dose)
+Hoisting the two post_render field loads (`hx = m->x8; hy = m->xA;`) to before the
+render site — i.e. 2 genuinely non-rematerializable values held live across the render
+call — DID raise pressure and produce real spills: the frame grew and stack use extended
+to 0x4C (vs our usual 0x44 max), and the index-0 frame mismatch disappeared.
+Result: 496 words / 261 rows — it OVERSHOT (frame past 0x50, +1 insn).
+
+This is the first lever that moved the allocator in the intended direction, and it
+validates the tooth-13 theory: **live non-constant values across the render call are
+what create the target's spills** (constants cannot — see tooth 12 REG_EQUIV).
+Next session should titrate this: try ONE hoisted non-constant value instead of two,
+or hoist a value that is already loaded elsewhere (so no net instruction is added),
+watching for the exact combination: frame 0x50 + 0x20-0x27 untouched + 495 words.
+Candidates to try one at a time: `m->x8`, `m->xA`, `m->x7E`, `m->x7F`, `m->x3D`,
+`D_80098934` — each used after the render call, so hoisting adds liveness cheaply.
