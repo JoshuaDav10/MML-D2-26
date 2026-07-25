@@ -7,9 +7,14 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: **276** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
-  hash OK, raw cmp byte-identical, census 276. 484 total, 208 active stubs.
-  Mission %: 276/484 = **57.0%** by function count, ~17.6% by instruction volume.)
+- rock_neo main: **277** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
+  hash OK, raw cmp byte-identical, census 277. 484 total, 207 active stubs.
+  Mission %: 277/484 = **57.2%** by function count, ~19.5% by instruction volume.)
+  - +1 (func_80057924, moji): matched + hash + mutation-tested. 3rd permuter win
+    (mml_57924). Script-opcode handler: `script2[1]==0` ? scale (x7D-x7C)*10 : use
+    zennyCount, negate into func_80043294(v,0,0), store x7D->x7C, script2+=2, return 1.
+    Hand analysis reached a pure $v0/$v1 mirror (10 rows); permuter's lever = use a
+    SEPARATE local for the delta instead of reusing the result variable.
   - +1 (func_80062C6C, debug): matched + hash + mutation-tested. 2nd permuter
     win (mml_62C6C). Register-mirror: fn-ptr vs counter in swapped $s1/$s2;
     lever = init `i=0` BEFORE `fp=D_8008DBE0` (reorders pseudo alloc). fn-table

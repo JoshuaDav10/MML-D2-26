@@ -1,5 +1,18 @@
 # Activity Log
 
+## 2026-07-25 (Opus) — 53B40 verdict + 3rd permuter win
+- **func_80057924 (moji) MATCHED** (276->277) — audit_count.sh census 277, hash OK,
+  raw cmp identical, mutation-tested. Hand-decoded to a pure $v0/$v1 register mirror
+  (10 rows); permuter (mml_57924) zeroed it. LEVER: use a distinct local for the
+  intermediate delta rather than reusing the result variable — reusing it mirrors the
+  pair. Third confirmation that register-mirrors are the permuter's reliable lane.
+- **53B40: VERDICT (not landed, 276 unchanged by it).** 75->70 rows; original hoist wall
+  SOLVED (frame fossil closed, allocation 7/8 identical to target). Deeper blocker
+  proven: the render-site copy is a RELOAD live-range split (proof read out of
+  local-alloc.c:combine_regs; cse guarantees plain copies die), same episode as the
+  reserved-but-untouched 0x20-0x27 spill slots. ~20 levers closed in teeth 10-15.
+  3 durable rules -> LESSONS; case study + 3 Book I sections -> the textbook repo.
+
 ## 2026-07-14 (Opus) — 2nd permuter win
 - **func_80062C6C (debug) MATCHED** (275->276) — audit_count.sh census 276, hash OK,
   raw cmp identical, mutation-tested. 2nd true permuter win (register-mirror, like

@@ -850,7 +850,24 @@ s32 func_80057744(MOJI_TASK *m) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_800577FC);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/moji", func_80057924);
+s32 func_80043294(s32, s32, s32);
+
+s32 func_80057924(MOJI_TASK *m) {
+    s32 v;
+    s32 d; /* distinct local for the delta: reusing `v` mirrors $v0/$v1 */
+
+    if (m->script2[1] == 0) {
+        d = Game_work.x7D - Game_work.x7C;
+        func_80043294(-(d * 10), 0, 0);
+        v = Game_work.x7D;
+    } else {
+        func_80043294(-Game_work.zennyCount, 0, 0);
+        v = Game_work.x7D;
+    }
+    Game_work.x7C = v;
+    m->script2 += 2;
+    return 1;
+}
 
 void func_800579D8(MOJI_TASK *m) {
     func_8005BF10(1, (Game_work.x7D - Game_work.x7C) * 10, m->script += 1);
