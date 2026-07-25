@@ -1,4 +1,4 @@
-# HANDOFF — MML Decomp session state (2026-07-25, 277 matched — authoritative)
+# HANDOFF — MML Decomp session state (2026-07-25, 278 matched — authoritative)
 
 > **53B40 giant push (2026-07-25 Opus) — VERDICT REACHED, count unchanged at 276.**
 > Draft improved **75 -> 70** positional rows (495/495 parity) and the *original* wall is

@@ -7,9 +7,14 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: **277** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
-  hash OK, raw cmp byte-identical, census 277. 484 total, 207 active stubs.
-  Mission %: 277/484 = **57.2%** by function count, ~19.5% by instruction volume.)
+- rock_neo main: **278** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
+  hash OK, raw cmp byte-identical, census 278. 484 total, 206 active stubs.
+  Mission %: 278/484 = **57.4%** by function count, ~19.6% by instruction volume.)
+  - +1 (func_8001B7B4, cd): matched FIRST BUILD + hash + mutation-tested. CD mute
+    toggle: pulse func_8001D394(0x7F..1), `D_800AD142[0] |= 0x8000` (array decl for the
+    single materialized read+write address), then swap D_800AD146 <-> D_80098994 gated
+    on D_800988DC, then func_8001CAAC(). Needed forward decls (the stub sits above
+    cd.c's own definitions).
   - +1 (func_80057924, moji): matched + hash + mutation-tested. 3rd permuter win
     (mml_57924). Script-opcode handler: `script2[1]==0` ? scale (x7D-x7C)*10 : use
     zennyCount, negate into func_80043294(v,0,0), store x7D->x7C, script2+=2, return 1.

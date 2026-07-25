@@ -1,6 +1,11 @@
 # Activity Log
 
-## 2026-07-25 (Opus) — 53B40 verdict + 3rd permuter win
+## 2026-07-25 (Opus) — 53B40 verdict + 2 harvest wins
+- **func_8001B7B4 (cd) MATCHED** (277->278) — audit_count.sh 278, hash OK, raw cmp
+  identical, mutation-tested. FIRST-BUILD match (no permuter): CD mute toggle. The
+  0x7F..1 pulse loop mirrors the already-matched func_8001CB7C sibling; `D_800AD142[0]
+  |= 0x8000` uses the array decl so the address materializes once for read+write.
+  Reminder: this stub sits ABOVE cd.c's own definitions, so forward decls were needed.
 - **func_80057924 (moji) MATCHED** (276->277) — audit_count.sh census 277, hash OK,
   raw cmp identical, mutation-tested. Hand-decoded to a pure $v0/$v1 register mirror
   (10 rows); permuter (mml_57924) zeroed it. LEVER: use a distinct local for the

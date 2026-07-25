@@ -26,7 +26,31 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B644);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B6FC);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B7B4);
+extern u16 D_800AD142[];
+extern u16 D_800AD146;
+extern u16 D_80098994;
+extern u8 D_800988DC;
+void func_8001CAAC(void);
+void func_8001D394(u8);
+
+void func_8001B7B4(void) {
+    s32 i;
+
+    for (i = 0x7F; i > 0; i--) {
+        func_8001D394(i);
+    }
+    D_800AD142[0] |= 0x8000;
+    if (D_800988DC != 0) {
+        D_800988DC = 0;
+        D_800AD146 = D_80098994;
+    } else {
+        u16 t = D_800AD146;
+        D_800AD146 = 0;
+        D_800988DC = 1;
+        D_80098994 = t;
+    }
+    func_8001CAAC();
+}
 
 typedef struct { u8 p[8]; s32 x8; } D_80098A84_t;
 extern D_80098A84_t *D_80098A84;
