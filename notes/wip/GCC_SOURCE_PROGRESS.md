@@ -377,3 +377,56 @@ h. Small branch-sense flip in the inner loop head (beqz vs bnez to the far block
   the m->x71 read (tree types u8 x71 / s8 x3F are opposite the draft's),
   `(DR_MODE *)pt` for SetDrawMode, local `void SetDrawArea(u32 *, RECT *);`
   decl (libgpu.h lacks it), DRAWCTX typedef + externs added to moji.c.
+
+## Ratchet tooth 10 (2026-07-25, Opus) — STACK-SLOT ORDERING lever: 75 -> 70
+
+**Measured state at session start** (all three rulers agree, ~2 apart as expected):
+- `tools/score53b40.sh notes/wip/53b40_draft_permbest.c` = **75** positional rows
+- `CPP=cpp tools/bytecmp.sh func_80053B40 <draft>` = 73 hard, **495/495 word parity**
+- true in-tree (splice via `tools/land53b40.sh` + `./diff.py`) = **68** differing rows
+  (in-tree is lowest because ~5 scratch mismatches are `%gp_rel` artifacts that
+  resolve when linked — confirmed: idx 1/23/26/46/54 are all `gp_rel(Moji_flag)`).
+
+**CONFIRMED SOLVED (do not re-investigate):** the frame fossil. In-tree the prologue
+is byte-identical — `addiu $sp,-0x50` and every callee-save offset (0x48/0x44/0x40/
+0x3C/0x38/0x34/0x30/0x2C/0x28) matches the target exactly. The `$s7`/`$fp` swap and
+the frame size are DONE (teeth 6-9 work held up).
+
+**NEW LEVER FOUND — local declaration order controls stack-slot assignment.**
+Symptom: our `rect` sat at `0x20(sp)`, target's at `0x18(sp)` (5 mismatches:
+`addiu a1,sp,0x18` + the four `sh v?,0x18/0x1a/0x1c/0x1e(sp)` stores). Cause: the
+permuter-introduced `volatile unsigned short new_var11;` is declared BEFORE
+`RECT rect;` and, being volatile, is forced to memory — it claimed slot `0x18` and
+pushed `rect` up to `0x20`. Fix: **move `RECT rect;` ABOVE
+`volatile unsigned short new_var11;`** in the declaration list. gcc 2.7 assigns
+stack slots in declaration order, so rect reclaims 0x18. Score 75 -> 70, parity held.
+(Any placement of rect earlier than new_var11 gives 70 — it is the ORDER that matters,
+not the exact position.)
+
+**Re-confirmed load-bearing (do not "clean up"):** `volatile unsigned short
+new_var11` cannot be removed or retyped. Dropping `volatile` -> 494 words/333 rows;
+retyping to `u32` (restoring real `m->flags & 0x100000` semantics) -> 497 words/338.
+Note it is semantically a no-op as written (`0x100000` truncated into a u16 is always
+0, so `if (!new_var11)` is always true) — but it holds the instruction stream
+together. This matches the tooth-4/5 finding that the search's "weirdness" IS the
+solution taking shape.
+
+**Remaining 68 (in-tree), biggest cluster = the RENDER-SITE COPY (~10 rows).**
+Target: `lw $v0,0($v1)` … `addu $s1,$v0,$zero` (a real live-range-split copy into the
+callee-saved reg), then `addiu $v0,$s1,0xC` computes the advance FROM `$s1`. Ours
+folds it to `lw $s1,0($v1)` direct — one instruction SHORT here, which shifts every
+following row in the cluster. Levers TRIED AND FAILED this session (all neutral at 70
+or worse — do not repeat):
+  - redundant conditional def `if (m) { prim = pr; } else { prim = pr; }` (the lever
+    that cracked E4C4/62C6C) -> 70, no effect
+  - keep `pr` live after the copy (`pr = prim;`) -> 70, no effect
+  - hoist the RECT table base into a local before the copy -> 496 words / 349
+  - move the `*pp = prim + 3` store after the call -> 497 words / 487
+The copy is a reload/live-range-split artifact, not a source-level construct; next
+attempt should come from a `-dg`/reload dump showing WHY the original split the range
+(suspect: the load result was allocated a caller-saved reg because its live range
+started before the arg-setup block).
+
+**Next step:** permuter re-seeded with the 70-row base (parity-safe). Remaining
+clusters after the render copy: the `0x80000000`/`0x8000000` constant materialization
+ORDER at 443dc-44400, and an `s1`/`s2` mirror at 445c4.

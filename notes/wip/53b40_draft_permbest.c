@@ -557,10 +557,10 @@ void func_80053B40(void)
   int new_var9;
   u32 tst;
   char new_var10;
+  RECT rect;
   volatile unsigned short new_var11;
   int new_var3;
   u32 fff;
-  RECT rect;
   unsigned char c;
   s32 t;
   s32 op;
