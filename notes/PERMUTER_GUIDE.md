@@ -43,6 +43,28 @@ Useful flags:
 - `--speed 1-100` — trade thoroughness for iteration rate.
 - multiple workdirs can be passed at once: `python3 permuter.py dirA dirB`.
 
+## ALWAYS pass `--stack-diffs` (2026-07-25 — we ran for weeks without it)
+
+**By default the permuter's score IGNORES stack positions.** If your residual involves
+frame size or stack-slot offsets — extremely common in this project — the score is blind
+to the very thing you are trying to fix, and the search optimizes the wrong objective.
+
+Worse: `src/randomizer.py:2254` contains a mutation whose docstring reads *"Inserts an
+unused variable to adjust stack offsets. Probably only useful with --stack-diffs
+enabled."* That mutation is precisely the `(void)&local` stack-reservation idiom that
+solved 53B40's reserved-but-untouched spill slots by hand (LESSONS / tooth 16) — and
+without the flag it is effectively dead weight.
+
+Every 53B40 run before 2026-07-25 was launched WITHOUT `--stack-diffs`, which likely
+explains a good share of why they stalled. `tools/permuter53b40.sh` now passes it.
+
+Rule of thumb: pass `--stack-diffs` unless you have a specific reason not to. The score
+scale changes (numbers get much larger), so do not compare scores across runs with and
+without the flag — they are different metrics ("two rulers", see LESSONS).
+
+Caveat from upstream docs: the permuter is "quite bad at resolving stack differences"
+even with the flag on — so treat it as *scoring correctly*, not as *likely to fix it*.
+
 ## Reading the output
 
 ```

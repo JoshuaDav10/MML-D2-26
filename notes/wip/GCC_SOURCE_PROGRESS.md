@@ -742,3 +742,30 @@ with confidence.
 **Also discovered: another MML decomp exists** — `ChrisNonyminus/mml1` (same ROCK_NEO.EXE,
 same PSY-Q gcc 2.7.2, WIP). Worth checking for prior art on any function; reportedly has
 NOT matched 0x80053B40. UNVERIFIED by us — confirm before relying on it.
+
+
+## Tooth 17 (2026-07-25) — upstream is dormant; the permuter was scoring blind
+
+**Upstream (`ChrisNonyminus/mml1`) is a DEAD END for prior art.** It is our fork parent
+and it has not committed since we branched: `git merge-base HEAD upstream/master` ==
+`upstream/master` (964bad3), and we are 213 commits ahead. Everything they have is
+already in our history. Do not re-check this hoping for new matches; re-check only if
+the repo shows new activity.
+
+**The permuter has been scoring 53B40 blind to the stack.** Upstream decomp-permuter
+docs: stack positions are ignored unless `--stack-diffs` is passed. Our
+`tools/permuter53b40.sh` never passed it, so every prior run optimized a metric that
+could not see frame size or slot offsets — a large part of this function's residual.
+Additionally `src/randomizer.py:2254` has an "insert an unused variable to adjust stack
+offsets" mutation (the same idiom as tooth 16's `(void)&local`) that the docstring says
+is only useful with the flag on. Both now fixed: launcher passes `--stack-diffs`, and
+`mml_53B40/base.c` is re-seeded with the exact-stack honest draft (76 rows).
+NOTE: with the flag on the score scale changes (base 740 vs the old ~690) — do not
+compare across the two.
+
+**Running:** detached (parent pid 1, survives session end), workdir
+`tools/decomp-permuter/mml_53B40/`, log `mml_53B40/permuter.log`, pid in
+`mml_53B40/permuter.pid`. It does NOT notify — poll it. Harvest with
+`ls -d mml_53B40/output-*` and verify ANY candidate with
+`CPP=cpp tools/bytecmp.sh func_80053B40 <source.c>` + `tools/audit_count.sh`
+(a permuter zero is a candidate, never a match — LESSONS).
