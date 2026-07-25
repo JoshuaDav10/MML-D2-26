@@ -508,3 +508,36 @@ The productive question is: *what makes gcc-2.7 spill exactly 2 pseudos here?*
 Answer that (via `-dg`/reload analysis of allocno pressure at the render site, or by
 finding the source shape that genuinely raises pressure without deleting insns) and
 the copy, the frame, and most of the residual should fall out together.
+
+## Tooth 12 (2026-07-25, Opus) — why pressure levers CAN'T work + an HONEST 495-word base
+
+### Finding A: constants can never force a spill (closes a whole lever class)
+gcc-2.7 attaches `REG_EQUIV` to constant-valued pseudos, and reload **rematerializes**
+them (re-emits `lui/ori`) instead of spilling them to stack. So "hoist a constant into
+a long-lived local to raise register pressure" can NEVER produce the target's 2 spill
+slots — it only trades instructions. Verified: hoisting 0xFF000000 (-> 494), 0xFF000000
++ 0x1F800000 with the volatile removed (-> 494, frame still 0x48, NO spill), and the
+DRAWCTX pointer (-> 492). **Do not attempt constant-hoisting for pressure again.**
+Real spills require non-rematerializable (loaded / computed) values held live.
+
+### Finding B: `notes/wip/53b40_draft_honest.c` — a semantically CORRECT 495-word base
+Deleting the dead `volatile new_var11` padding entirely AND restoring the genuine test
+it had replaced (`if (!(m->flags & 0x100000))` inline, which the permuter had degraded
+into an always-true u16 truncation) gives:
+  **495/495 word parity, 96 positional rows, frame 0x48.**
+This is worse numerically than the padded 70-row base, but it is *honestly* 495 — right
+instruction count from real code, no dead padding, correct semantics. The padded base is
+at a local optimum built on two fake instructions; this one is not.
+
+**Two bases now exist — pick deliberately:**
+- `53b40_draft_permbest.c` — 70 rows, 495 words, but 2 of those words are dead padding
+  and the 0x50 frame is an artifact of the padding's stack slot. Best for permuter runs.
+- `53b40_draft_honest.c` — 96 rows, 495 words, semantically correct, frame 0x48.
+  Best for HUMAN reasoning: its only structural deficit is the 2 missing genuine spills
+  (frame 0x48 vs 0x50), which is the single remaining question.
+
+### The question the next session should answer
+What non-constant value(s) did the original keep live across the render site such that
+gcc-2.7 spilled exactly 2 pseudos (reserving 0x20-0x27, accesses later optimized away)?
+Answering that should simultaneously produce the frame 0x50, the live-range-split copy
+`addu $s1,$v0,$zero`, and collapse most of the residual — they are all one phenomenon.
