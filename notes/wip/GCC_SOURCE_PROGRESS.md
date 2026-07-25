@@ -486,3 +486,25 @@ same step.** Parity must be evaluated on the combined edit — each half alone b
 Note the post_render twin of this copy WAS solved by the interleave trick
 (`pr = *X; rect.x = m->x8; prim = pr;`) — the render site resists it because the
 statements available to interleave there are not free (each adds an insn).
+
+### Tooth 11 addendum — the frame size is ALSO an accident of the padding
+Dropping `volatile` doesn't just lose an instruction: **the frame shrinks 0x50 -> 0x48**
+(`addiu $sp,-0xB8FF` vs `-0xB0FF`) and every callee-save offset shifts down 8. So the
+volatile's stack slot is the ONLY reason our frame is 0x50. We currently match the
+target's frame size and word count **for the wrong reasons** — padding, not structure.
+
+The target's 0x50 frame comes from its allocator genuinely SPILLING 2 pseudos
+(reserved 0x20-0x27, accesses later optimized away). Attempts to reproduce that
+pressure honestly, both FAILED by *removing* instructions instead of adding pressure:
+- hoist `0xFF000000` to a long-lived local -> 494 words / 99
+- hoist the 3 per-site `DRAWCTX *dc` block-locals to one function-scope pseudo
+  -> 492 words / 402   (confirms the tooth-9 finding that per-site dc locals are required)
+
+**Bottom line for the next session:** the ~70 residual rows are NOT 70 independent
+nits. They are the visible surface of ONE fact — our compile allocates registers
+differently from the original (no spills, so no live-range-split copy, so a different
+schedule). Chasing individual rows or permuting the padded base cannot converge.
+The productive question is: *what makes gcc-2.7 spill exactly 2 pseudos here?*
+Answer that (via `-dg`/reload analysis of allocno pressure at the render site, or by
+finding the source shape that genuinely raises pressure without deleting insns) and
+the copy, the frame, and most of the residual should fall out together.
