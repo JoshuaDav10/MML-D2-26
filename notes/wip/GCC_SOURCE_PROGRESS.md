@@ -592,3 +592,39 @@ or hoist a value that is already loaded elsewhere (so no net instruction is adde
 watching for the exact combination: frame 0x50 + 0x20-0x27 untouched + 495 words.
 Candidates to try one at a time: `m->x8`, `m->xA`, `m->x7E`, `m->x7F`, `m->x3D`,
 `D_80098934` — each used after the render call, so hoisting adds liveness cheaply.
+
+## Tooth 14 (2026-07-25, Opus) — titration DONE; the fossil is not source-reproducible
+
+Ran the tooth-13 titration to completion. **Every single-value hoist costs +2 words**,
+because when OUR compile spills, reload emits real `sw`/`lw` code — whereas the target's
+0x20-0x27 slots are reserved with **zero access instructions**:
+
+| lever | words | rows | frame/slots |
+|---|---|---|---|
+| BASE (padded) | 495 | 70 | frame 0x50, max slot 0x48, touches 0x20 twice |
+| hoist `m->x8` | 497 | 483 | max slot grew to 0x4C |
+| hoist `m->xA` | 497 | 482 | grew |
+| hoist `m->x7E` | 497 | 483 | grew |
+| hoist `m->x7F` | 497 | 483 | grew |
+| hoist x8+xA (tooth 13) | 496 | 261 | grew |
+| `__asm__("" :: "m"(fossil))` reservation | 498 | 457 | the "m" constraint emits address code |
+| `volatile u32 fossil[2];` unused | — | — | DCE'd, no slot reserved |
+| `u32 fossil[2];` unused | — | — | DCE'd, no slot reserved |
+
+**Conclusion: the fossil (2 slots reserved with NO access code) cannot be produced by
+any source-level construct tried.** It is an artifact of the original compile's
+reload/inheritance — reload allocated slots for 2 spilled pseudos, then register
+inheritance eliminated every access, leaving the reservation. Deliberate pressure
+always yields spills WITH code (+2 words); deliberate reservation always yields either
+DCE (no slot) or address code (+words).
+
+**Therefore the padded base is the PRAGMATIC optimum, not a mistake.** The
+`volatile unsigned short new_var11` costs +1 net word and 2 stack touches, but buys the
+correct 0x50 frame (worth ~10 rows: the `addiu $sp` plus 9 callee-save offsets). That is
+why it scores 70 vs the honest base's 96. Keep it unless/until the fossil is understood.
+
+**Remaining gap, precisely:** we have 494 words of REAL code + 1 word of padding = 495;
+the target has 495 words of real code. **We are exactly ONE real instruction short, and
+it is almost certainly the render-site copy `addu $s1,$v0,$zero`.** Land that one
+instruction honestly and the padding can be deleted in the same edit (tooth 11's
+combined-edit rule). That single instruction is now the whole remaining problem.
