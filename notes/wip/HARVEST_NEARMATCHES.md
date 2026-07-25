@@ -104,3 +104,14 @@ NOTE: `D_80098934` is `UnkStruc_80098934*` in game.h — cast, don't redeclare.
 ## func_8001F158 (scene) — parked earlier this session (see activity.md 2026-07-14)
 
 xA4 address-CSE genus; logic solved. Draft in git history.
+
+## Sce_flag_off (scene) — logic solved, addressing-order residual (2026-07-25)
+Clears bit `0x80>>(f&7)` in `Sce_flag[f>>3]`, then if `(u32)(f-0x500) < 0x20` scans two
+Player_work tables (+0x454 len 0x20, then +0x450 len 3) for the value `f-0x4FF` and zeroes
+the first hit in each. NOTE the pre-existing decl in include/rock_neo.h is
+`unknown_t Sce_flag_off(unknown_t)` — the definition MUST return int, not void.
+**cc1 SEGFAULTS if the scan loops use `break`** — use goto (see LESSONS).
+Residual: the target computes `&Sce_flag[f>>3]` as base-then-index into a held register
+(`lui/addiu` base, `srl` index, `addu a0,v0,a0`); every ordering tried (array index, held
+pointer, explicit `base` local) permutes the operand order / register pair. Draft saved as
+notes/wip/sce_flag_off_draft.c — good permuter candidate (addressing/register genus).

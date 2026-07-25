@@ -51,6 +51,22 @@ may already be matching. Consequences:
 
 ## cc1-27 (GCC 2.7.2) codegen facts — verified byte-for-byte
 
+**COMPILER BUG: cc1-27 SEGFAULTS on `break` inside a `do {} while` nested in an `if`**
+(2026-07-25, hit while drafting Sce_flag_off). The build fails with
+`make: *** [...] Error 139` (SIGSEGV) and NO error message — it looks like a build-system
+problem, not a source problem, so it is easy to misdiagnose. Reproducer shape:
+```c
+if (cond) {
+    do { if (*p == t) { *p = 0; break; } p++; } while (p < e);   /* <-- crashes cc1 */
+    do { ... same ... } while (p < e);
+}
+```
+**Workaround:** rewrite the loops with explicit labels and `goto` instead of `break`.
+That compiles cleanly and produces the same semantics. (Verified: struct-vs-array
+declaration of the walked object was NOT the trigger; removing `break` was.)
+If you see `Error 139` from a `.c.o` rule with no diagnostic, suspect this first.
+
+
 **Stack slots follow DECLARATION ORDER** (2026-07-25, func_80053B40). gcc-2.7 assigns
 local stack slots in the order locals are declared. A `volatile` local declared before
 an aggregate will claim the lower slot and push the aggregate up. Symptom: your struct
