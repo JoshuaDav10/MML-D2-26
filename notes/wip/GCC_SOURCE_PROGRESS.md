@@ -541,3 +541,38 @@ What non-constant value(s) did the original keep live across the render site suc
 gcc-2.7 spilled exactly 2 pseudos (reserving 0x20-0x27, accesses later optimized away)?
 Answering that should simultaneously produce the frame 0x50, the live-range-split copy
 `addu $s1,$v0,$zero`, and collapse most of the residual — they are all one phenomenon.
+
+## Tooth 13 (2026-07-25, Opus) — THE ALLOCATION IS 7/8 IDENTICAL (reframes the residual)
+
+Mapped what every callee-saved register holds, target vs ours. **They agree on 7 of 8.**
+
+| reg | TARGET | OURS |
+|---|---|---|
+| s0 | `addiu $s0,$s2,0x71` = m+0x71 (biased base; fields reached via signed offsets, e.g. `-0x6b(s0)`=m->x6, `0x47(s0)`=m->xB8) | same |
+| **s1** | **`addu $s1,$v0,$zero` = prim ONLY** | **`move $17,$18` = a COPY OF m first (call arg), then prim** |
+| s2 | `lui $s2,%hi(Moji_work)` = m | same |
+| s3 | 0xFFFFFF | same |
+| s4 | 0xFF000000 | same |
+| s5 | 0x40000 | same |
+| s6 | 0x86186187 (glyph divide magic) | same |
+| s7 | 0x40000000 | same |
+
+**Why this matters:** the ~70 residual rows are NOT a scattered allocation failure. Six
+constants and both pointers land in exactly the right registers. The entire remaining
+delta traces to two coupled facts:
+  (1) **s1's lifetime differs** — ours reuses s1 for an m-copy (a call argument) before
+      prim is born; the target's s1 is prim's alone, born at the render load via a
+      live-range-split copy.
+  (2) **the 2 missing spills** (frame 0x48 vs 0x50, 0x20-0x27 reserved-untouched).
+
+Collapsing the redundant m-copy at the SOURCE level does nothing (gcc re-creates it):
+removing `new_var7` and passing `m` directly scores identically (70 padded / 96 honest,
+parity held in both). So the copy is emitted by the call-argument setup, not by the
+variable — it must be attacked via what is live across that call, not by renaming.
+
+**Sharpest formulation of the remaining problem:** make prim's pseudo be BORN at the
+render load (not share s1 with an earlier call-argument copy of m), which should force
+the live-range split; and find the 2 non-rematerializable values the original held live
+that spilled to 0x20-0x27. These are almost certainly the same phenomenon: if two more
+values are live across the render call, s1 cannot be recycled for the m-copy, prim gets
+its own range, and 2 pseudos overflow to the stack.
