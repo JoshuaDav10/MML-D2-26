@@ -430,3 +430,59 @@ started before the arg-setup block).
 **Next step:** permuter re-seeded with the 70-row base (parity-safe). Remaining
 clusters after the render copy: the `0x80000000`/`0x8000000` constant materialization
 ORDER at 443dc-44400, and an `s1`/`s2` mirror at 445c4.
+
+## Tooth 11 (2026-07-25, Opus) — RTL/stack forensics: the volatile is PADDING, not a fix
+
+Read the actual `-dg` greg dump + compared stack-slot usage. Three findings that
+reframe the endgame; the next session should start from HERE, not from more C-form
+guessing at the render site.
+
+### 1. Our render-site RTL, exactly (greg dump, insns 397-422)
+```
+insn 397: (set (reg/v:SI 17 s1) (mem:SI (reg/v:SI 3 v1)))   ; lw  s1,0(v1)  <-- DIRECT
+insn 403: (set (reg:SI 2 v0) (plus (reg/v:SI 17 s1) 12))    ; addiu v0,s1,0xC
+insn 405: (set (mem:SI (reg/v:SI 3 v1)) (reg:SI 2 v0))      ; sw  v0,0(v1)  (v1 DIES here)
+insn 411: lbu v0,0x1F800000 ; 420: addu a0,s1 ; 414: sll ; 416/422: a1 = &D_80097F50[i]
+```
+Target instead: `lw $v0` … `lui/addiu $a1` … `addu $s1,$v0,$zero` (COPY) … `addiu $v0,$s1,0xC`
+… `jal` … `sw $v0,0($v1)` **in the delay slot** (so `$v1`/pp stays live to the end).
+Ours coalesces pr+prim into one pseudo (s1) and sinks the store EARLY, killing v1.
+
+### 2. STACK LAYOUT NOW MATCHES EXCEPT ONE SLOT (this is the fossil, precisely)
+Touched sp-offsets — ours vs target:
+- ours:   0x10, 0x18,0x1A,0x1C,0x1E (rect), **0x20**, 0x28..0x44 (callee saves)
+- target: 0x10, 0x18,0x1A,0x1C,0x1E (rect),  ---  , 0x28..0x44
+Frame is 0x50 in BOTH; rect is at 0x18 in BOTH (tooth 10 fix). The ONLY difference:
+**we touch 0x20; the target reserves 0x20-0x27 and never touches it.** That is the
+"register-pressure fossil" — 2 words reserved for pseudos whose accesses reload
+optimized away. We occupy 0x20 with the volatile `new_var11` (its `sh`/`lhu` pair).
+
+### 3. THE KEY INSIGHT — `volatile unsigned short new_var11` is INSTRUCTION PADDING
+It is semantically dead (`m->flags & 0x100000` truncated into a u16 is always 0, so
+`if (!new_var11)` is always true). Removing it gives **494 words (-1)**, i.e. we are
+currently at the correct 495 only because ~2 fake instructions from the volatile are
+standing in for ~2 genuinely MISSING real instructions elsewhere — **one of which is
+the render-site copy `addu $s1,$v0,$zero`.**
+
+=> The endgame is NOT "make the permuter grind" and NOT "find a C spelling for the
+copy in isolation". It is: **find the real missing instructions (render copy + the
+0x80000000 materialization order), add them, and DELETE the volatile padding in the
+same step.** Parity must be evaluated on the combined edit — each half alone breaks
+495 and looks like a regression (that is why every isolated attempt has failed).
+
+### Levers tried this session at the render site — ALL FAILED, do not repeat
+| lever | result |
+|---|---|
+| redundant cond def `if (m){prim=pr;}else{prim=pr;}` (the E4C4/62C6C winner) | 70, no effect |
+| `pr = prim;` after the copy (keep pr live) | 70, no effect |
+| hoist `RECT *rp = D_80097F50;` before the copy | 496 words / 349 |
+| move `*pp = prim+3` after the call | 497 / 487 |
+| interleave (add) `new_var9 = 0x80;` between load and copy | 497 / 491 |
+| interleave (add) `new_var10 = m->x3C;` | 495 / 78 |
+| MOVE `new_var9 = 0x80;` up into the load/copy gap | 497 / 491 |
+| hoist `0xFF000000` into a local (add reg pressure) | 494 / 99 |
+| drop `volatile` / retype new_var11 to u32 | 494 / 333, 497 / 338 |
+
+Note the post_render twin of this copy WAS solved by the interleave trick
+(`pr = *X; rect.x = m->x8; prim = pr;`) — the render site resists it because the
+statements available to interleave there are not free (each adds an insn).
