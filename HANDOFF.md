@@ -1,20 +1,23 @@
 # HANDOFF — MML Decomp session state (2026-07-25, 276 matched — authoritative)
 
-> **53B40 giant push (2026-07-25 Opus):** count UNCHANGED at **276** (53B40 NOT
-> landed — no fake progress). Real movement: the draft went **75 -> 70** positional
-> rows (495/495 word parity held), banked in `notes/wip/53b40_draft_permbest.c` and
-> re-seeded into the permuter base. **NEW LEVER (tooth 10):** gcc-2.7 assigns stack
-> slots in DECLARATION ORDER — the volatile `new_var11` was declared before
-> `RECT rect` and claimed slot 0x18, pushing rect to 0x20; moving `RECT rect;` above
-> it reclaims 0x18 (-5 rows). **CONFIRMED SOLVED:** the frame fossil — in-tree the
-> whole prologue is byte-identical (-0x50 + every callee-save offset). Remaining ~68
-> in-tree rows: biggest cluster is the RENDER-SITE COPY (target does
-> `lw $v0` then `addu $s1,$v0,$zero`, a live-range split; ours folds to `lw $s1`),
-> then the 0x80000000 materialization order and an s1/s2 mirror. **5 levers tried and
-> FAILED this session are listed in GCC_SOURCE_PROGRESS.md tooth 10 — do not repeat
-> them.** Next attempt needs the `-dg`/reload dump to explain WHY the original split
-> that live range. Permuter re-launched from the 70-row base via
-> `tools/permuter53b40.sh` (managed launcher — never hand-launch).
+> **53B40 giant push (2026-07-25 Opus) — VERDICT REACHED, count unchanged at 276.**
+> Draft improved **75 -> 70** positional rows (495/495 parity) and the *original* wall is
+> SOLVED: frame fossil closed (prologue byte-identical), and the callee-saved allocation
+> now matches the target on **7 of 8 registers**. But a deeper blocker was identified and
+> proven: the target's `addu $s1,$v0,$zero` at the render site is a **reload live-range
+> split**, and the 8 reserved-but-untouched frame bytes (0x20-0x27) are the *same* reload
+> episode. Proof by reading `local-alloc.c:combine_regs` — a reg-to-reg copy is deleted iff
+> the source pseudo is dead, and `cse` (running earlier) always makes it dead for a plain
+> `b = a`. Confirmed empirically twice. **Scoped claim:** no *spelling of that assignment*
+> can produce it; a structurally different whole function still might.
+> **~20 levers tried and closed — teeth 10-15 in `notes/wip/GCC_SOURCE_PROGRESS.md`. DO NOT
+> RETRY ANY OF THEM.** Durable rules extracted to LESSONS.md (stack slots follow declaration
+> order; constants are rematerialized not spilled — REG_EQUIV; the combine_regs copy rule).
+> Two bases banked: `53b40_draft_permbest.c` (70 rows, uses a `volatile` as padding that
+> buys the correct 0x50 frame) and `53b40_draft_honest.c` (96 rows, semantically clean,
+> frame 0x48). **RECOMMENDATION: stop source-form work on 53B40.** Remaining options are
+> (1) study reload1.c inheritance, (2) accept the near-match, (3) accept-as-asm. Redirect to
+> BB4C or the small-function lanes, where levers still work.
 
 > **53B40 session (2026-07-19/20 Fable, max-effort single-target):** count
 > UNCHANGED at **274** (audit_count.sh verified at start AND after the
