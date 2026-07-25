@@ -654,7 +654,11 @@ Verified empirically: substituting `pr` for `prim` at downstream uses inside the
 block (semantically identical, intended to keep `pr` live) changes NOTHING —
 `((u32) pr)` in the casts -> 70; `pr[0]` read as well -> 70. cse folds them both times.
 
-**Therefore:** the target's `addu $s1,$v0,$zero` is **not** produced by any source shape.
+**Therefore (scoped claim — do not overstate):** the target's `addu $s1,$v0,$zero` is not
+produced by ANY spelling of the *plain copy* `prim = pr` — that shape is provably always
+deleted. This does NOT prove no C program can produce it: a structurally different whole
+function (different variables/loop shape) could put reload into the original's state. What
+is proven is that local edits at this site are futile.
 It is a **reload live-range split** — the same reload episode that reserved the untouched
 0x20-0x27 spill slots (tooth 14). Copy and fossil are ONE phenomenon, emitted by reload
 under register pressure, invisible to C.

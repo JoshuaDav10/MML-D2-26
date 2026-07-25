@@ -51,6 +51,31 @@ may already be matching. Consequences:
 
 ## cc1-27 (GCC 2.7.2) codegen facts — verified byte-for-byte
 
+**Stack slots follow DECLARATION ORDER** (2026-07-25, func_80053B40). gcc-2.7 assigns
+local stack slots in the order locals are declared. A `volatile` local declared before
+an aggregate will claim the lower slot and push the aggregate up. Symptom: your struct
+local sits at the wrong `N($sp)` and every store to it mismatches. Fix: reorder the
+declarations. (Worth 5 rows on 53B40 — moving `RECT rect;` above a volatile.)
+
+**Constants can never be spilled — they are REMATERIALIZED** (2026-07-25). gcc-2.7
+attaches `REG_EQUIV` to constant-valued pseudos; under pressure reload re-emits the
+`lui/ori` rather than spilling to stack. Consequence: "hoist a constant into a local to
+raise register pressure" is a DEAD LEVER — it only trades instructions, it can never
+produce stack spills. If you need genuine spills, you need live NON-constant (loaded or
+computed) values.
+
+**When does a register-to-register copy survive?** (2026-07-25, the rule that governs
+live-range splits). There is no `regmove.c` in 2.7 — copies are eliminated by
+`local-alloc.c:combine_regs` (line 1722). It ties the two pseudos (deleting the copy)
+iff the SOURCE pseudo is DEAD at the copy insn; `block_alloc` scans FORWARD
+(local-alloc.c:1090) so the "destination already has a quantity" escape never applies to
+a first assignment. **And `cse` runs earlier and folds any plain `b = a` copy**, which
+makes `a` dead — so a plain copy written in C is always deleted. Therefore a surviving
+`addu $dst,$src,$zero` in a target usually indicates a RELOAD live-range split (a
+compiler-internal artifact under register pressure), not something written in the source.
+Look for corroborating evidence: reserved-but-never-touched stack slots in the target's
+frame mean reload spilled pseudos whose accesses inheritance later removed.
+
 **Held-pointer vs constant-folded absolute address** (func_8001D394, cd.c,
 2026-07-14). Writing `CdMix(D_800AD140 + 0x14)` makes cc1 constant-fold the
 symbol+offset into a single absolute address and emit `lui/addiu %hi/%lo(SYM+0x14)`
