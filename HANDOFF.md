@@ -1,4 +1,20 @@
-# HANDOFF — MML Decomp session state (2026-07-14, 276 matched — authoritative)
+# HANDOFF — MML Decomp session state (2026-07-25, 276 matched — authoritative)
+
+> **53B40 giant push (2026-07-25 Opus):** count UNCHANGED at **276** (53B40 NOT
+> landed — no fake progress). Real movement: the draft went **75 -> 70** positional
+> rows (495/495 word parity held), banked in `notes/wip/53b40_draft_permbest.c` and
+> re-seeded into the permuter base. **NEW LEVER (tooth 10):** gcc-2.7 assigns stack
+> slots in DECLARATION ORDER — the volatile `new_var11` was declared before
+> `RECT rect` and claimed slot 0x18, pushing rect to 0x20; moving `RECT rect;` above
+> it reclaims 0x18 (-5 rows). **CONFIRMED SOLVED:** the frame fossil — in-tree the
+> whole prologue is byte-identical (-0x50 + every callee-save offset). Remaining ~68
+> in-tree rows: biggest cluster is the RENDER-SITE COPY (target does
+> `lw $v0` then `addu $s1,$v0,$zero`, a live-range split; ours folds to `lw $s1`),
+> then the 0x80000000 materialization order and an s1/s2 mirror. **5 levers tried and
+> FAILED this session are listed in GCC_SOURCE_PROGRESS.md tooth 10 — do not repeat
+> them.** Next attempt needs the `-dg`/reload dump to explain WHY the original split
+> that live range. Permuter re-launched from the 70-row base via
+> `tools/permuter53b40.sh` (managed launcher — never hand-launch).
 
 > **53B40 session (2026-07-19/20 Fable, max-effort single-target):** count
 > UNCHANGED at **274** (audit_count.sh verified at start AND after the
