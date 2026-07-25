@@ -1,6 +1,12 @@
 # Activity Log
 
 ## 2026-07-25 (Opus) — 53B40 verdict + 2 harvest wins
+- **func_80040178 (player) MATCHED** (279->280) — audit 280, hash OK, cmp identical,
+  mutation-tested. Knobs: byte-offset casts for pad-array fields; s16 load into an
+  s32 local to get `lh` (not `lhu`); and a temp to force `(ret-0x20)-w` association.
+- **cc1-27 COMPILER BUG FOUND** (LESSONS): `break` inside a `do{}while` nested in an
+  `if` SEGFAULTS the compiler — bare `Error 139`, no diagnostic, looks like a broken
+  build. Workaround: rewrite with goto. Hit while drafting Sce_flag_off (parked).
 - **func_8001FBC4 (scene) MATCHED** (278->279) — audit 279, hash OK, cmp identical,
   mutation-tested. FIRST-BUILD match. Flag-driven setter; the shared-tail shape came
   free from if/else + a local. gp-accessed scalars -> plain scalar externs.

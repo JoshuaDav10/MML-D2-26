@@ -182,7 +182,29 @@ void func_80040140(PL_WORK* pl) {
 
 void func_80040170(void) {}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040178);
+s32 func_80048E6C(void);
+
+/* x16/x44/x46/x48/x78 fall inside PL_WORK pad arrays -> byte-offset form */
+void func_80040178(PL_WORK *pl) {
+    s32 v;
+
+    if (*(u8 *)&pl->xA == 1) {
+        s32 r;
+        v = *(s16 *)((u8 *)pl + 0x16);
+        r = func_80048E6C() - 0x20;
+        if (r - *(s16 *)(*(u8 **)((u8 *)pl + 0x78) + 0xA) < v) {
+            pl->x9 = 7;
+            pl->xA = 4;
+            pl->x75 = 1;
+            pl->x74 = 1;
+            *(s16 *)((u8 *)pl + 0x44) = -0x2A;
+            *(s16 *)((u8 *)pl + 0x46) = 0;
+            *(s16 *)((u8 *)pl + 0x48) = 0;
+            Pl00_shot_enable_on(pl);
+            func_80041DDC(pl, 0x12, 0, 1);
+        }
+    }
+}
 
 void func_800394AC(void);
 

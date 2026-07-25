@@ -7,9 +7,15 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: **279** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
-  hash OK, raw cmp byte-identical, census 279. 484 total, 205 active stubs.
-  Mission %: 279/484 = **57.6%** by function count, ~19.6% by instruction volume.)
+- rock_neo main: **280** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
+  hash OK, raw cmp byte-identical, census 280. 484 total, 204 active stubs.
+  Mission %: 280/484 = **57.9%** by function count, ~19.7% by instruction volume.)
+  - +1 (func_80040178, player): matched + hash + mutation-tested. Guarded state
+    transition (body is func_8003EE68's + x44/x46/x48 stores). THREE knobs needed:
+    (1) x16/x44/x46/x48/x78 fall in PL_WORK pad arrays -> byte-offset casts;
+    (2) the s16 read must land in an s32 local or cc1 emits `lhu` not `lh`;
+    (3) `(ret - 0x20) - w` must be forced with a temp — written inline, cc1
+    reassociates to `ret - (w + 0x20)` (addiu +0x20 instead of -0x20).
   - +1 (func_8001FBC4, scene): matched FIRST BUILD + hash + mutation-tested. Sets
     D_8009823A/3E/40 from Game_work.x52==5 + Sce_flag_test(0x1C/0x1B); the two
     early arms `return` directly and the last two share a tail (the goto-shared-tail
