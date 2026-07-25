@@ -467,7 +467,33 @@ void func_8001FB8C(void) {
     D_80098236 = (v < 0) ? 0x78 : (v < 2) ? 0x76 : (v < 6) ? 0x77 : 0x78;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FBC4);
+extern s16 D_8009823A; /* gp-accessed scalars (sdata) */
+extern s16 D_8009823E;
+extern s16 D_80098240;
+
+void func_8001FBC4(void) {
+    s16 v;
+
+    if (Game_work.x52 == 5) {
+        if (Sce_flag_test(0x1C)) {
+            D_8009823A = 0x7A;
+            D_8009823E = 0x7C;
+            D_80098240 = -1;
+            return;
+        }
+        if (Sce_flag_test(0x1B)) {
+            D_80098240 = -1;
+            D_8009823E = -1;
+            D_8009823A = -1;
+            return;
+        }
+        v = 0x7A;
+    } else {
+        v = 0x7B;
+    }
+    D_80098240 = v;
+    D_8009823E = v;
+}
 
 void func_8001FC50(void) {
     s8 v = Game_work.x52;
