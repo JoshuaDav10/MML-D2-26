@@ -7,9 +7,18 @@
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: **280** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
-  hash OK, raw cmp byte-identical, census 280. 484 total, 204 active stubs.
-  Mission %: 280/484 = **57.9%** by function count, ~19.7% by instruction volume.)
+- rock_neo main: **281** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
+  hash OK, raw cmp byte-identical, census 281. 484 total, 203 active stubs.
+  Mission %: 281/484 = **58.1%** by function count, ~19.8% by instruction volume.)
+  - +1 (func_80040764, player): matched + hash + mutation-tested. Key-mask state
+    chooser (two OR'd mask groups; equal-emptiness -> rand()&1, else pick by group 2).
+    FIVE knobs, all from LESSONS: K&R decl (caller func_80040140 passes leftover $a0
+    with no arg setup — and retyping this callee void->s32 did NOT disturb that
+    matched caller); evaluate the x12A|x12E group BEFORE x128|x12C; keep the raw
+    masked value AND its ==0 boolean both live (target tests `bnez` on the value but
+    `sltiu` on the boolean); `if (a != b)` so the rand block is the branch TARGET;
+    and `m & pl->x138` (not `pl->x138 & m`) to fix the final $v0/$v1 load mirror —
+    AND operand order follows source order.
   - +1 (func_80040178, player): matched + hash + mutation-tested. Guarded state
     transition (body is func_8003EE68's + x44/x46/x48 stores). THREE knobs needed:
     (1) x16/x44/x46/x48/x78 fall in PL_WORK pad arrays -> byte-offset casts;

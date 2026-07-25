@@ -7,7 +7,7 @@
 s32 func_800406A8(PL_WORK*);
 void func_8003BE6C(PL_WORK*, s32);
 s32 func_80041DDC(PL_WORK*, s32, s32, s32);
-void func_80040764(void);
+s32 func_80040764();
 
 void func_8003BE40(s32 arg0) {
     func_8003BE6C(&Player_work, arg0);
@@ -430,7 +430,41 @@ s32 func_80040710(PL_WORK* pl) {
     return 0;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040764);
+s32 func_80040764(pl) /* K&R: caller func_80040140 passes the leftover $a0 */
+PL_WORK *pl;
+{
+    u16 k = pl->x11C;
+    s32 a;
+    s32 b;
+    s32 g2;
+    u16 m;
+
+    m = pl->x11E;
+    if (!(m & pl->x138)) {
+        return 0;
+    }
+    a = (k & (pl->x12A | pl->x12E)) == 0;
+    g2 = k & (pl->x128 | pl->x12C);
+    b = g2 == 0;
+    if (a != b) {
+        if (g2 != 0) {
+            pl->x9 = 9;
+            pl->xA = 0;
+        } else {
+            pl->x9 = 9;
+            pl->xA = 0x100;
+        }
+    } else if (rand() & 1) {
+        pl->x9 = 9;
+        pl->xA = 0;
+    } else {
+        pl->x9 = 9;
+        pl->xA = 0x100;
+    }
+    *(u8 *)((u8 *)pl + 0x168) = 0;
+    *(u8 *)((u8 *)pl + 0x169) = 0;
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040818);
 

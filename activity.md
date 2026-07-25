@@ -1,6 +1,10 @@
 # Activity Log
 
 ## 2026-07-25 (Opus) — 53B40 verdict + 2 harvest wins
+- **func_80040764 (player) MATCHED** (280->281) — audit 281, hash OK, cmp identical,
+  mutation-tested. Five knobs (see progress.md). Notable: retyping the callee
+  void->s32 did NOT break the matched caller func_80040140 (verified byte-identical),
+  and swapping the `&` operand order flipped the last $v0/$v1 load mirror.
 - **func_80040178 (player) MATCHED** (279->280) — audit 280, hash OK, cmp identical,
   mutation-tested. Knobs: byte-offset casts for pad-array fields; s16 load into an
   s32 local to get `lh` (not `lhu`); and a temp to force `(ret-0x20)-w` association.
