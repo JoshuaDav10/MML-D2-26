@@ -560,6 +560,7 @@ void func_80053B40(void)
   RECT rect;
   int new_var3;
   u32 fff;
+  u32 fossil[2];
   unsigned char c;
   s32 t;
   s32 op;
@@ -587,6 +588,7 @@ void func_80053B40(void)
     tst = 0x40000;
     setflag = 0x40000000;
     fff = 0xFFFFFF;
+    (void)&fossil;
     if (((s32) m->flags) < 0)
     {
       c = m - Moji_work;

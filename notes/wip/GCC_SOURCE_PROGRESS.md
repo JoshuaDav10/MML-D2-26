@@ -676,3 +676,69 @@ under register pressure, invisible to C.
 avenue has been enumerated and closed above. The next session should either study
 reload1.c inheritance directly, or make the accept-as-asm call and redirect the effort
 to BB4C / the small-function lanes where levers still work.
+
+## Tooth 16 (2026-07-25, Opus + deep research) — TOOTH 14 WAS WRONG: the fossil IS reproducible
+
+External research (see `notes/DEEP_RESEARCH_PROMPT_reload.md`) supplied the idiom I failed
+to find, and it works. **Correction to tooth 14's claim that the reserved-but-untouched
+spill slots are "not source-reproducible."** They are.
+
+### The idiom: `(void)&local;`
+Taking the address of an otherwise-unused local forces gcc-2.7 to allocate it a stack slot
+in `function.c` *before* reload runs, while generating **zero instructions**. My earlier
+attempts failed for specific reasons now understood: `__asm__("" :: "m"(x))` emits address
+code (+3 words), and a plain unused array is dead-code-eliminated. `(void)&x` is neither.
+
+```c
+u32 fossil[2];        /* declared alongside the other locals */
+...
+(void)&fossil;        /* zero instructions; reserves 8 bytes */
+```
+A `volatile int` declared and never referenced works identically (both tested).
+
+### Result — the stack layout now matches the target EXACTLY
+Touched sp-offsets (decimal), honest base vs +fossil vs target:
+```
+target        : 16 24 26 28 30 __ __ 40 44 48 52 56 60 64 68 72
+honest base   : 16 24 26 28 30 32 36 40 44 48 52 56 60 64
+honest+fossil : 16 24 26 28 30 __ __ 40 44 48 52 56 60 64 68 72   <-- EXACT
+```
+The 32/36 (0x20/0x24) gap — reserved, never touched — is reproduced, and every later slot
+shifts into place. Score on the honest base: **96 -> 76**, word parity held (495/495).
+`notes/wip/53b40_draft_honest.c` updated to this version.
+
+### Sizing
+`fossil[1]` and `fossil[2]` both give the correct frame (gcc rounds to 8); `fossil[3]`
+overshoots. Adding the reservation *on top of* the volatile padding also overshoots
+(90 rows) — the two are alternatives, not cumulative.
+
+### The copy (Symptom A) — researched idioms tried, all still fail
+On the corrected-stack base, all three researched copy idioms scored identically to
+baseline (76): nested-block temp `{ u32 *t = *pp; prim = t; }`; GNU statement expression
+`prim = ({ pr; });`; volatile-qualified read. This is exactly what tooth 15's
+`combine_regs` proof predicts — cse folds the copy before local-alloc regardless of the
+syntactic wrapper. **Tooth 15 stands; tooth 14 is retracted.**
+
+### Current best bases
+| base | words | rows | stack |
+|---|---|---|---|
+| `53b40_draft_permbest.c` (volatile padding) | 495 | **70** | wrong (touches 0x20) |
+| `53b40_draft_honest.c` (real test + fossil)  | 495 | 76 | **EXACT** |
+| "B1" (dead test, no volatile, + fossil)      | 494 | 323 | **EXACT** |
+
+**B1 is the sharpest formulation of what remains:** correct stack, correct semantics,
+and **exactly one instruction short — the render copy.** Land that one instruction on the
+B1 shape and the function should fall. The padded base still scores best numerically, but
+only because its wrong-stack cost (2 rows) is smaller than the honest base's flag-test
+spelling cost (~14 rows) — that ~14 is now the *other* thing worth attacking, and it is an
+ordinary source-shape problem, not a compiler artifact.
+
+**Research also settled the toolchain question:** SN Systems did NOT modify the register
+allocator or reload passes (only target options, spec strings, and assembler-output
+formatting). **FSF gcc-2.7.2 `reload1.c`/`local-alloc.c` are therefore authoritative for
+our compiler** — the tooth-15 proof is sound, and future reload study can use FSF source
+with confidence.
+
+**Also discovered: another MML decomp exists** — `ChrisNonyminus/mml1` (same ROCK_NEO.EXE,
+same PSY-Q gcc 2.7.2, WIP). Worth checking for prior art on any function; reportedly has
+NOT matched 0x80053B40. UNVERIFIED by us — confirm before relying on it.
