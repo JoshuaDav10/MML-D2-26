@@ -143,3 +143,48 @@ So: hoist = right instruction, wrong register; no-hoist = right register, missin
 Need a form where `v` is set pre-branch yet provably dead on the zerocase path.
 Type changes (s32/int/u16) do not help. Permuter workdir mml_F828 running.
 **Solving this likely solves func_8001FA94 too — identical shape.**
+
+## STRATEGY REVIEW (2026-07-25) — read before planning another harvest session
+
+**The rate collapsed and it is measurable.** Matched-count by date:
+Jul 4-6: 64 -> 244 (~60/day, the easy era) | Jul 11-12: -> ~271 | Jul 19-20 (53B40
+focus): 273 -> 274 (+1 in two days) | Jul 25: 276 -> 281 (+5). **203 remain.** At the
+current rate that is ~40 more sessions; the last hour of Jul 25 produced 0.
+
+**"The wall" is NOT one wall — this was my own sloppy framing.** The parked residuals
+are five distinct causes with very different tractability:
+| residual | example | permuter record |
+|---|---|---|
+| register mirror | func_8001E4C4, func_80062C6C, func_80057924 | **3 for 3 — reliable** |
+| live-range-split copy (`move rX,rY`) | func_80042154, 53B40 render | 0; PROVEN source-unreachable (combine_regs+cse) |
+| delay-slot fill vs liveness | func_8001F828 | 0 |
+| preheader arg setup | func_80062A50 | 0 |
+| addressing base/index order | Sce_flag_off | 0 |
+| basic-block tail ordering | func_8001AE6C | 0 (and it FALSE-ZEROED) |
+Solving the copy genus would NOT unlock the others. Only the copy one has a proof
+against it; the rest are merely unsolved.
+
+**A screening heuristic was tried and FAILED — do not rebuild it.** Counting bare
+`addu $rX, $rY, $zero` copies in the target asm does not predict difficulty: every
+function I failed on (func_8001F828, func_8001FA94, Sce_flag_off) screens CLEAN, because
+the problem only appears after compiling our C, not in the reference. There is no known
+way to tell a hard function from an easy one by inspection.
+
+**What actually works, in order of evidence:**
+1. Functions whose residual is a REGISTER MIRROR -> permuter, reliably.
+2. Functions that match on the first or second try by hand (straight-line stores,
+   arithmetic, table dispatch reusing a matched sibling's template).
+3. Everything else -> park with the exact residual and move on. Do NOT hand-grind;
+   Jul 25 lost an hour to four consecutive parks.
+
+**Process change adopted:** run permuters on ALL parked drafts concurrently rather
+than one at a time (12 cores; 5 running as of this note: FA94, 62A50, F828, 42154,
+SCEOFF). Generating near-matches faster than resolving them was the bottleneck.
+NOTE mml_SCEOFF base score is 100430 (length mismatch) — not a real candidate; fix the
+draft's instruction count before trusting it.
+
+**Biggest available lever is OUTSIDE this repo.** The single largest unlock of the Jul 25
+session came from user-supplied external research (`(void)&local`, which reproduced a
+stack reservation I had wrongly declared impossible). One good answer from a PSX decomp
+community on forcing a reload live-range-split copy could unlock a whole genus. That is
+a forum post, not a session. See notes/DEEP_RESEARCH_PROMPT_reload.md.
