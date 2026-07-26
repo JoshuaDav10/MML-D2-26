@@ -14,15 +14,17 @@ get() { printf '%s' "$JSON" | python3 -c "import json,sys;print(json.load(sys.st
 
 python3 - "$(get matched)" "$(get c_mapped)" "$(get active_stubs)" "$(get unsplit_raw)" \
            "$(get main_exe_total)" "$(get whole_game)" "$(get pct_slice)" \
-           "$(get pct_main_exe)" "$(get pct_whole_game)" <<'PY'
+           "$(get pct_main_exe)" "$(get pct_whole_game)" \
+           "$(get stage_matched)" "$(get overlay_unique)" "$(get matched_total)" <<'PY'
 import sys, re, pathlib
-N, CMAP, S, UNSPLIT, TOTAL, WHOLE, PS, PE, PG = sys.argv[1:10]
+N, CMAP, S, UNSPLIT, TOTAL, WHOLE, PS, PE, PG, SM, OU, MT = sys.argv[1:13]
 BEGIN, END = "<!-- BEGIN GENERATED COUNTS -->", "<!-- END GENERATED COUNTS -->"
 body = (
     f"| matched functions | **{N}** |\n"
     f"| C-mapped slice | {N} / **{CMAP}** = {PS}% |\n"
     f"| main executable | {N} / **{TOTAL}** = **{PE}%** |\n"
-    f"| **whole game** | {N} / **~{WHOLE}** = **~{PG}%** |\n"
+    f"| **stage overlays** | {SM} / **~{OU}** |\n"
+    f"| **whole game** | {MT} / **~{WHOLE}** = **~{PG}%** |\n"
     f"| active INCLUDE_ASM stubs | **{S}** |\n"
     f"| still unsplit raw asm | **{UNSPLIT}** functions in `asm/rock_neo/*.s` |\n"
 )

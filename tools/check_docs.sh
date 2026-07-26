@@ -35,7 +35,7 @@ UNSPLIT=$(get unsplit_raw); TOTAL=$(get main_exe_total); WHOLE=$(get whole_game)
 
 echo "authoritative: $N matched / $CMAP C-mapped ($(get pct_slice)%)"
 echo "               $N / $TOTAL main exe ($(get pct_main_exe)%) — $UNSPLIT still unsplit raw asm"
-echo "               $N / ~$WHOLE whole game ($(get pct_whole_game)%) · $S active stubs"
+echo "               $N engine + $(get stage_matched) stage = $(get matched_total) / ~$WHOLE whole game ($(get pct_whole_game)%) · $S active stubs"
 
 # --------------------------------------------------------------- 1. COUNTS.md byte-diff
 if ! tools/gen_counts.sh --stdout 2>/dev/null | diff -q - "$DOC_ROOT/notes/COUNTS.md" >/dev/null 2>&1; then
@@ -50,7 +50,8 @@ block() {
 | matched functions | **$N** |
 | C-mapped slice | $N / **$CMAP** = $(get pct_slice)% |
 | main executable | $N / **$TOTAL** = **$(get pct_main_exe)%** |
-| **whole game** | $N / **~$WHOLE** = **~$(get pct_whole_game)%** |
+| **stage overlays** | $(get stage_matched) / **~$(get overlay_unique)** |
+| **whole game** | $(get matched_total) / **~$WHOLE** = **~$(get pct_whole_game)%** |
 | active INCLUDE_ASM stubs | **$S** |
 | still unsplit raw asm | **$UNSPLIT** functions in \`asm/rock_neo/*.s\` |
 EOF

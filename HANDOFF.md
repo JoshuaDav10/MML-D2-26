@@ -6,7 +6,8 @@
 | matched functions | **301** |
 | C-mapped slice | 301 / **505** = 59.6% |
 | main executable | 301 / **1119** = **26.9%** |
-| **whole game** | 301 / **~8183** = **~3.7%** |
+| **stage overlays** | 6 / **~7064** |
+| **whole game** | 307 / **~8183** = **~3.8%** |
 | active INCLUDE_ASM stubs | **204** |
 | still unsplit raw asm | **614** functions in `asm/rock_neo/*.s` |
 <!-- END GENERATED COUNTS -->

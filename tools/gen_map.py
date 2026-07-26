@@ -139,6 +139,56 @@ def objdump_engine_c():
     return out
 
 
+def objdump_stage_c():
+    """Functions present in built STAGE overlay C objects: {(archive, name): insns}.
+
+    Mirrors objdump_engine_c() for src/<ARCHIVE>/<overlay>/*.c. Linkage is proven from
+    the overlay's OWN map (build/<ARCHIVE>.<overlay>.map): an object the linker never
+    pulled in is not in the binary, and counting it would recreate the phantom-match
+    bug in a third place. Added 2026-07-26, when the first stage matches landed and
+    every counting tool was structurally unable to see them.
+    """
+    out = {}
+    for o in sorted(glob.glob("build/src/*/*/*.o")):
+        parts = o.split("/")                     # build / src / ARCH / OVL / file.c.o
+        if len(parts) != 5 or parts[2] == "rock_neo":
+            continue
+        arch, ovl, obj = parts[2], parts[3], parts[4]
+        if not (pathlib.Path("src") / arch / ovl / obj[:-2]).is_file():
+            continue                             # stale .o, source deleted
+        mp = pathlib.Path("build") / f"{arch}.{ovl}.map"
+        if mp.is_file() and o not in mp.read_text():
+            continue                             # compiled but never linked
+        try:
+            txt = subprocess.run(["mipsel-elf-objdump", "-t", o],
+                                 capture_output=True, text=True, check=True).stdout
+        except Exception:
+            continue
+        for line in txt.splitlines():
+            m = re.match(r"^([0-9a-f]+)\s+.*\sF\s+\.text\s+([0-9a-f]+)\s+(\S+)", line)
+            if m:
+                out[(arch, m.group(3))] = int(m.group(2), 16) // 4
+    return out
+
+
+def cpp_stub_names_stage():
+    """(archive, name) still pulled in as INCLUDE_ASM after cpp, for stage C files."""
+    sys.path.insert(0, str(ROOT / "tools"))
+    import census
+
+    names = set()
+    for c in sorted(glob.glob("src/*/*/*.c")):
+        arch = c.split("/")[1]
+        if arch == "rock_neo":
+            continue
+        try:
+            for _folder, name in census.cpp_stubs(ROOT / c):
+                names.add((arch, name))
+        except Exception:
+            continue
+    return names
+
+
 def build():
     rows = []
 
@@ -160,11 +210,21 @@ def build():
                              skel=hashlib.md5(",".join(fn["ops"]).encode()).hexdigest()))
 
     # ---- STAGES --------------------------------------------------------------
+    # A stage function keeps its asm-derived row (so instance/unique counts stay
+    # exact); only its STATE changes once a C translation unit owns it. Creating a
+    # second row for the C version would double-count it.
+    stage_c = objdump_stage_c()
+    stage_stubs = cpp_stub_names_stage() if stage_c else set()
     for f in code_files("asm/**/*.s", skip_engine=True):
         archive = f.split("/")[1]
         for fn in parse_asm(f):
+            key = (archive, fn["name"])
+            if key in stage_c:
+                st = "STUB" if key in stage_stubs else "MATCHED"
+            else:
+                st = "STAGE"
             rows.append(dict(name=fn["name"], realm="STAGE", container=archive,
-                             state="STAGE", insns=len(fn["words"]),
+                             state=st, insns=len(fn["words"]),
                              leaf=not any(o in CALLS for o in fn["ops"]),
                              body=hashlib.md5("".join(fn["words"]).encode()).hexdigest(),
                              skel=hashlib.md5(",".join(fn["ops"]).encode()).hexdigest()))
@@ -178,10 +238,19 @@ def build():
 
     uniq_stage = len({r["body"] for r in rows if r["realm"] == "STAGE"})
     engine_n = sum(1 for r in rows if r["realm"] == "ENGINE")
-    matched = sum(1 for r in rows if r["state"] == "MATCHED")
     unsplit_n = sum(1 for r in rows if r['state'] == 'UNSPLIT')
-    return rows, dict(engine_total=engine_n, unsplit_engine=unsplit_n, stage_instances=sum(1 for r in rows if r["realm"] == "STAGE"),
-                      stage_unique=uniq_stage, whole_game=engine_n + uniq_stage, matched=matched)
+    # Name every numerator, like every denominator. A bare "matched" is how the two
+    # realms silently merged before anyone noticed which one they were quoting.
+    eng_matched = sum(1 for r in rows if r["realm"] == "ENGINE" and r["state"] == "MATCHED")
+    stg_matched_inst = sum(1 for r in rows if r["realm"] == "STAGE" and r["state"] == "MATCHED")
+    stg_matched = len({r["body"] for r in rows
+                       if r["realm"] == "STAGE" and r["state"] == "MATCHED"})
+    return rows, dict(engine_total=engine_n, unsplit_engine=unsplit_n,
+                      stage_instances=sum(1 for r in rows if r["realm"] == "STAGE"),
+                      stage_unique=uniq_stage, whole_game=engine_n + uniq_stage,
+                      engine_matched=eng_matched, stage_matched=stg_matched,
+                      stage_matched_instances=stg_matched_inst,
+                      matched_total=eng_matched + stg_matched)
 
 
 def render(rows, s):
@@ -202,9 +271,9 @@ def render(rows, s):
     A("## Birds-eye\n")
     A("| realm | what it is | functions | done |")
     A("|---|---|---|---|")
-    A(f"| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **{s['engine_total']:,}** | **{s['matched']}** ({pct(s['matched'], s['engine_total'])}) |")
-    A(f"| **STAGES** | 37 code archives (168 more are asset-only). {s['stage_instances']:,} copies of {s['stage_unique']:,} unique bodies. | **{s['stage_unique']:,}** | 0 |")
-    A(f"| **WHOLE GAME** | | **{s['whole_game']:,}** | **{s['matched']}** ({pct(s['matched'], s['whole_game'])}) |")
+    A(f"| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **{s['engine_total']:,}** | **{s['engine_matched']}** ({pct(s['engine_matched'], s['engine_total'])}) |")
+    A(f"| **STAGES** | 37 code archives (168 more are asset-only). {s['stage_instances']:,} copies of {s['stage_unique']:,} unique bodies. | **{s['stage_unique']:,}** | **{s['stage_matched']}** ({pct(s['stage_matched'], s['stage_unique'])}) |")
+    A(f"| **WHOLE GAME** | | **{s['whole_game']:,}** | **{s['matched_total']}** ({pct(s['matched_total'], s['whole_game'])}) |")
     A("")
 
     A("## States\n")
@@ -305,7 +374,8 @@ def main():
     pathlib.Path("build/function_map.json").write_text(json.dumps(dict(summary=s, functions=rows), indent=1))
     print(f"gen_map: {s['whole_game']:,} functions mapped "
           f"({s['engine_total']:,} engine + {s['stage_unique']:,} unique stage), "
-          f"{s['matched']} matched -> notes/FUNCTION_MAP.md + build/function_map.json")
+          f"{s['engine_matched']} engine + {s['stage_matched']} stage matched "
+          f"-> notes/FUNCTION_MAP.md + build/function_map.json")
     return 0
 
 

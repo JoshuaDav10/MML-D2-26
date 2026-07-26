@@ -15,12 +15,15 @@ separate, slower step: `tools/audit_count.sh`.
 | **Game functions in ROCK_NEO.EXE** | **1119** | 505 + 614. The MAIN-EXE denominator. |
 | Unique overlay functions | **~7064** | Measured by `tools/overlay_scope.py`; deduped across 205 overlays. |
 | **Whole-game functions** | **~8183** | 1119 main exe + ~7064 overlay. THE whole-game denominator. |
-| Matched (real C in tree) | **301** | 505 − 204. |
+| Matched — ENGINE (real C in tree) | **301** | 505 − 204. `census.py --matched`, authoritative for the main exe. |
+| Matched — STAGE (unique bodies) | **6** | Stage overlay functions with real C. Invisible to `census.py` (it globs only `build/src/rock_neo/*.o`); read from `gen_map.py`, which proves linkage from each overlay's own `.map`. |
+| **Matched — WHOLE GAME** | **307** | 301 engine + 6 stage. |
 | Active INCLUDE_ASM stubs | **204** | Stubs still pulled in AFTER cpp (ifdef-aware). |
 | Raw `grep -c INCLUDE_ASM` | 210 | **DO NOT USE.** Blind to `#define ACCEPT_REORDERING_BULLSHIT` in game.c/sub_scrn.c; 6 stubs are shadowed by an active `#else` body. Un-gating one is a NO-OP that reads as +1 — this caused the 2026-07-19 inflation. |
 | By function count (C-mapped slice) | **59.6%** | 301 / 505 — the number historically quoted. Overstates the mission. |
 | By function count (main exe) | **26.9%** | 301 / 1119. |
-| **By function count (WHOLE GAME)** | **~3.7%** | 301 / ~8183. The honest number. |
+| By function count (stage realm) | **0.1%** | 6 / ~7064. |
+| **By function count (WHOLE GAME)** | **~3.8%** | 307 / ~8183. The honest number. |
 
 ## Splitting is not progress
 A phase-0 split MOVES a function from the unsplit bucket into the C-mapped bucket. It
@@ -33,6 +36,13 @@ The 2026-07-26 audit found this project had reported `matched/C-mapped` for mont
 `census.py` (which reads only `build/src/rock_neo/*.o`). Same defect class as the
 ACCEPT_REORDERING_BULLSHIT inflation: a completion metric defined by what a tool parses
 rather than by the target binary.
+
+## Two realms, two authorities
+`census.py` can only see `build/src/rock_neo/*.o`, so it is authoritative for the ENGINE
+and structurally blind to stages. `gen_map.py` sees both. Until the first stage match
+landed (2026-07-26) the two agreed by accident, because the stage count was zero — the
+blind spot and the truth were the same number. `gen_counts.sh` now cross-checks the two
+on the engine figure and refuses to emit anything if they disagree.
 
 ## Function count runs ahead of code volume
 Small functions were matched first, so function-count progress overstates volume progress.

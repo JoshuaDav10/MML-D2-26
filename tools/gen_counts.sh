@@ -31,6 +31,18 @@ MAP=build/function_map.json
 [ -f "$MAP" ] || tools/gen_map.py >/dev/null 2>&1
 mapget() { python3 -c "import json;print(json.load(open('$MAP'))['summary']['$1'])" 2>/dev/null; }
 UNSPLIT=$(mapget unsplit_engine)
+# Stage realm. census.py is authoritative for the ENGINE only (it globs
+# build/src/rock_neo/*.o); the map is authoritative for stages. Read each from the tool
+# that can actually see it, and CROSS-CHECK the overlap — two tools quoting different
+# engine numbers is precisely the drift this project keeps getting bitten by.
+STAGE_MATCHED=$(mapget stage_matched)
+MAP_ENGINE_MATCHED=$(mapget engine_matched)
+if [ -n "$MAP_ENGINE_MATCHED" ] && [ "$MAP_ENGINE_MATCHED" != "$MATCHED" ]; then
+  echo "gen_counts: DISAGREEMENT — census.py says $MATCHED engine matched, gen_map.py says $MAP_ENGINE_MATCHED." >&2
+  echo "gen_counts: refusing to emit a number. Rebuild (make CPP=cpp) then re-run tools/gen_map.py." >&2
+  exit 3
+fi
+MATCHED_TOTAL=$(( MATCHED + STAGE_MATCHED ))
 RAWGREP=$(grep -c INCLUDE_ASM src/rock_neo/*.c 2>/dev/null | awk -F: '{s+=$2} END{print s+0}')
 TOTAL=$(( CMAP + UNSPLIT ))
 SHADOWED=$(( RAWGREP - STUBS ))
@@ -42,11 +54,12 @@ OVL_UNIQUE=$(mapget stage_unique)
 WHOLE=$(( TOTAL + OVL_UNIQUE ))
 
 pct() { awk "BEGIN{printf \"%.1f\", 100*$1/$2}"; }
-P_SLICE=$(pct "$MATCHED" "$CMAP"); P_EXE=$(pct "$MATCHED" "$TOTAL"); P_GAME=$(pct "$MATCHED" "$WHOLE")
+P_SLICE=$(pct "$MATCHED" "$CMAP"); P_EXE=$(pct "$MATCHED" "$TOTAL")
+P_GAME=$(pct "$MATCHED_TOTAL" "$WHOLE"); P_STAGE=$(pct "$STAGE_MATCHED" "$OVL_UNIQUE")
 
 if [ "${1:-}" = "--json" ]; then
-  printf '{"matched":%s,"c_mapped":%s,"active_stubs":%s,"unsplit_raw":%s,"main_exe_total":%s,"overlay_unique":%s,"whole_game":%s,"pct_slice":%s,"pct_main_exe":%s,"pct_whole_game":%s}\n' \
-    "$MATCHED" "$CMAP" "$STUBS" "$UNSPLIT" "$TOTAL" "$OVL_UNIQUE" "$WHOLE" "$P_SLICE" "$P_EXE" "$P_GAME"
+  printf '{"matched":%s,"stage_matched":%s,"matched_total":%s,"c_mapped":%s,"active_stubs":%s,"unsplit_raw":%s,"main_exe_total":%s,"overlay_unique":%s,"whole_game":%s,"pct_slice":%s,"pct_main_exe":%s,"pct_stage":%s,"pct_whole_game":%s}\n' \
+    "$MATCHED" "$STAGE_MATCHED" "$MATCHED_TOTAL" "$CMAP" "$STUBS" "$UNSPLIT" "$TOTAL" "$OVL_UNIQUE" "$WHOLE" "$P_SLICE" "$P_EXE" "$P_STAGE" "$P_GAME"
   exit 0
 fi
 
@@ -69,12 +82,15 @@ separate, slower step: \`tools/audit_count.sh\`.
 | **Game functions in ROCK_NEO.EXE** | **$TOTAL** | $CMAP + $UNSPLIT. The MAIN-EXE denominator. |
 | Unique overlay functions | **~$OVL_UNIQUE** | Measured by \`tools/overlay_scope.py\`; deduped across 205 overlays. |
 | **Whole-game functions** | **~$WHOLE** | $TOTAL main exe + ~$OVL_UNIQUE overlay. THE whole-game denominator. |
-| Matched (real C in tree) | **$MATCHED** | $CMAP − $STUBS. |
+| Matched — ENGINE (real C in tree) | **$MATCHED** | $CMAP − $STUBS. \`census.py --matched\`, authoritative for the main exe. |
+| Matched — STAGE (unique bodies) | **$STAGE_MATCHED** | Stage overlay functions with real C. Invisible to \`census.py\` (it globs only \`build/src/rock_neo/*.o\`); read from \`gen_map.py\`, which proves linkage from each overlay's own \`.map\`. |
+| **Matched — WHOLE GAME** | **$MATCHED_TOTAL** | $MATCHED engine + $STAGE_MATCHED stage. |
 | Active INCLUDE_ASM stubs | **$STUBS** | Stubs still pulled in AFTER cpp (ifdef-aware). |
 | Raw \`grep -c INCLUDE_ASM\` | $RAWGREP | **DO NOT USE.** Blind to \`#define ACCEPT_REORDERING_BULLSHIT\` in game.c/sub_scrn.c; $SHADOWED stubs are shadowed by an active \`#else\` body. Un-gating one is a NO-OP that reads as +1 — this caused the 2026-07-19 inflation. |
 | By function count (C-mapped slice) | **${P_SLICE}%** | $MATCHED / $CMAP — the number historically quoted. Overstates the mission. |
 | By function count (main exe) | **${P_EXE}%** | $MATCHED / $TOTAL. |
-| **By function count (WHOLE GAME)** | **~${P_GAME}%** | $MATCHED / ~$WHOLE. The honest number. |
+| By function count (stage realm) | **${P_STAGE}%** | $STAGE_MATCHED / ~$OVL_UNIQUE. |
+| **By function count (WHOLE GAME)** | **~${P_GAME}%** | $MATCHED_TOTAL / ~$WHOLE. The honest number. |
 
 ## Splitting is not progress
 A phase-0 split MOVES a function from the unsplit bucket into the C-mapped bucket. It
@@ -87,6 +103,13 @@ $UNSPLIT functions sat in \`asm/rock_neo/*.s\`, linked by \`rock_neo.ld\` and in
 \`census.py\` (which reads only \`build/src/rock_neo/*.o\`). Same defect class as the
 ACCEPT_REORDERING_BULLSHIT inflation: a completion metric defined by what a tool parses
 rather than by the target binary.
+
+## Two realms, two authorities
+\`census.py\` can only see \`build/src/rock_neo/*.o\`, so it is authoritative for the ENGINE
+and structurally blind to stages. \`gen_map.py\` sees both. Until the first stage match
+landed (2026-07-26) the two agreed by accident, because the stage count was zero — the
+blind spot and the truth were the same number. \`gen_counts.sh\` now cross-checks the two
+on the engine figure and refuses to emit anything if they disagree.
 
 ## Function count runs ahead of code volume
 Small functions were matched first, so function-count progress overstates volume progress.

@@ -48,6 +48,28 @@ if [ -f tools/audit_count.sh ]; then
   rm -f tools/_selftest_ac.sh
 fi
 
+# --- gen_counts.sh must REFUSE when census.py and gen_map.py disagree on the engine
+# --- count. Added 2026-07-26 with the stage realm: two tools now publish numbers and
+# --- only one can see each realm, so their overlap must be policed.
+if [ -f build/function_map.json ]; then
+  cp build/function_map.json "$TMP/fm.bak"
+  python3 -c "
+import json
+d=json.load(open('build/function_map.json'))
+d['summary']['engine_matched'] = d['summary']['engine_matched'] + 1
+json.dump(d, open('build/function_map.json','w'))
+" 2>/dev/null
+  out=$(tools/gen_counts.sh --json 2>&1); rc=$?
+  cp "$TMP/fm.bak" build/function_map.json
+  if [ "$rc" = 3 ] && printf '%s' "$out" | grep -q 'DISAGREEMENT'; then
+    ok "gen_counts.sh exits 3 when census.py and gen_map.py disagree on engine matched"
+  else
+    bad "gen_counts.sh did not refuse on a census/map disagreement (rc=$rc) — it is not a gate"
+  fi
+else
+  bad "build/function_map.json missing — census/map cross-check self-test could not run"
+fi
+
 # --- check_docs.sh must exit 1 on a REALISTIC stale count, against a throwaway copy.
 if [ -f tools/check_docs.sh ]; then
   mkdir -p "$TMP/notes" "$TMP/.claude/agents"
@@ -85,9 +107,18 @@ else
   C_TXT=$(mipsel-elf-size -A build/src/rock_neo/*.o 2>/dev/null | awk '/^\.text/{s+=$2} END{print s+0}')
   A_TXT=$(mipsel-elf-size -A build/asm/rock_neo/*.o 2>/dev/null | awk '/^\.text/{s+=$2} END{print s+0}')
   C_FN=$(mipsel-elf-objdump -t build/src/rock_neo/*.o 2>/dev/null | grep -c " F \.text")
-  A_FN=$(grep -h '^glabel' asm/rock_neo/*.s 2>/dev/null | wc -l | tr -d ' ')
-  MATCHED=$(tools/gen_counts.sh --json 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin)["matched"])' 2>/dev/null)
-  TOT_FN=$(( C_FN + A_FN )); TOT_TXT=$(( C_TXT + A_TXT ))
+  # A_FN must NOT be `grep -h '^glabel' asm/rock_neo/*.s`. Stale chunk files linger
+  # there after a re-split (gitignored, nothing cleans them), so the raw grep
+  # double-counts functions that also live in a linked chunk: it read 834 against a
+  # real 614 and asserted a total of 1339 against a real 1119 — then FAILED the
+  # correct COUNTS.md for "omitting" its own wrong number. gen_counts.sh already
+  # solved this by reading the map; this gate must use the same source or it trains
+  # people to ignore a red audit. (Found 2026-07-26 by the stage-realm work.)
+  CJSON=$(tools/gen_counts.sh --json 2>/dev/null)
+  jg() { printf '%s' "$CJSON" | python3 -c "import json,sys;print(json.load(sys.stdin)['$1'])" 2>/dev/null; }
+  A_FN=$(jg unsplit_raw)
+  MATCHED=$(jg matched)
+  TOT_FN=$(jg main_exe_total); TOT_TXT=$(( C_TXT + A_TXT ))
   printf "  C TUs      : %5s fns  %8s bytes\n" "$C_FN" "$C_TXT"
   printf "  raw asm    : %5s fns  %8s bytes   <- NEVER split into per-function files\n" "$A_FN" "$A_TXT"
   printf "  TOTAL      : %5s fns  %8s bytes\n" "$TOT_FN" "$TOT_TXT"
