@@ -42,6 +42,12 @@ echo "----------------------------------------"
 # exited 0 even when raw cmp said DIFFERS — it could not be used as a gate/hook.
 case "$HASH" in *OK*) ;; *) echo "  FAIL: hash check did not print OK"; rc=1;; esac
 case "$CMP"  in *byte-identical*) ;; *) echo "  FAIL: raw cmp is not byte-identical"; rc=1;; esac
-[ "$rc" = 0 ] && echo "Trust THIS number. Never a grep of INCLUDE_ASM." \
+# `rm -rf build` above also deletes the 205 overlay .BIN files, and this script only
+# rebuilds the main exe. `make CPP=cpp check_overlays` (and therefore the pre-push hook)
+# will FAIL until you run `make CPP=cpp chunks`. Note: plain `make CPP=cpp` does NOT
+# build them — the .PHONY line in the Makefile is comma-separated, so nothing is
+# actually declared phony and `build` is a real directory.
+[ "$rc" = 0 ] && echo "Trust THIS number. Never a grep of INCLUDE_ASM.
+NOTE: overlays were deleted by the clean rebuild — run 'make CPP=cpp chunks' before pushing." \
               || echo "BUILD DOES NOT MATCH — the count above is meaningless."
 exit $rc
