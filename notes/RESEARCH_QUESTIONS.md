@@ -144,6 +144,15 @@ the concurrency cap).
 ## Related, already written
 
 - `notes/DEEP_RESEARCH_PROMPT_reload.md` — the SN gcc 2.7.2 reload / live-range-split
-  question. Written 2026-07-25, **launched 2026-07-26 in a separate session**, result
-  pending. Overlaps question 1: if reload behaviour becomes predictable, the >120 wall may
-  fall regardless of what other projects do.
+  question. Written 2026-07-25, launched + **RETURNED 2026-07-26**. Findings triaged in
+  `notes/RESEARCH_FINDINGS_reload.md`; raw report at
+  `notes/research_raw/2026-07-26_reload_report.md`.
+  **Headline, VERIFIED here from primary sources:** the reconstructed SN 2.7.2 tree
+  (`decompals/old-gcc` `2.7.2-cdk`) leaves `reload.c`/`reload1.c`/`local-alloc.c`/
+  `global.c`/`cse.c`/`loop.c`/`combine.c`/`flow.c` **bit-for-bit stock FSF** — only the
+  MIPS backend header, driver, build system and version banner are patched. Reading FSF
+  2.7.2 source is reading our compiler's middle end.
+  This partially answers question 1 below: same-generation projects (sotn, lom, spyro, esa)
+  **do** carry permanent NONMATCHING functions for irreducible reload episodes — so some
+  ceiling is real. What it does *not* answer is whether they routinely match 300-800
+  instruction functions; that stays open and is still the highest-value question.
