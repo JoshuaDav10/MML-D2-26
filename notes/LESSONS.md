@@ -22,6 +22,22 @@ iteration teaches something; this file is how the project gets smarter.
 
 ## Permuter score-0 is NOT a guaranteed byte match (2026-07-14)
 
+**SECOND failure mode (2026-07-25): a scratch zero may not TRANSFER in-tree.**
+func_8001F828's permuter reached a genuine score 0 in its workdir, and the winning source
+transcribed faithfully into scene.c still produced the SAME 5-row diff in-tree (census
+said 282, but raw `cmp` DIFFERED — the hash caught it).
+Cause: the permuter workdir's `base.c` is a SIMPLIFIED environment. For F828 it declared
+`typedef struct { s8 _a[0x52]; s8 x52; } GAME_WORK;` (0x53 bytes) and only *declared*
+`Sce_flag_test`, whereas in scene.c the struct is the full GAME_WORK and Sce_flag_test is
+**defined in the same TU**. Those differences change register allocation / delay-slot
+filling, so the mutation that wins in scratch is not the mutation that wins in-tree.
+**Rule: a permuter workdir must replicate the tree environment as closely as practical**
+(real struct definitions, same same-TU callees) or its zeros are only scratch-valid.
+When a zero fails to transfer, do NOT hand-tune the transcription — fix the workdir
+prelude and re-run. (E4C4/62C6C/57924 DID transfer; they had little or no struct/callee
+context, which is why this went unnoticed until F828.)
+
+
 The decomp-permuter's scorer **normalizes jump/branch targets**, so a candidate with
 the WRONG control flow (a `j`/branch to the wrong label) can score **0** while being
 byte-different. Real example: func_8001AE6C — permuter reported score 0 for a version
