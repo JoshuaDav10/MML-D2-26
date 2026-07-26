@@ -16,8 +16,9 @@ only INCLUDE_ASM stubs, YAML entries, and declarations.
   unmatched functions are .s files under `asm/rock_neo/nonmatchings/<file>/`.
 - C files with stubs: `src/rock_neo/*.c`. Stub format (one blank line between):
   `INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/<file>", <func_name>);`
-- The main exe is currently fully mapped (475 functions). New mapping work is
-  mostly for overlays (config/overlay/…) or when splitting files.
+- The main exe is NOT fully mapped: a large majority of it is still raw asm in
+  `asm/rock_neo/*.s` awaiting a phase-0 split. See `notes/COUNTS.md` (generated) for
+  live figures and `notes/wip/PHASE0_SPLIT_TEMPLATE.md` for the split procedure.
 
 ## Rules
 - Add YAML/symbol entries in ascending address order. Never reorder existing

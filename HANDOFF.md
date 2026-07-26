@@ -1,5 +1,17 @@
 # HANDOFF — MML Decomp
 
+<!-- BEGIN GENERATED COUNTS -->
+| metric | value |
+|---|---|
+| matched functions | **282** |
+| C-mapped slice | 282 / **488** = 57.8% |
+| main executable | 282 / **1119** = **25.2%** |
+| **whole game** | 282 / **~8129** = **~3.5%** |
+| active INCLUDE_ASM stubs | **206** |
+| still unsplit raw asm | **631** functions in `asm/rock_neo/*.s` |
+<!-- END GENERATED COUNTS -->
+
+
 **Authoritative state (2026-07-26, `tools/check_docs.sh` clean; the +1 match & first split
 were clean-rebuild verified — see caveat):**
 
@@ -141,8 +153,9 @@ assembled into the same `.o` (an earlier attempt got this wrong and reported an 
 - **Largest function ever matched: `MojiTaskExec`, 119 instructions.** Nothing above 120 has
   ever matched, across the project's entire history.
 - Median matched function: **20** instructions; 90th percentile 45.
-- Of the 203 remaining stubs: median **90**; **71 are over 120**; 28 over 200; 11 over 300.
-- Only **55** remain at ≤60 instructions.
+- Of the remaining stubs: median **90** instructions; **71 over 120**; 28 over 200; 11 over 300.
+  Only **55** sit at ≤60. [SUPERSEDED counts — regenerate with `tools/analyze_raw_asm.py`;
+  live totals in `notes/COUNTS.md`.]
 
 This is a real wall, not coincidence. Small functions have few register-allocation degrees
 of freedom; past ~120 instructions gcc 2.7.2's reload pass makes choices no source-level
@@ -153,7 +166,7 @@ of them**).
 
 ### Honest projection
 
-- Realistic ceiling on the C-mapped slice: **~345–365 of 484** (71–75%) — roughly the
+- Realistic ceiling on the C-mapped slice: **~71–75%** — roughly the
   ≤120-instruction population plus a few lucky mid-size wins.
 - Against the real executable: **~31–33%**.
 - **100% is not reachable** with current toolchain understanding. The remainder ships as

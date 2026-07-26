@@ -2,8 +2,9 @@
 
 Built from **measured ground truth**, not inherited numbers. Every figure here is
 reproducible from the scripts named. This exists because the project spent months
-quoting a denominator (484) that was defined by what `census.py` could read, not by
-the target binary. This map is denominator-first.
+quoting a C-slice denominator that was defined by what `census.py` could read, not by
+the target binary. This map is denominator-first. **Live counts: `notes/COUNTS.md`
+(generated) — the tables here describe STRUCTURE, not current totals.**
 
 ## 0. The finish lines (there are TWO — pick consciously)
 
@@ -24,19 +25,19 @@ already satisfy line A. Do not let the overlay count stampede the plan (see §4)
 
 | slice | count | note |
 |---|---|---|
-| **Matched & byte-verified (C)** | **281** | authoritative: clean rebuild + hash + cmp |
-| Active stubs (mapped, not matched) | 203 | in the C slice, still INCLUDE_ASM |
-| **C-mapped slice** | 484 | = 281 + 203 |
-| Raw asm in ROCK_NEO.EXE, never split | ~628–635 | 56,459 insn, 64.6% of the exe by volume |
-| **ROCK_NEO.EXE TOTAL** | **~1119** | the honest primary denominator |
-| **Real completion** | **281 / 1119 = 25.1%** | ~7% by volume |
+| **Matched & byte-verified (C)** | see `notes/COUNTS.md` | authoritative: clean rebuild + hash + cmp |
+| Active stubs (mapped, not matched) | see `notes/COUNTS.md` | in the C slice, still INCLUDE_ASM |
+| **C-mapped slice** | see `notes/COUNTS.md` | = matched + active stubs |
+| Raw asm in ROCK_NEO.EXE, never split | see `notes/COUNTS.md` | ~56k insn, ~64% of the exe by volume |
+| **ROCK_NEO.EXE TOTAL** | see `notes/COUNTS.md` | the honest primary denominator |
+| **Real completion** | see `notes/COUNTS.md` | function count runs well ahead of volume |
 | Overlay `func_` labels (raw) | 10,087 | before de-dup (tools/overlay_scope.py) |
 | Overlay UNIQUE functions | **~7,010** | after de-dup (1.4x); 464,382 insn; ALL undecompiled |
-| **WHOLE-GAME unique functions** | **~8,100** | 1,119 main + ~7,010 overlay (minus untested main∩overlay overlap) |
-| **Whole-game completion** | **281 / ~8,100 ≈ 3.5%** | by unique-function count |
+| **WHOLE-GAME unique functions** | see `notes/COUNTS.md` | 1119 main + ~7,010 overlay (minus untested main∩overlay overlap) |
+| **Whole-game completion** | see `notes/COUNTS.md` | by unique-function count |
 
-**THREE denominators, all true, name which every time:** 281/484 = 58% (C-slice, the
-old inflating frame) · 281/1119 = 25% (main exe) · 281/~8100 ≈ 3.5% (whole game).
+**THREE denominators, all true, name which every time** (values in `notes/COUNTS.md`):
+the C-slice (the old inflating frame) · the main exe · the whole game.
 Plus the finish-line axis: overlays already BUILD byte-identical (line A = done) but
 are 0% C (line B). See §7 for the de-dup evidence.
 

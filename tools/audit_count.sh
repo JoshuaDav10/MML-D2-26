@@ -8,10 +8,22 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source .venv/bin/activate 2>/dev/null || true
 
 echo "=== AUTHORITATIVE AUDIT ($(git rev-parse --short HEAD), branch $(git branch --show-current)) ==="
-echo "[1/4] clean rebuild (rm -rf build)..."
-rm -rf build
-if ! make CPP=cpp build_rock_neo_only >/tmp/audit_build.log 2>&1; then
-  echo "  BUILD FAILED — see /tmp/audit_build.log"; grep -iE "error" /tmp/audit_build.log | head; exit 1
+# AUDIT_SKIP_BUILD=1 reuses the existing build/ instead of rebuilding from scratch.
+# It exists so the gate SELF-TEST in adversarial_audit.sh can exercise the exit-code
+# logic below WITHOUT paying for a clean rebuild. 2026-07-26: that self-test used to
+# sed-and-execute a copy of this file which still contained the `rm -rf build` + full
+# `make`, so EVERY SessionStart nuked and rebuilt build/ just to check an exit code.
+# NEVER set this when producing a number you intend to report.
+if [ "${AUDIT_SKIP_BUILD:-0}" = 1 ]; then
+  echo "[1/4] SKIPPED rebuild (AUDIT_SKIP_BUILD=1 — self-test mode, NOT authoritative)"
+else
+  echo "[1/4] clean rebuild (rm -rf build)..."
+  rm -rf build
+  if ! make CPP=cpp build_rock_neo_only >/tmp/audit_build.log 2>&1; then
+    # Exit 2, not 1: a BUILD failure is not a GATE failure. The self-test requires
+    # exactly 1, so a broken venv can no longer masquerade as "the gate works".
+    echo "  BUILD FAILED — see /tmp/audit_build.log"; grep -iE "error" /tmp/audit_build.log | head; exit 2
+  fi
 fi
 echo "[2/4] hash check..."
 HASH=$(make CPP=cpp check_rock_neo_only 2>&1 | tail -1)

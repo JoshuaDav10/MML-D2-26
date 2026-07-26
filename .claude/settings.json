@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && ./tools/adversarial_audit.sh 2>&1 | tail -28 || true"
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && ./tools/check_docs.sh 2>&1 | tail -12 || true"
           }
         ]
       }

@@ -84,8 +84,9 @@ matching judgment.
 - **De-dup manifest + match-propagation tool:** map each unique function → all its
   byte-identical copies, so ONE accepted match auto-applies to every copy across every
   stage. This is what makes leverage #1/#2 automatic instead of manual.
-- **Whole-game census:** extend `census.py`/`audit_count.sh` to count against ~8,000,
-  reporting all three denominators + by-volume. Never measure against 484 again.
+- **Whole-game census:** DONE 2026-07-26 — `tools/gen_counts.sh` generates all three
+  denominators into `notes/COUNTS.md`; `tools/check_docs.sh` byte-diffs it. Never
+  measure against the C-slice alone again.
 
 ### Phase 1 — Free & near-free wins (highest ROI)
 - **Library/SDK fingerprinting.** Build/import a signature DB (other PSX PSY-Q decomps

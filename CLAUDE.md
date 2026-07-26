@@ -56,13 +56,31 @@ Goal: C source that recompiles to a byte-for-byte identical binary.
 - Update progress.md and activity.md when a function is matched.
 
 ## Session start (MANDATORY, before anything else)
-Run `tools/adversarial_audit.sh`. It self-tests that the gates still FAIL when they
-should, prints BOTH denominators, and asks what is not being measured. Then
-`tools/audit_count.sh` for the count. Report completion with BOTH denominators —
-`N/484` (C-mapped slice) AND `N/1119` (game functions actually in ROCK_NEO.EXE).
-Quoting only /484 overstates completion ~2.3x; 635 functions / 56,999 instructions
-(64.6% of the binary) sit in `asm/rock_neo/*.s`, are linked by `rock_neo.ld`, and were
-invisible to every count this project produced before 2026-07-26.
+`tools/check_docs.sh` runs automatically via the SessionStart hook — read its output.
+It is CHEAP (~1s, no rebuild). If no output appeared, the hook is broken; say so.
+
+## Audit tiers — ASK THE USER BEFORE RUNNING ANYTHING ABOVE "cursory"
+Three different things get called "the audit". Name which one, state the cost, and let
+the user pick. **Default to cursory.** Throughput is the goal; verification protects the
+count claims, it is not the work.
+
+| tier | command | cost | when |
+|---|---|---|---|
+| cursory | `tools/check_docs.sh` | ~1s | session start (automatic); before any doc commit |
+| normal | `tools/audit_count.sh` | minutes (clean rebuild) | ONLY before claiming the count changed |
+| deep | `tools/adversarial_audit.sh` or a multi-agent Workflow | very expensive | on request, or after a batch of matches |
+
+2026-07-26: a simple question ("how hard are these three stubs?") triggered an unrequested
+4-agent workflow — **419k tokens, 28 minutes** — of which ~110k changed no decision. Do not
+do that. Reach for a Workflow only when (a) you would otherwise repeat a claim you cannot
+cheaply verify, or (b) there is genuine fan-out across many files.
+
+## Counts are GENERATED, never typed
+`notes/COUNTS.md` is produced by `tools/gen_counts.sh` and byte-diffed by `check_docs.sh`.
+`progress.md` and `HANDOFF.md` carry a `<!-- BEGIN GENERATED COUNTS -->` block synced by
+`tools/sync_docs.sh`. **Never hand-type a count into any doc** — every hand-written number
+in this repo has rotted at least once, and a regex gate cannot catch a phrasing nobody
+encoded. Other docs must delegate to `notes/COUNTS.md`; the gate fails them if they restate.
 
 ## Progress-counting integrity (MANDATORY — the 2026-07-19 session over-claimed +7 by violating these)
 - **The ONLY authoritative matched count is `tools/audit_count.sh`** (clean

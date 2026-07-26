@@ -8,7 +8,11 @@ set -uo pipefail
 ROOT="$(git rev-parse --show-toplevel)"
 [ -x "$ROOT/tools/check_docs.sh" ] || exit 0
 # Only gate commits that touch count-bearing docs or source (not pure notes/tooling churn).
-if git diff --cached --name-only | grep -qE '^(progress\.md|HANDOFF\.md|activity\.md|notes/COUNTS\.md|src/rock_neo/)'; then
+# 2026-07-26: scope widened. CLAUDE.md (the mandatory session-start rulebook),
+# notes/WORK_MAP.md, notes/STRATEGY.md and .claude/agents/*.md were all OUTSIDE this
+# filter and all carried stale counts — CLAUDE.md was telling every new session the
+# wrong denominator.
+if git diff --cached --name-only | grep -qE '^(progress\.md|HANDOFF\.md|activity\.md|CLAUDE\.md|notes/(COUNTS|WORK_MAP|STRATEGY)\.md|\.claude/agents/|src/rock_neo/)'; then
   if ! "$ROOT/tools/check_docs.sh" >/tmp/precommit_docs.txt 2>&1; then
     echo "pre-commit: DOC/COUNT INCONSISTENCY — commit blocked."
     cat /tmp/precommit_docs.txt

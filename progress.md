@@ -1,5 +1,17 @@
 # MML-D2-26 Progress
 
+<!-- BEGIN GENERATED COUNTS -->
+| metric | value |
+|---|---|
+| matched functions | **282** |
+| C-mapped slice | 282 / **488** = 57.8% |
+| main executable | 282 / **1119** = **25.2%** |
+| **whole game** | 282 / **~8129** = **~3.5%** |
+| active INCLUDE_ASM stubs | **206** |
+| still unsplit raw asm | **631** functions in `asm/rock_neo/*.s` |
+<!-- END GENERATED COUNTS -->
+
+
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
 - rock_neo main: **488** functions in linked object code (`tools/census.py
   --matched`; see `notes/COUNTS.md`). **478** have splat asm under
