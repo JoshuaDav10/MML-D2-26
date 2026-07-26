@@ -1052,3 +1052,46 @@ match, so not hash-gated; the 53B40 verdict that uses these is still PENDING).
   by inheritance). Matching such a frame is about recreating simultaneous-live
   PRESSURE at those insns, not about any single statement — single added locals
   measured neutral five different ways on 53B40 (see the fossil brief).
+
+## 2026-07-26 (stage realm opened: eve19 12/12) — proven against the overlay hash
+
+- **Leaked Capcom source MATCHES the US binary.** `eve19.c`, `sub_scrn.c`, `em1c.c` and
+  `EM09_49.c` were left uncompiled in the **JP/PSP** `ST1E.BIN` and are transcribed on
+  TCRF (page static since 2021-08-06; the US disc contains none of it — swept all 205
+  BINs + the exe). Despite being the JP build, all 12 eve19 functions matched, and
+  `check_block` was instruction-for-instruction correct on the FIRST compile. Treat the
+  leak as near-verbatim but verify every constant against the target asm.
+  Already-mined: upstream transcribed sub_scrn's sort functions and the whole symbol
+  table from this page years ago (336 of 347 syms are real Capcom names).
+- **cc1-27 DEFAULTS TO BIG-ENDIAN FOR UNALIGNED ACCESS.** It emits `lwl/lwr` and
+  `swl/swr` with swapped byte offsets (`lwl base+0 / lwr base+3` instead of the
+  little-endian `lwl base+3 / lwr base+0`). Latent for the project's first 301 matches
+  because no compiled-C function had ever used an unaligned access — the 176 `lwl`s in
+  built engine objects are all INCLUDE_ASM'd original assembly, not compiler output.
+  **Fix: add `-mel`.** Verified endian-neutral otherwise (full engine rebuild hashes OK,
+  205/205 overlays). Trigger: any struct with alignment 1 (all-char members) being copied.
+- **THERE ARE TWO COPIES OF THE COMPILER FLAGS.** `Makefile` `CC_FLAGS` builds the
+  engine; `tools/buildoverlay.py` has its own `CC_FLAGS` for overlays. Changing one does
+  nothing to the other. This cost several confused rebuild cycles. Both now carry a
+  comment naming the other.
+- **Array-extern vs scalar-extern decides instruction count** (restating LESSONS §2
+  because it was the last blocker on 4 of 12 functions): if the target materializes the
+  address — `lui $r,%hi(SYM)` + `addiu $r,$r,%lo(SYM)` then `0($r)` — the extern is an
+  UNSIZED ARRAY (`extern u16 SYM[];`, indexed `[0]`). If it uses `%lo(SYM)($r)` directly,
+  it is a plain scalar. A held-pointer local (`u16 *fp = &SYM;`) is NOT equivalent and
+  made things worse (-2 insns).
+- **Overlay rodata can be carved exactly like engine rodata.** Add a named subsegment to
+  the archive yaml (`- [0xEC8, .rodata, eve19]`), re-split, and the C file's own
+  `.rodata` is linked at that address. Constraint: **all** functions sharing the carved
+  region must be converted at once, because gcc emits rodata in first-use order and a
+  partial conversion leaves the region incomplete. Back up `asm/` before re-splitting —
+  it is gitignored.
+- **`check_overlays` reports 205/205 on STALE BINs when the build failed.** `make chunks`
+  can exit nonzero and leave the previous BINs in place. ALWAYS read the build exit code
+  before believing the gate. Same false-pass class as the 2026-07-05 stale-object bug.
+- **`.c.o` under `build/src/<ARCHIVE>/` are make intermediates too.** Touching the `.c`
+  is not enough; delete the overlay's `build/<ARCH>.*` artifacts to force a real rebuild.
+- **Parallel agents: analysis yes, builds no.** Reading asm, recovering offsets/constants
+  and drafting C parallelise cleanly. The build tree and `build/` are shared and the
+  verification gate is global, so integration + `make` + hash-check must stay serial in
+  one thread. Agents are read-only and return C as text.
