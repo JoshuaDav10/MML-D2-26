@@ -486,7 +486,60 @@ void Sub_screen_gauge_set(s32 x0, s32 y0, s32 power, s32 flag) {
     PRIM_PTR(POLY_FT4) = ft4_buff_ptr2;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_gauge_set2);
+void Sub_screen_gauge_set2(s32 x0, s32 y0, s32 power, s32 infi) {
+    POLY_FT4 *ft4_buff_ptr1, *ft4_buff_ptr2;
+
+    ft4_buff_ptr1 = ft4_buff_ptr2 = PRIM_PTR(POLY_FT4);
+
+    *(u32*)ft4_buff_ptr2 = ((u32)(ft4_buff_ptr2 + 1) & 0x00ffffff) | 0x09000000;
+    *(u32*)&ft4_buff_ptr2->r0 = 0x2c808080;
+
+    ft4_buff_ptr2->x0 = ft4_buff_ptr2->x2 = x0;
+    ft4_buff_ptr2->x1 = ft4_buff_ptr2->x3 = x0 + power;
+    ft4_buff_ptr2->y0 = ft4_buff_ptr2->y1 = y0;
+    ft4_buff_ptr2->y2 = ft4_buff_ptr2->y3 = y0 + 0x08;
+
+    ft4_buff_ptr2->tpage = 0x0c;
+    ft4_buff_ptr2->clut = 0xfa0c >> 2;
+
+    *(u16*)&ft4_buff_ptr2->u0 = 0x48 | (0x90 << 8);
+    *(u16*)&ft4_buff_ptr2->u1 = 0x49 | (0x90 << 8);
+    *(u16*)&ft4_buff_ptr2->u2 = 0x48 | (0x98 << 8);
+    *(u16*)&ft4_buff_ptr2->u3 = 0x49 | (0x98 << 8);
+
+    ft4_buff_ptr2++;
+
+    *(u32*)ft4_buff_ptr2 = ((u32)(ft4_buff_ptr2 + 1) & 0x00ffffff) | 0x09000000;
+    *(u32*)&ft4_buff_ptr2->r0 = 0x2c808080;
+
+    ft4_buff_ptr2->x0 = ft4_buff_ptr2->x2 = x0 + power;
+    ft4_buff_ptr2->x1 = ft4_buff_ptr2->x3 = x0 + power + 0x04;
+    ft4_buff_ptr2->y0 = ft4_buff_ptr2->y1 = y0;
+    ft4_buff_ptr2->y2 = ft4_buff_ptr2->y3 = y0 + 0x08;
+
+    ft4_buff_ptr2->tpage = 0x0c;
+    ft4_buff_ptr2->clut = 0xfa0c >> 2;
+
+    *(u16*)&ft4_buff_ptr2->u0 = 0x4c | (0x90 << 8);
+    *(u16*)&ft4_buff_ptr2->u1 = 0x50 | (0x90 << 8);
+    *(u16*)&ft4_buff_ptr2->u2 = 0x4c | (0x98 << 8);
+    *(u16*)&ft4_buff_ptr2->u3 = 0x50 | (0x98 << 8);
+
+    ft4_buff_ptr2++;
+
+    if ((infi) && (power == 88)) {
+        *(u32*)ft4_buff_ptr2 = ((u32)(ft4_buff_ptr2 + 1) & 0x00ffffff) | 0x04000000;
+        *(u32*)&ft4_buff_ptr2->r0 = 0x64808080;
+        ((SPRT*)ft4_buff_ptr2)->x0 = x0 + 0x18;
+        ((SPRT*)ft4_buff_ptr2)->y0 = y0;
+        *(u32*)&(((SPRT*)ft4_buff_ptr2)->u0) = 0x28 | (0xf8 << 8) | ((0xfa08 >> 2) << 16);
+        *(u32*)&(((SPRT*)ft4_buff_ptr2)->w) = 0x00080028;
+
+        ft4_buff_ptr2++;
+    }
+    addPrims(&D_80098934->x70[2], ft4_buff_ptr1, ft4_buff_ptr2 - 1);
+    PRIM_PTR(POLY_FT4) = ft4_buff_ptr2;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_basic_param_set);
 

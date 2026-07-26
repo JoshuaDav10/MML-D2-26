@@ -38,6 +38,21 @@ Night, Spyro, Crash Bandicoot, Ape Escape, Silent Hill, Metal Gear Solid, Legend
 Dragoon, Tomb Raider — **routinely** match 300–800 instruction functions? What techniques
 do they use at that size that we are not using?
 
+> ## ✅ PARTIALLY ANSWERED 2026-07-26 — BY EXPERIMENT, not by research
+> `Sub_screen_gauge_set` (**137 insns**) and `Sub_screen_gauge_set2` (**111**) both
+> matched on essentially the first compile, from authentic Capcom source. 137 breaks a
+> ceiling that had stood for the project's entire history (previous max: MojiTaskExec,
+> 119; nothing above 120 had ever matched).
+> **So the wall is not a toolchain property.** It was an effort/知識 ceiling: past ~120
+> instructions, reverse-engineering the exact source shape by hand stops converging.
+> Given the real source, size stopped mattering.
+> Two consequences: (1) the 211 unmatched >120 functions are recoverable IN PRINCIPLE,
+> so the engine target is nearer 1,119 than ~908; (2) the highest-leverage lever is
+> anything that supplies source shape — the leak, m2c (question 2), or better
+> compiler-internals tooling — not more hand-iteration.
+> Still open: whether OTHER projects routinely match 300-800 insn functions *without*
+> original source, and what workflow they use. That is the part worth researching.
+
 **Why it matters.** This single answer moves the realistic engine target between **~908
 and 1,119**:
 - If they do → our ceiling is a *skill gap*, and 211 functions are recoverable.
