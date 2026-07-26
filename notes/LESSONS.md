@@ -51,6 +51,34 @@ may already be matching. Consequences:
 
 ## cc1-27 (GCC 2.7.2) codegen facts — verified byte-for-byte
 
+### External techniques from another PSY-Q gcc-2.x decomp (2026-07-25, UNVERIFIED HERE)
+Source: NFSHS-PSX-decomp (Caesar0007), commit 545c844 — same toolchain generation.
+These are THEIR verified idioms, not yet confirmed against our hash. Test before trusting.
+
+1. **addu operand order via explicit shift-in-expression.** Writing
+   `*(int *)((base + (patch_idx << 2)) + 0x14)` (shift inline, base first) makes the
+   base `addu` operand 1 — oracle `addu v0,s1,v0`. Contrast `base + patch_idx * 4 + 0x14`,
+   which reassociates. Relevant to our Sce_flag_off addressing-order residual.
+2. **A returned pointer variable materialises as a reg-to-reg COPY.** `return out;` on a
+   pointer param emits `addu v0,s3,zero` at the epilogue ("void->non-void discriminator:
+   a dead-base copy to $v0 = the return value"). This is the ONLY documented way we have
+   seen to get a deliberate `addu rX,rY,zero` from C — possibly relevant to the
+   live-range-split copy genus (53B40 render, func_80042154), though there the copy is
+   mid-function, not an epilogue return.
+3. **Do NOT let gcc tail-merge duplicate epilogues.** Their oracle keeps TWO separate
+   `return 1` blocks; writing one shared return collapses them. (We independently found
+   the inverse — a shared goto label PREVENTS a setcc collapse — so both directions are
+   levers depending on the target.)
+4. **Assignment placed before a branch lands in that branch's delay slot** — "stored in
+   the beqz delay slot (even if 0)". We confirmed this works (func_8001F828) BUT it can
+   extend the value's live range across a call in the other arm, forcing a callee-saved
+   reg + save/restore. Tension is real; see HARVEST_NEARMATCHES func_8001F828.
+5. **Loop increment placed last in the body lands in the loop-back branch delay slot.**
+6. **Cache a loop-invariant count in a local and reuse it** rather than re-reading.
+7. **Tentative definition (no initialiser) puts a symbol in .sdata** so maspsx -G expands
+   it to gp-relative — matches our own gprel/.comm finding (LESSONS section 2).
+
+
 **COMPILER BUG: cc1-27 SEGFAULTS on `break` inside a `do {} while` nested in an `if`**
 (2026-07-25, hit while drafting Sce_flag_off). The build fails with
 `make: *** [...] Error 139` (SIGSEGV) and NO error message — it looks like a build-system
