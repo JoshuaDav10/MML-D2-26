@@ -34,6 +34,26 @@ Main-exe ∩ overlay overlap is thin (only 5 byte-identical unique funcs) — th
 executable and the stage programs are largely SEPARATE codebases. Don't expect the
 281 done to give free overlay progress.
 
+## CORRECTION — Phase 1 pressure-test (autonomous, 2026-07-26 PM), evidence over hope
+
+I pressure-tested lever #3 ("top-shared functions are stock SDK with known source") by
+reading the actual bodies. **It was wrong, and the truth is more useful:**
+- The most-shared overlay funcs are NOT SDK: `func_8010E3B0` (342x) is a bare
+  `jr $ra; nop` no-op stub; `func_80103A48` (144x) is a THUNK into `func_80031824`
+  which lives in the MAIN EXE; `func_8010976C` (72x) is small shared game logic (a
+  counter decrement). They are the shared R3 ENGINE, not an external library.
+- **The real relationship between main exe and overlays is DEPENDENCY, not duplication.**
+  Only 5 bodies are byte-identical, BUT **681 distinct main-exe functions are called
+  (jal) from the overlays.** The main executable is the shared RUNTIME/API that every
+  stage program calls into.
+
+**Strategic consequence (raises the main exe's priority):** finishing/naming/typing the
+1,119-function main exe is NOT "just one of several jobs" — it is the foundation all
+~7,000 overlay functions call. Every main-exe function named + typed makes overlay code
+readable for free. So: **do the main exe FIRST/most**, and target SDK-fingerprinting at
+the main exe (where memcpy/GTE/PSY-Q SDK actually live), not the overlay stub tail.
+Lever #3 below is downgraded to "unconfirmed; look in the main exe"; levers #1/#2/#4 stand.
+
 ## Phased plan (dependency-ordered; leverage front-loaded)
 
 ### Phase 0 — Infrastructure & visibility (mechanical; unlocks everything)
