@@ -38,17 +38,32 @@ typedef struct {
 void func_80033A28(SEQ_WORK *);
 void func_8003346C(SEQ_WORK *);
 
-/* Select sequence `idx` and seek to command `sub`. */
-void func_800322A8(SEQ_WORK *m, s32 idx, s32 sub) {
-    SEQ_CMD *b;
+/* Tick the current command; on expiry advance, jump, or reload the repeat count.
+ *
+ * `p` is hoisted above the `if` deliberately — that is what puts `lw 0x98` in the lbu's
+ * load-delay slot. `c` must be s8 (not u8): the lb + bgez pattern is the signed-char test;
+ * a u8 field emits andi 0xff instead. -funsigned-char is on, so plain `char` will not do.
+ * s8 also gives the QImode local a stack slot, which is where the frame's 8 var bytes
+ * come from (the leaf twin func_800323FC is addiu $sp,-0x8). */
+void func_80032488(SEQ_WORK *m) {
+    SEQ_CMD *p = m->cur;
+    s8 c;
 
-    /* Store order is load-bearing: base must be written before idx, and `b + sub` must be
-     * recomputed rather than read back from m->base, or a reload of 0x94 appears. */
-    m->base = b = m->tbl[idx];
-    m->idx = idx;
-    m->cur = b + sub;
-    m->cc.w = *(u32 *)(b + sub);
-
+    if (--m->cc.b.tick == 0) {
+        c = p->code;
+        if (c < 0) {
+            if (c == -1) {
+                m->cc.b.tick = p->cnt;
+            } else {
+                m->cur = m->base + (c & 0x7F);
+                m->cc.w = *(u32 *)m->cur;
+            }
+        } else {
+            /* re-reads 0x98: this arm is a branch target outside cse's extended block */
+            m->cur = m->cur + 1;
+            m->cc.w = *(u32 *)m->cur;
+        }
+    }
     func_80033A28(m);
     func_8003346C(m);
 }

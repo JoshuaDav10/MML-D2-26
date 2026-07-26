@@ -855,3 +855,18 @@
 - Built notes/COMPILER_IDIOMS.md (portable gcc-2.7.2 cookbook) +
   RESEARCH_BRIEF_gcc272_idioms.md. Fable launched on the 53B40 constant-CSE
   blocker (bg/53b40-fable, in flight).
+
+## 2026-07-26 (session 2)
+- **+2 matched (282 -> 284, audit_count.sh clean-rebuild verified).**
+  - `func_80031824` (22 insn) — Close_*_WORK shape: index = literal unsigned `/0x3C0` of
+    the byte offset from `D_8009F108` (multu/mfhi/srl magic 0x88888889>>9, NOT pointer
+    subtraction), set `0x80000000 >> i` in D_8009880C, AND with D_800987E8, clear `*p`.
+    Matched first shot. **Template: SIX near-identical siblings in asm/rock_neo/2187C.s.**
+  - `func_800322A8` (23 insn) — SEQ_WORK animation actor. Store order load-bearing;
+    the 0xA5 tick overlaps byte 1 of the 0xA4 command word, so the union is mandatory.
+  - `func_80032488` (44 insn) — NOT landed, 3 rows. Two shapes each get half (see the
+    note in src/rock_neo/Code80032488.c). Permuter-ready.
+- Gates rebuilt: counts are now GENERATED (tools/gen_counts.sh + sync_docs.sh) and
+  byte-diffed, replacing a regex whitelist that had missed 12 stale claims including
+  CLAUDE.md's own denominator. SessionStart no longer does a clean rebuild (1.0s now).
+- Backup pushed to origin/session/2026-07-26 (origin/dev deliberately untouched).

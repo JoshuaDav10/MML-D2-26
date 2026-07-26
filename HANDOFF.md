@@ -3,11 +3,11 @@
 <!-- BEGIN GENERATED COUNTS -->
 | metric | value |
 |---|---|
-| matched functions | **282** |
-| C-mapped slice | 282 / **488** = 57.8% |
-| main executable | 282 / **1119** = **25.2%** |
-| **whole game** | 282 / **~8129** = **~3.5%** |
-| active INCLUDE_ASM stubs | **206** |
+| matched functions | **284** |
+| C-mapped slice | 284 / **488** = 58.2% |
+| main executable | 284 / **1119** = **25.4%** |
+| **whole game** | 284 / **~8129** = **~3.5%** |
+| active INCLUDE_ASM stubs | **204** |
 | still unsplit raw asm | **631** functions in `asm/rock_neo/*.s` |
 <!-- END GENERATED COUNTS -->
 
