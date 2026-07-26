@@ -111,10 +111,14 @@ Player_work tables (+0x454 len 0x20, then +0x450 len 3) for the value `f-0x4FF` 
 the first hit in each. NOTE the pre-existing decl in include/rock_neo.h is
 `unknown_t Sce_flag_off(unknown_t)` — the definition MUST return int, not void.
 **cc1 SEGFAULTS if the scan loops use `break`** — use goto (see LESSONS).
-Residual: the target computes `&Sce_flag[f>>3]` as base-then-index into a held register
-(`lui/addiu` base, `srl` index, `addu a0,v0,a0`); every ordering tried (array index, held
-pointer, explicit `base` local) permutes the operand order / register pair. Draft saved as
-notes/wip/sce_flag_off_draft.c — good permuter candidate (addressing/register genus).
+**CORRECTED DIAGNOSIS (2026-07-25):** the residual is NOT the addressing operand order.
+Our draft is **45 instructions vs the target's 46 — one SHORT** — and that misalignment is
+what produces the 1000+ row diff. The operand-order differences I chased are downstream
+artifacts of the shift, not the cause. Applying the external "inline shift, base first"
+idiom (LESSONS external-techniques #1) changed nothing meaningful (1021 -> 1019 rows).
+FIND THE MISSING INSTRUCTION FIRST; do not tune addressing until words == 46.
+Draft: notes/wip/sce_flag_off_draft.c. Permuter mml_SCEOFF is therefore a BAD candidate
+as seeded (base score 100430 = the length penalty) — fix the count before re-running.
 
 ## func_80042154 (player) — logic solved, needs the v1=v0 copy (2026-07-25)
 Symmetric accel/decel on `pl->xB4` gated by `pl->x11C & keymask`; returns 1 (key set)
