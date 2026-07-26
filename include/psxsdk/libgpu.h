@@ -137,6 +137,19 @@ void AddPrim(void*, void*);                         /* extern */
 u16 GetClut(int, int);                                  /* extern */
 u16 GetTPage(int, int, int, int);                           /* extern */
 
+/* PSY-Q ordering-table primitive tag. The 24/8 bitfield split is LOAD-BEARING:
+   it is what produces the lw / and 0xFF000000 / and 0x00FFFFFF / or / sw sequence
+   in every addPrims tail. Recovered 2026-07-26 from the leaked Capcom sub_scrn.c. */
+typedef struct {
+    unsigned addr : 24;
+    unsigned len  : 8;
+    unsigned char r0, g0, b0, code;
+} P_TAG;
+
+#define getaddr(p)           ((unsigned long)((P_TAG*)(p))->addr)
+#define setaddr(p, _addr)    (((P_TAG*)(p))->addr = (unsigned long)(_addr))
+#define addPrims(ot, p0, p1) (setaddr(p1, getaddr(ot)), setaddr(ot, p0))
+
 typedef struct {
     unsigned char tag[4];
     unsigned char r0, g0, b0, code;

@@ -430,17 +430,105 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_rb_parts_
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_status_calc);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_gauge_set);
+void Sub_screen_gauge_set(s32 x0, s32 y0, s32 power, s32 flag) {
+    POLY_FT4 *ft4_buff_ptr1, *ft4_buff_ptr2;
+
+    ft4_buff_ptr1 = ft4_buff_ptr2 = PRIM_PTR(POLY_FT4);
+
+    *(u32*)ft4_buff_ptr2 = ((u32)(ft4_buff_ptr2 + 1) & 0x00ffffff) | 0x09000000;
+    *(u32*)&ft4_buff_ptr2->r0 = 0x2c808080;
+
+    ft4_buff_ptr2->x0 = ft4_buff_ptr2->x2 = x0;
+    ft4_buff_ptr2->x1 = ft4_buff_ptr2->x3 = x0 + power + 0x06;
+    ft4_buff_ptr2->y0 = ft4_buff_ptr2->y1 = y0 + flag * 0x02;
+    ft4_buff_ptr2->y2 = ft4_buff_ptr2->y3 = y0 + flag * 0x02 + 0x05;
+
+    ft4_buff_ptr2->tpage = 0x0c;
+    ft4_buff_ptr2->clut = 0xfa0c >> 2;
+
+    *(u16*)&ft4_buff_ptr2->u0 = 0x60 | ((0x90 + flag * 0x08) << 8);
+    *(u16*)&ft4_buff_ptr2->u1 = 0x61 | ((0x90 + flag * 0x08) << 8);
+    *(u16*)&ft4_buff_ptr2->u2 = 0x60 | ((0x95 + flag * 0x08) << 8);
+    *(u16*)&ft4_buff_ptr2->u3 = 0x61 | ((0x95 + flag * 0x08) << 8);
+
+    ft4_buff_ptr2++;
+
+    *(u32*)ft4_buff_ptr2 = ((u32)(ft4_buff_ptr2 + 1) & 0x00ffffff) | 0x09000000;
+    *(u32*)&ft4_buff_ptr2->r0 = 0x2c808080;
+
+    ft4_buff_ptr2->x0 = ft4_buff_ptr2->x2 = x0 + power + 0x06;
+    ft4_buff_ptr2->x1 = ft4_buff_ptr2->x3 = x0 + power + 0x0a;
+    ft4_buff_ptr2->y0 = ft4_buff_ptr2->y1 = y0 + flag * 0x02;
+    ft4_buff_ptr2->y2 = ft4_buff_ptr2->y3 = y0 + flag * 0x02 + 0x05;
+
+    ft4_buff_ptr2->tpage = 0x0c;
+    ft4_buff_ptr2->clut = 0xfa0c >> 2;
+
+    *(u16*)&ft4_buff_ptr2->u0 = 0x6f | ((0x90 + flag * 0x08) << 8);
+    *(u16*)&ft4_buff_ptr2->u1 = 0x73 | ((0x90 + flag * 0x08) << 8);
+    *(u16*)&ft4_buff_ptr2->u2 = 0x6f | ((0x95 + flag * 0x08) << 8);
+    *(u16*)&ft4_buff_ptr2->u3 = 0x73 | ((0x95 + flag * 0x08) << 8);
+
+    ft4_buff_ptr2++;
+
+    if ((!flag) && (((y0 != 0x46) && (power == 0x0a * 7)) ||
+                    ((y0 == 0x46) && (power == 0x0a * 4)))) {
+        *(u32*)ft4_buff_ptr2 = ((u32)(ft4_buff_ptr2 + 1) & 0x00ffffff) | 0x04000000;
+        *(u32*)&ft4_buff_ptr2->r0 = 0x64808080;
+        ((SPRT*)ft4_buff_ptr2)->x0 = x0 + 0x0a + (power == 0x0a * 7) * 0x0e;
+        ((SPRT*)ft4_buff_ptr2)->y0 = y0;
+        *(u32*)&(((SPRT*)ft4_buff_ptr2)->u0) = 0x28 | (0xf0 << 8) | ((0xfa08 >> 2) << 16);
+        *(u32*)&(((SPRT*)ft4_buff_ptr2)->w) = 0x00060018;
+
+        ft4_buff_ptr2++;
+    }
+    addPrims(&D_80098934->x70[2], ft4_buff_ptr1, ft4_buff_ptr2 - 1);
+    PRIM_PTR(POLY_FT4) = ft4_buff_ptr2;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_gauge_set2);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_basic_param_set);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_basic_param_set_sub);
+SPRT* Sub_screen_basic_param_set_sub(SPRT* ptr, u32 pos, s32 num, s32 flag) {
+    s32 d0, d1;
+
+    for (d0 = (flag & 0xFF) - 1; d0 >= 0x00; d0--) {
+        d1 = num % 10;
+        if (((d0 == (flag & 0xFF) - 1) && (!(flag & 0x0200))) || (num) ||
+            (!(flag & 0x0100))) {
+            *(u32*)ptr = ((u32)(ptr + 1) & 0x00FFFFFF) | 0x04000000;
+            *(u32*)&ptr->r0 = 0x64808080;
+            *(u32*)&ptr->x0 = d0 * 0x07 + pos;
+            *(u32*)&ptr->w = 0x00080008;
+            *(u32*)&ptr->u0 = (d1 * 0x08 + 0x60) | (0xB0 << 8) | (0xF9D4 << 14);
+            ptr++;
+        }
+        num /= 10;
+    }
+    return ptr;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_status_param_set);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_status_param_set_sub);
+SPRT* Sub_screen_status_param_set_sub(SPRT* ptr, u32 pos, s32 num, s32 flag) {
+    s32 d0, d1;
+
+    for (d0 = (flag & 0xFF) - 1; d0 >= 0x00; d0--) {
+        d1 = num % 10;
+        if (((d0 == (flag & 0xFF) - 1) && (!(flag & 0x0200))) || (num) ||
+            (!(flag & 0x0100))) {
+            *(u32*)ptr = ((u32)(ptr + 1) & 0x00FFFFFF) | 0x04000000;
+            *(u32*)&ptr->r0 = 0x64808080;
+            *(u32*)&ptr->x0 = d0 * 0x07 + pos;
+            *(u32*)&ptr->w = 0x00080006;
+            *(u32*)&ptr->u0 = (d1 * 0x08) | (0xC0 << 8) | (0xFA08 << 14);
+            ptr++;
+        }
+        num /= 10;
+    }
+    return ptr;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Sub_screen_back_ground_set);
 
@@ -461,7 +549,29 @@ void Map_screen_init(void) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", Map_screen_task);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", map_screen_set);
+void map_screen_set(void) {
+    POLY_FT4* ft4_buff_ptr;
+
+    ft4_buff_ptr = PRIM_PTR_INC(POLY_FT4);
+
+    *(u32*)ft4_buff_ptr = 0x09000000;
+    *(u32*)&ft4_buff_ptr->r0 = 0x2C808080;
+
+    ft4_buff_ptr->x0 = ft4_buff_ptr->x2 = 32;
+    ft4_buff_ptr->x1 = ft4_buff_ptr->x3 = 287;
+    ft4_buff_ptr->y0 = ft4_buff_ptr->y1 = 0;
+    ft4_buff_ptr->y2 = ft4_buff_ptr->y3 = 240;
+
+    ft4_buff_ptr->tpage = (0x0C) | (0x01 << 7);
+    ft4_buff_ptr->clut = (0xFA00 >> 2);
+
+    *(u16*)&ft4_buff_ptr->u0 = 0x00 | (0x00 << 8);
+    *(u16*)&ft4_buff_ptr->u1 = 0xFF | (0x00 << 8);
+    *(u16*)&ft4_buff_ptr->u2 = 0x00 | (0xF0 << 8);
+    *(u16*)&ft4_buff_ptr->u3 = 0xFF | (0xF0 << 8);
+
+    AddPrim(&D_80098934->x70[2], ft4_buff_ptr);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", map_cursor_set);
 

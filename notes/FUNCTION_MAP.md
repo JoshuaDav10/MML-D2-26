@@ -10,9 +10,9 @@ is what produced a completion figure ~16x too high for months.
 
 | realm | what it is | functions | done |
 |---|---|---|---|
-| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **301** (26.9%) |
+| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **305** (27.3%) |
 | **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | **12** (0.2%) |
-| **WHOLE GAME** | | **8,183** | **313** (3.8%) |
+| **WHOLE GAME** | | **8,183** | **317** (3.9%) |
 
 ## States
 
@@ -22,8 +22,8 @@ once covers every copy.*
 
 | state | realm | meaning | functions | (raw instances) |
 |---|---|---|---|---|
-| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **313** | — |
-| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 204 | — |
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **317** | — |
+| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 200 | — |
 | `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 614 | — |
 | `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 10,095 |
 | | | **total distinct functions in the game** | **8,183** | |
@@ -61,7 +61,7 @@ once covers every copy.*
 | `52C0.s` | 6 | 0 | 0 | 6 |
 | `543A8.s` | 49 | 0 | 0 | 49 |
 | `77D4.s` | 43 | 0 | 0 | 43 |
-| `src/rock_neo` | 505 | 301 | 204 | 0 |
+| `src/rock_neo` | 505 | 305 | 200 | 0 |
 
 ### Engine work pools (not yet MATCHED)
 
@@ -70,11 +70,11 @@ once covers every copy.*
 | ≤10 instructions | 76 |
 | ≤20 instructions | 173 |
 | ≤30 instructions | 248 |
-| ≤50 instructions | 377 |
-| ≤120 instructions | 607 |
+| ≤50 instructions | 376 |
+| ≤120 instructions | 604 |
 | leaf (calls nothing) | 281 |
 | in a family of ≥2 (template transfers) | 152 |
-| >120 instructions (**nothing this big has ever matched**) | 211 |
+| >120 instructions (**nothing this big has ever matched**) | 210 |
 
 ## Stages — where the volume is
 

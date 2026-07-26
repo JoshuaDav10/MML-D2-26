@@ -5,13 +5,20 @@ import re
 
 def patch_asm(asm):
     re_li_pattern = r"li\s+(\$\w+),\s*(0x[0-9a-fA-F]+)"
-    # Ensure that any li instance where the \2 value is less than 0xFFFF is addiu instead
-    # This is because the assembler will automatically convert these lis to ori for whatever reason
+    # Ensure that any li instance where the \2 value is below 0x8000 becomes addiu.
+    # GNU as splits the `li` macro at 0x8000: below it emits addiu (sign-extended
+    # 16-bit), at/above it emits ori (zero-extended). The bound here was 0xFFFF, which
+    # forced addiu for the whole 0x8000..0xFFFE band where the original uses ori —
+    # e.g. map_screen_set's 0xF000/0xF0FF came out 0x2402F000 instead of 0x3402F000.
+    # Narrowed 2026-07-26. Blast radius measured first: compiling every src/**.c with
+    # the real flags yields exactly TWO hex `li` constants in that band, both in the
+    # function being added, so no already-matched byte can change. Gated on
+    # `make CPP=cpp check`.
     for line in asm.splitlines():
         match = re.match(re_li_pattern, line)
         if match:
             reg, val = match.groups()
-            if int(val, 16) < 0xFFFF:
+            if int(val, 16) < 0x8000:
                 asm = asm.replace(line, f"addiu {reg}, $0, {val}")
 
     return asm
