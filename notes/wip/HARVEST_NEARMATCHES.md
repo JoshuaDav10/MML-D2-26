@@ -217,3 +217,13 @@ displacement (`addiu a1,v1,0x3c` … `sw zero,0x24(a1)`); ours folds the member 
 into the IV (`addiu a1,v1,0x60` … `sw zero,0(a1)`). Knobs that did NOT reproduce it:
 `Scene_work.x24[i]`, `((u8**)&Scene_work)[i+9]`, `*(u8**)((u8*)&Scene_work + i*4 + 0x24)`,
 and an explicit walking `q` with `q[9]`. Permuter mml_DDE4 launched.
+
+## BAD PERMUTER SEEDS — do not re-run as-is (2026-07-25)
+A base score in the 100000+ range means a WORD-COUNT mismatch, not a near-match: the
+permuter is scoring the length penalty and can never converge. Two seeds were in this
+state and were killed to free cores:
+- `mml_SCEOFF` (Sce_flag_off): base 100430 — draft 45 words vs target 46 (1 short).
+- `mml_D58C`  (func_8001D58C): base 200430 — draft 45 words vs target 47 (2 short).
+FIX THE INSTRUCTION COUNT FIRST, then reseed.
+**Rule: only seed a permuter when `tools/bytecmp.sh` shows words expected == actual.**
+Otherwise you burn CPU on a penalty term that no mutation can remove.
