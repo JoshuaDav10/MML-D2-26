@@ -16,12 +16,17 @@ is what produced a completion figure ~16x too high for months.
 
 ## States
 
-| state | meaning | count |
-|---|---|---|
-| `MATCHED` | real C, recompiles to identical bytes. **The deliverable.** | **284** |
-| `STUB` | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 204 |
-| `UNSPLIT` | engine function still in a raw asm chunk, no C file. | 631 |
-| `STAGE` | in a stage archive; C pipeline not yet set up for it (1 of 37 done). | 10,107 |
+*"functions" = distinct functions to decompile. The stage row also shows raw
+instances, because the same body is duplicated across archives — decompiling it
+once covers every copy.*
+
+| state | realm | meaning | functions | (raw instances) |
+|---|---|---|---|---|
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **284** | — |
+| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 204 | — |
+| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 631 | — |
+| `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 10,107 |
+| | | **total distinct functions in the game** | **8,183** | |
 
 > Moving `UNSPLIT -> STUB` is a *split*: bookkeeping, **not progress**. Only
 > `-> MATCHED` counts.
