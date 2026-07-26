@@ -48,7 +48,7 @@ and gate on `tools/audit_count.sh` (full hash + raw `cmp` byte-identical); REVER
 false ones. Never commit a permuter result on the score alone. (Same family as the
 count-integrity gotcha below: verify the claim, not a proxy.)
 
-## Counting matched functions — GOTCHA (2026-07-14)
+## Counting matched functions — GOTCHA (2026-07-19)
 
 **`#define ACCEPT_REORDERING_BULLSHIT` at the top of game.c AND sub_scrn.c**
 (since commit 957191c) makes every `#ifndef ACCEPT_REORDERING_BULLSHIT` guard in
@@ -57,7 +57,10 @@ those files take the `#else` **body** branch. So a function that LOOKS stubbed
 may already be matching. Consequences:
 - A naive `grep INCLUDE_ASM` stub census **overcounts stubs** (it can't see the
   define) and makes "un-gating" such a body look like a new match when it's a
-  NO-OP. This cost a session a false +5 count (277→280→283 claimed; real = 273).
+  NO-OP. This cost a false +7 COMMITTED count (peak 280 committed, real 273; +10 counting the
+never-committed in-session 283). Audit 2026-07-25 found 5 of those 7 phantoms were
+banked EARLIER, on 2026-07-12 by 3ca4b7d and f2e025e (both pure un-gates in sub_scrn.c,
+which defines the macro) — so the true count entering 07-19 was 271 while docs said 276.
 - **The ONLY authoritative matched count is `tools/census.py --matched`** (it
   reads the built `.c.o` intermediates) run AFTER `rm -rf build && make`.
   Corroborate with `make check_rock_neo_only` (OK) + `cmp disks/us/ROCK_NEO.EXE

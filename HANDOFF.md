@@ -102,10 +102,10 @@
 - **The build matches byte-for-byte**.
   `make CPP=cpp check_rock_neo_only` prints OK; also verifiable with
   `cmp disks/us/ROCK_NEO.EXE build/rock_neo.exe` (raw byte compare).
-- **Matched: 276** (~15.x% of instruction volume; ~214 active stubs,
-  484 total per `tools/census.py --matched` — authoritative, run AFTER a fresh
-  build or it under-counts stale objects). moji.c 106/145; scene 36/59. See
-  `progress.md`.
+- **Matched: 281** (~20% of instruction volume; 203 active stubs, 484 total).
+  AUTHORITATIVE source is `tools/audit_count.sh` (clean rebuild + hash + raw cmp +
+  census) — never a grep, never a stale note here. Run `tools/check_docs.sh` to verify
+  this file has not drifted. See `progress.md`.
   - 2026-07-12 resume: salvaged stranded work from the dead agent branches —
     moji func_80058CC8 (codex-moji dc5aee9) landed + hash-gated (259); both
     giants' advanced scratch drafts pulled into notes/wip (see giant status).

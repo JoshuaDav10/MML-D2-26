@@ -55,7 +55,7 @@ Goal: C source that recompiles to a byte-for-byte identical binary.
 - Map functions in ascending address order when adding to the splat yaml.
 - Update progress.md and activity.md when a function is matched.
 
-## Progress-counting integrity (MANDATORY — a 2026-07-14 session over-claimed +5 by violating these)
+## Progress-counting integrity (MANDATORY — the 2026-07-19 session over-claimed +7 by violating these)
 - **The ONLY authoritative matched count is `tools/audit_count.sh`** (clean
   `rm -rf build` + hash + raw cmp + `census.py --matched`, which reads the built
   `.c.o`). NEVER report or reason about the count from a `grep INCLUDE_ASM` — it
@@ -73,10 +73,21 @@ Goal: C source that recompiles to a byte-for-byte identical binary.
   my change / did it already match?" — check THAT, not just "does it match now?"
 - Do not let pressure to show progress lower the verification bar. No number
   ships without `audit_count.sh` behind it.
+- **Run `tools/check_docs.sh` at session start and before any commit claiming a count.**
+  It is cheap (no rebuild) and fails if progress.md / HANDOFF.md / notes/COUNTS.md have
+  drifted from the built objects. A 2026-07-25 audit found THREE stale count claims that
+  neither the assistant nor the user had noticed for up to 20 days — including a "verified,
+  not aspirational" HANDOFF section that was 5 counts stale, and notes/COUNTS.md (the
+  designated reconciliation doc) reading 223/261 against a real 281/203.
+- **NEVER retro-edit a dated historical entry.** The same audit found the HANDOFF block
+  dated "2026-07-14" had been silently overwritten by four later sessions while keeping its
+  original date, partially destroying the audit trail of the one confirmed inflation event
+  (its "+3 genuine … both real stubs" against three names is the fingerprint). Append a new
+  dated entry instead; correct an old one only by adding a visible CORRECTION line.
 - **GENERALIZED (any claim, not just counts):** before asserting that ANYTHING
   works — a match, a script, a watcher/notifier, a tool, a build step — DEMONSTRATE
   it working (run it, trigger its condition, show the output). "I set it up / fixed
-  it" is not "I verified it fires." The 2026-07-14 count-inflation and a silently
+  it" is not "I verified it fires." The 2026-07-19 count-inflation and a silently
   broken permuter-watcher were the SAME root cause: asserting a claim instead of
   testing it. Test the claim, then state it.
 
