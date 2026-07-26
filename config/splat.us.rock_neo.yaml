@@ -53,7 +53,9 @@ segments:
       - [0x1F9C4, c, Code8002F9C4]  # func_8002F9C4 (10 insns, phase-0 split template)
       - [0x1F9EC, asm]           # splits to 1F9EC.s (0x1F9EC to 0x21824)
       - [0x21824, c, Code80031824]  # func_80031824 (22 insns, phase-0 split)
-      - [0x2187C, asm]           # splits to 2187C.s (0x2187C to 0x2C640)
+      - [0x2187C, asm]           # splits to 2187C.s (0x2187C to 0x222A8)
+      - [0x222A8, c, Code800322A8]  # func_800322A8 (23 insns, phase-0 split)
+      - [0x22304, asm]           # splits to 22304.s (0x22304 to 0x2C640)
       - [0x2C640, c, player]
       - [0x32A38, asm]
       - [0x43F88, c, moji]
