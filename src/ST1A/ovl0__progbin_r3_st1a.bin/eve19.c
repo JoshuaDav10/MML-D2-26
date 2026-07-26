@@ -14,14 +14,24 @@ typedef struct EVE_WORK {
     s32 eve_free[1]; /* 0x1C */
 } EVE_WORK;
 
+extern void (*eve19_move_tbl[])(EVE_WORK *evp);
+extern void (*eve19_main_tbl[])(EVE_WORK *evp);
+void Close_EVE_WORK(EVE_WORK *evp);
+
 #define R0_MAIN 0
 #define R0_END  1
 
-INCLUDE_ASM("config/overlay/splat.us.ST1A/../../../asm/ST1A/ovl0__progbin_r3_st1a.bin/nonmatchings/eve19", StXX_eve19_move);
+void StXX_eve19_move(EVE_WORK *evp) {
+    eve19_move_tbl[evp->routine_0](evp);
+}
 
-INCLUDE_ASM("config/overlay/splat.us.ST1A/../../../asm/ST1A/ovl0__progbin_r3_st1a.bin/nonmatchings/eve19", eve19_main);
+void eve19_main(EVE_WORK *evp) {
+    eve19_main_tbl[evp->type](evp);
+}
 
-INCLUDE_ASM("config/overlay/splat.us.ST1A/../../../asm/ST1A/ovl0__progbin_r3_st1a.bin/nonmatchings/eve19", eve19_end);
+void eve19_end(EVE_WORK *evp) {
+    Close_EVE_WORK(evp);
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST1A/../../../asm/ST1A/ovl0__progbin_r3_st1a.bin/nonmatchings/eve19", eve19_main_area_00);
 
