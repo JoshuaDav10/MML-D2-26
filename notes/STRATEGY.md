@@ -4,6 +4,25 @@ Target (measured, `notes/WORK_MAP.md`): **~8,000 unique functions**, of which **
 done (~3.5%)**. This plan orders the work by **leverage per unit effort**, measured
 with `tools/leverage_analysis.py`, not guessed.
 
+## AUTONOMOUS CHAIN PROGRESS (live)
+- ✅ Priority queue built (`notes/wip/DEP_PRIORITY.md`, `tools/dep_priority.py`): of the
+  main-exe funcs called from overlays, **185 distinct targets; 142 still raw-asm only.**
+  Ranked by stage-breadth. **These are the highest-leverage matches on the board** —
+  each is called by many stages, so naming/typing one makes all its callers readable.
+  Top raw-asm targets (do these first, they're tiny AND universal):
+  | func | stages | sites | insn |
+  |---|---|---|---|
+  | `func_800322A8` | 37 | 1370 | 23 |
+  | `func_8002F9C4` | 37 | 629 | 10 |
+  | `func_80032488` | 36 | 545 | 44 |
+  | `func_80031824` | 35 | 398 | 22 |
+  | `func_80031BEC` | 29 | 1270 | 46 |
+- ✅ SDK candidates flagged (`notes/wip/SDK_CANDIDATES.md`): `bzero`/memcpy/GTE-init/div
+  + a libgcc shift cluster at `0x8003B2D4`–`0x8003B540` — check vs GCC 2.7.2 libgcc2.c.
+- ⏳ NEXT: establish the **Phase 0 split template** — relocate ONE raw function into a
+  per-function INCLUDE_ASM C stub with the build staying byte-identical. Unlocks the
+  whole 635-func main-exe queue. Then decompile the tiny universal funcs above.
+
 ## The leverage reality (measured — read this before believing any shortcut)
 
 I hoped duplication would collapse the 8,000. It does NOT, much:
