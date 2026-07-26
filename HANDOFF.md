@@ -1,29 +1,45 @@
 # HANDOFF — MML Decomp
 
-**Authoritative state (verified 2026-07-26 via `tools/audit_count.sh`: hash OK, raw cmp byte-identical):**
+**Authoritative state (2026-07-26, `tools/check_docs.sh` clean; the +1 match & first split
+were clean-rebuild verified — see caveat):**
 
 | metric | value |
 |---|---|
-| matched functions | **281** |
-| C-mapped slice | 281 / **484** = 58.1% |
-| main executable | 281 / **1119** = **25.1%** by function, **~7.0% by volume** |
-| **WHOLE GAME** | 281 / **~8,000** = **~3.5%** (main exe + ~7,010 unique overlay funcs) |
-| active INCLUDE_ASM stubs | 203 |
-| never split into C at all | **635 functions / 227,996 bytes** in `asm/rock_neo/*.s` |
-| overlay code (measured 2026-07-26 PM) | ~7,010 unique funcs / 464,382 insn in ~51 stage programs; ALL un-decompiled (but build byte-identical) |
+| matched functions | **282** |
+| C-mapped slice | 282 / **488** = 57.8% |
+| main executable | 282 / **1119** = **25.2%** by function |
+| **WHOLE GAME** | 282 / **~8,000** = **~3.5%** (main exe + ~7,010 unique overlay funcs) |
+| active INCLUDE_ASM stubs | 206 |
+| still unsplit raw asm | **631 functions** in `asm/rock_neo/*.s` (was 635; 4 split out this session) |
 
-> **Always quote WHICH denominator.** `/484` = a hand-carved slice; `/1119` = the main
-> executable; `/~8,000` = the whole game (main exe + disc overlays). Quoting `/484`
-> overstates completion ~16x vs the whole game. `tools/check_docs.sh` blocks commits whose
-> count disagrees with the built objects.
->
-> **New this session (2026-07-26 PM), read before working:**
-> - `notes/WORK_MAP.md` — measured whole-game scope + evidence (§7 overlay de-dup).
-> - `notes/STRATEGY.md` — the leverage-ordered plan (Phase 0 infra → Phase 4 grind).
-> - `notes/META_LESSONS.md` — the measurement-integrity saga, written to teach from.
-> - Tools: `tools/overlay_scope.py`, `tools/leverage_analysis.py`, `tools/analyze_raw_asm.py`.
-> **Next concrete action: STRATEGY.md Phase 0** — split the 7 giant `asm/rock_neo/*.s`
-> files, then splat-config one stage program (ST00) as the overlay template.
+> **Always quote WHICH denominator.** `/488` = C-slice; `/1119` = main exe; `/~8,000` =
+> whole game. A "split" MOVES a fn between buckets (C-slice up, unsplit down) — total 1119
+> is invariant. `tools/check_docs.sh` (SessionStart + pre-commit hook) blocks count drift.
+
+> ## ⭐ NEXT SESSION — the explicit goal is MATCHES, skip the meta
+> Three tiny, high-leverage functions are **already mapped as stubs and ready to decompile**
+> (each called by ~36 stage overlays — highest leverage on the board):
+> - `func_800322A8` (23 insn, 37 stages) → `src/rock_neo/Code800322A8.c`
+> - `func_80031824` (22 insn, 35 stages) → `src/rock_neo/Code80031824.c`
+> - `func_80032488` (44 insn, 36 stages) → `src/rock_neo/Code80032488.c`
+> **Do this:** for each, read its `asm/rock_neo/nonmatchings/CodeXXXX/*.s`, write real C,
+> then verify with the FULL ritual (`make CPP=cpp check_rock_neo_only` = OK → mutation test
+> → `tools/audit_count.sh` count must rise). Template match this session: `func_8002F9C4`.
+> More targets: `notes/wip/DEP_PRIORITY.md` (142 raw funcs ranked by leverage).
+> **⚠️ FIRST: verify the 3 maps hold under a clean rebuild** (`tools/audit_count.sh` should
+> print 282 / 488). They were worker-build-gated but not clean-audited by me last turn.
+
+> **Key docs (this session, read once):** `notes/WORK_MAP.md` (measured scope + evidence),
+> `notes/STRATEGY.md` (leverage-ordered plan; main exe = shared runtime, 681 overlay
+> call-sites), `notes/META_LESSONS.md` (the denominator saga, teachable),
+> `notes/wip/PHASE0_SPLIT_TEMPLATE.md` (how to move a raw fn into the C queue).
+> New tools: `overlay_scope.py`, `leverage_analysis.py`, `analyze_raw_asm.py`, `dep_priority.py`.
+
+> **What the 2026-07-26 session did (honest):** measured the true whole-game scope
+> (58%→3.5%), built the strategy + priority queue, proved the Phase 0 split template,
+> matched +1 (`func_8002F9C4`, 281→282), split 3 more raw fns into the ready-to-match
+> queue, and hardened `check_docs.sh` (2 latent bugs fixed + negative-tested). Thin on raw
+> match output (one), heavy on the infrastructure that makes the next batch fast.
 
 ---
 
