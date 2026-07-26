@@ -12,14 +12,14 @@ does NOT change the total: unsplit 635→634, C-slice 484→485, **total stays 1
 
 | Number | Value | Meaning |
 |---|---|---|
-| `F .text` in all rock_neo `.o` | **485** | Functions currently split into C TUs. **NOT the mission denominator** — see below. |
-| Functions still unsplit (raw asm) | **634** | `glabel`s in `asm/rock_neo/*.s`, never split into a C TU. |
-| **Game functions in ROCK_NEO.EXE** | **1119** | 485 + 634. The MAIN-EXE denominator. |
+| `F .text` in all rock_neo `.o` | **486** | Functions currently split into C TUs. **NOT the mission denominator** — see below. |
+| Functions still unsplit (raw asm) | **633** | `glabel`s in `asm/rock_neo/*.s`, never split into a C TU. |
+| **Game functions in ROCK_NEO.EXE** | **1119** | 486 + 633. The MAIN-EXE denominator. |
 | **Whole-game functions** | **~8,000** | 1119 main exe + ~7,010 unique overlay funcs (measured 2026-07-26, `notes/WORK_MAP.md` §7). THE whole-game denominator. |
-| Matched (real C in tree) | **282** | `485 − 203`. Authoritative; hash OK + raw cmp byte-identical. |
-| Active INCLUDE_ASM stubs | **203** | Stubs still pulled in AFTER cpp (ifdef-aware). |
+| Matched (real C in tree) | **282** | `486 − 204`. Authoritative; hash OK + raw cmp byte-identical. |
+| Active INCLUDE_ASM stubs | **204** | Stubs still pulled in AFTER cpp (ifdef-aware). |
 | Raw `grep -c INCLUDE_ASM` | ~210 | **DO NOT USE.** Blind to `#define ACCEPT_REORDERING_BULLSHIT` in game.c/sub_scrn.c; 6 stubs are shadowed by an active `#else` body. Un-gating one is a NO-OP that reads as +1 — this caused the 2026-07-19 inflation. |
-| By function count (C-mapped slice) | **58.1%** | 282 / 485 — the number historically quoted. Overstates the mission. |
+| By function count (C-mapped slice) | **58.0%** | 282 / 486 — the number historically quoted. Overstates the mission. |
 | By function count (main exe) | **25.2%** | 282 / 1119. |
 | **By function count (WHOLE GAME)** | **~3.5%** | 282 / ~8,000. The honest number. |
 
