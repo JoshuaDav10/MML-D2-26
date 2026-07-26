@@ -81,7 +81,13 @@ for f in $PROSE; do
   done < <(grep -nEi '(matched|active stub|C-mapped|denominator|unsplit|fully mapped|functions in)' "$p" 2>/dev/null)
 done
 
-# --------------------------------------------------------- 4. rulebook self-consistency
+# ------------------------------------------------------------ 4. the function map
+# The map is the only artifact where every function in the game appears exactly once.
+if [ "$DOC_ROOT" = "." ] && ! tools/gen_map.py --check >/dev/null 2>&1; then
+  def "notes/FUNCTION_MAP.md is stale — run: tools/gen_map.py"
+fi
+
+# --------------------------------------------------------- 5. rulebook self-consistency
 # NOTE: `$(grep -c ... || echo 0)` yields "0\n0" on no-match (grep prints 0 AND exits 1),
 # which never compares equal to 0. Use a plain if-grep instead.
 if grep -q 'ONLY authoritative matched count is `tools/census.py' "$DOC_ROOT/notes/LESSONS.md" 2>/dev/null; then

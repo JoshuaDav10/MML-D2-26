@@ -292,6 +292,9 @@ check_rock_neo_only: build_rock_neo_only diff_rock_neo
 
 build_rock_neo_only: $(BUILD_DIR)/$(ROCK_NEO).exe
 
+map:
+	tools/gen_map.py
+
 install_hooks:
 	ln -sf ../../tools/git-hooks/pre-push .git/hooks/pre-push
 	ln -sf ../../tools/git-hooks/pre-commit .git/hooks/pre-commit

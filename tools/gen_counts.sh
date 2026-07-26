@@ -27,9 +27,12 @@ RAWGREP=$(grep -c INCLUDE_ASM src/rock_neo/*.c 2>/dev/null | awk -F: '{s+=$2} EN
 TOTAL=$(( CMAP + UNSPLIT ))
 SHADOWED=$(( RAWGREP - STUBS ))
 
-# Whole-game denominator. Sourced from tools/overlay_scope.py, which is expensive, so it
-# is cached in build/overlay_scope.count. Regenerate with: tools/overlay_scope.py
-OVL_UNIQUE=$(cat build/overlay_scope.count 2>/dev/null || echo 7010)
+# Whole-game denominator. Single source of truth is tools/gen_map.py, which derives it
+# from the asm itself. Two tools publishing different whole-game numbers (8129 vs 8183)
+# is the drift this project keeps getting bitten by, so read it from the map.
+OVL_UNIQUE=$(python3 -c "import json;print(json.load(open('build/function_map.json'))['summary']['stage_unique'])" 2>/dev/null \
+             || { tools/gen_map.py >/dev/null 2>&1; python3 -c "import json;print(json.load(open('build/function_map.json'))['summary']['stage_unique'])" 2>/dev/null; } \
+             || echo 7064)
 WHOLE=$(( TOTAL + OVL_UNIQUE ))
 
 pct() { awk "BEGIN{printf \"%.1f\", 100*$1/$2}"; }
