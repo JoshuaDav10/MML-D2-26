@@ -1,4 +1,10 @@
-# HANDOFF — MML Decomp session state (2026-07-25, 281 matched — authoritative)
+# HANDOFF — MML Decomp session state (281 matched — authoritative)
+
+> **READ THE DENOMINATOR.** 281 / **484** C-mapped functions = 58.1% is the number this
+> project has always quoted. It is NOT mission completion. 635 more game functions
+> (56,999 instructions) are still linked as raw asm and were never split into a C TU.
+> Against the actual executable: **281 / 1119 = 25.1% by function, ~7.1% by volume.**
+> Quote both. (2026-07-26 adversarial audit; `tools/check_docs.sh` now enforces it.)
 
 > **53B40 giant push (2026-07-25 Opus) — VERDICT REACHED, count unchanged at 276.**
 > Draft improved **75 -> 70** positional rows (495/495 parity) and the *original* wall is
@@ -43,7 +49,9 @@
 > tooth 9 (needs (u8)x3F/(s8)x71 casts + DRAWCTX+externs in moji.c). Landing
 > gate: audit_count.sh must print 275.
 
-> **Harvest update (2026-07-14 Opus):** AUTHORITATIVE count = **276 matched**
+> **[SUPERSEDED — see the title line for the current count]** Harvest update
+> (dated 2026-07-14 in-file; the count-scandal it describes is actually 2026-07-19 per
+> git 959c5ed). As-written-then [SUPERSEDED]: AUTHORITATIVE count = **276 matched**
 > (`census.py --matched` after `rm -rf build`; hash OK + raw `cmp` identical).
 > Genuine new this session: **+3** — func_80016434 (game), func_8001D394 (cd), func_8001A63C (sound),
 > both real stubs I wrote C for and mutation-tested. Mission: 276/484 = **57.0%**
@@ -74,9 +82,10 @@
 > pre-loop `setflag=0x40000000` local; extern `D_800BB9C8`=Moji_work+0x310) + settle
 > `$fp`→`$s7`, then permute/diff to a byte match. Match NOT yet hash-verified.
 > Also: cc1-27 is SN-patched `2.7.2.SN32.3.7` (FSF source = mechanism baseline only;
-> ground truth = the `-dL` dump). 276 matched (unchanged this session).
+> ground truth = the `-dL` dump). 276 matched (unchanged that session). [SUPERSEDED]
 >
-> **Prior (2026-07-12 Opus session):** 276 matched (sub_scrn sort vein +4 →
+> **Prior (2026-07-12 Opus session) [SUPERSEDED — 5 of these were phantom un-gates,
+> see the 2026-07-19 correction]:** [SUPERSEDED] 276 matched (sub_scrn sort vein +4 →
 > func_8001F6C4 scene +1). decomp-permuter FIXED & working (`pip install toml`
 > + patchasm build/test.s guard) — see `notes/PERMUTER_GUIDE.md`. New
 > `notes/PARTS_LIST.md` (tooling inventory). Expedition plan:

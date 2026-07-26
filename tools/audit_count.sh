@@ -3,6 +3,7 @@
 # Does a from-scratch rebuild so no stale object can produce a false pass.
 # Usage: tools/audit_count.sh   (takes a few minutes; that's the point)
 set -uo pipefail
+rc=0
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
 source .venv/bin/activate 2>/dev/null || true
 
@@ -25,4 +26,10 @@ echo "  hash check : $HASH"
 echo "  raw cmp    : $CMP"
 echo "  count      : $COUNT"
 echo "----------------------------------------"
-echo "Trust THIS number. Never a grep of INCLUDE_ASM."
+# 2026-07-26 audit: these were previously CAPTURED BUT NEVER TESTED, so the script
+# exited 0 even when raw cmp said DIFFERS — it could not be used as a gate/hook.
+case "$HASH" in *OK*) ;; *) echo "  FAIL: hash check did not print OK"; rc=1;; esac
+case "$CMP"  in *byte-identical*) ;; *) echo "  FAIL: raw cmp is not byte-identical"; rc=1;; esac
+[ "$rc" = 0 ] && echo "Trust THIS number. Never a grep of INCLUDE_ASM." \
+              || echo "BUILD DOES NOT MATCH — the count above is meaningless."
+exit $rc

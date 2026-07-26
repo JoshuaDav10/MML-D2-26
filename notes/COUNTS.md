@@ -9,13 +9,23 @@ Last verified: **2026-07-25**, HEAD on `dev`, via `tools/audit_count.sh`
 
 | Number | Value | Meaning |
 |---|---|---|
-| `F .text` in all rock_neo `.o` | **484** | Functions actually emitted from current `src/rock_neo/*.c`. THE denominator. |
+| `F .text` in all rock_neo `.o` | **484** | Functions currently split into C TUs. **NOT the mission denominator** — see below. |
+| Functions still unsplit (raw asm) | **635** | `glabel`s in `asm/rock_neo/*.s`, 56,999 instruction lines, never split into a C TU and never counted. |
+| **Game functions in the executable** | **1119** | 484 + 635. **THE mission denominator.** |
 | Matched (real C in tree) | **281** | `484 − 203`. Authoritative; hash OK + raw cmp byte-identical. |
 | Active INCLUDE_ASM stubs | **203** | Stubs still pulled in AFTER cpp (ifdef-aware). |
 | Raw `grep -c INCLUDE_ASM` | 209 | **DO NOT USE.** Blind to `#define ACCEPT_REORDERING_BULLSHIT` in game.c/sub_scrn.c; 6 stubs are shadowed by an active `#else` body. Un-gating one is a NO-OP that reads as +1 — this caused the 2026-07-19 inflation. |
 | Splat nonmatchings `.s` files | 475 | Historical asm reference; NOT the denominator. |
-| By function count | **58.1%** | 281 / 484. |
-| By instruction volume | **~20%** | ~6,200 of 30,903 instruction words; 24,699 remain across the 203 stubs. |
+| By function count (C-mapped slice) | **58.1%** | 281 / 484 — the number usually quoted. Overstates the mission ~2.3x. |
+| By function count (ACTUAL) | **25.1%** | 281 / 1119. |
+| By instruction volume (C-mapped slice) | ~21% | 6,584 of 30,903 words in the split TUs. |
+| By instruction volume (ACTUAL) | **~7.1%** | 6,204 of 87,902 words of game code in the exe. |
+
+## ALWAYS quote both denominators
+2026-07-26 audit: reporting only 281/484 overstates mission completion by ~2.3x, because
+635 functions (57k instructions) are still linked as raw asm and were never in the
+denominator. This is the same defect class as the ACCEPT_REORDERING_BULLSHIT inflation —
+a completion metric defined by the current *source* rather than by the target *binary*.
 
 ## Why the two percentages differ
 The small functions were matched first. The 203 remaining average ~120 instructions each,

@@ -61,7 +61,9 @@ may already be matching. Consequences:
 never-committed in-session 283). Audit 2026-07-25 found 5 of those 7 phantoms were
 banked EARLIER, on 2026-07-12 by 3ca4b7d and f2e025e (both pure un-gates in sub_scrn.c,
 which defines the macro) — so the true count entering 07-19 was 271 while docs said 276.
-- **The ONLY authoritative matched count is `tools/census.py --matched`** (it
+- **The ONLY authoritative matched count is `tools/audit_count.sh`** (which runs
+  census AND gates on the full hash + raw cmp; census alone is NOT sufficient —
+  it accepted the func_8001F828 false transfer). `tools/census.py --matched` (it
   reads the built `.c.o` intermediates) run AFTER `rm -rf build && make`.
   Corroborate with `make check_rock_neo_only` (OK) + `cmp disks/us/ROCK_NEO.EXE
   build/rock_neo.exe`. Never claim a count from a source grep.
