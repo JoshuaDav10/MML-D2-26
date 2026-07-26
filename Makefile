@@ -16,7 +16,13 @@ LD              := $(CROSS)ld
 CPP				:= $(CROSS)cpp
 OBJCOPY         := $(CROSS)objcopy
 AS_FLAGS        += -Iinclude -march=r3000 -mtune=r3000 -no-pad-sections -O1 -G0
-CC_FLAGS        += -mcpu=3000 -quiet -w -O2 -funsigned-char -fpeephole -ffunction-cse -fpcc-struct-return -fcommon -fverbose-asm -fgnu-linker -mgas -msoft-float -G8  -gcoff
+# -mel: cc1-27 defaults to BIG-endian for UNALIGNED access, emitting lwl/lwr and
+# swl/swr with the byte offsets swapped (lwl base+0 / lwr base+3 instead of the
+# little-endian lwl base+3 / lwr base+0). It went unnoticed for 301 matches because
+# no compiled-C function had used an unaligned access until eve19's align-1 struct
+# copies (2026-07-26). Endian-neutral for everything else — verified by full rebuild:
+# main-exe sha1 OK + 205/205 overlays.
+CC_FLAGS        += -mcpu=3000 -quiet -w -O2 -funsigned-char -fpeephole -ffunction-cse -fpcc-struct-return -fcommon -fverbose-asm -fgnu-linker -mgas -msoft-float -G8  -gcoff -mel
 CPP_FLAGS       += -Iinclude -undef -Wall -lang-c -fno-builtin
 CPP_FLAGS       += -Dmips -D__GNUC__=2 -D__OPTIMIZE__ -D__mips__ -D__mips -Dpsx -D__psx__ -D__psx -D_PSYQ -D__EXTENSIONS__ -D_MIPSEL -D_LANGUAGE_C -DLANGUAGE_C -DHACKS
 

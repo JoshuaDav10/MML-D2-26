@@ -32,6 +32,12 @@ segments:
     subalign: 4
     subsegments:
       - [0x800, rodata]
+      # eve19 owns the TAIL of rodata: jtbl_801006C8 (area_00's 7-case switch) plus the
+      # five CHECK_BLOCK initializers D_801006E4/E8/EC/F0/F4 (areas 01,02,05,06,09).
+      # 0xEC8..0xEF8. Handed to the C file so gcc emits it; left in the asm segment it
+      # would be duplicated. Boundary verified: the preceding symbol jtbl_801006B4 is
+      # referenced by EF8.s, not by any eve19 function.
+      - [0xEC8, .rodata, eve19]
       - [0xEF8, asm]
       - [0x2C0E4, c, eve19]
       - [0x2CAEC, asm]

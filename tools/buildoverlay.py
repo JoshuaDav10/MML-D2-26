@@ -29,7 +29,12 @@ CPP = os.environ.get("CPP", "cpp" if shutil.which("cpp") else f"{CROSS}cpp")
 OBJCOPY = f"{CROSS}objcopy"
 CC = "./bin/cc1-27"
 AS_FLAGS        = "-Iinclude -march=r3000 -mtune=r3000 -no-pad-sections -O1 -G0"
-CC_FLAGS        = "-mcpu=3000 -quiet -G0 -w -O2 -funsigned-char -fpeephole -ffunction-cse -fpcc-struct-return -fcommon -fverbose-asm -fgnu-linker -mgas -msoft-float -gcoff"
+# NOTE: this is a SECOND copy of the compiler flags, independent of the Makefile's
+# CC_FLAGS. Changing one does not change the other — that cost real time on
+# 2026-07-26. Keep them in sync.
+# -mel: cc1-27 defaults to BIG-endian for unaligned access (lwl/lwr, swl/swr get
+# swapped byte offsets). Needed by eve19's align-1 CHECK_BLOCK struct copies.
+CC_FLAGS        = "-mcpu=3000 -quiet -G0 -w -O2 -funsigned-char -fpeephole -ffunction-cse -fpcc-struct-return -fcommon -fverbose-asm -fgnu-linker -mgas -msoft-float -gcoff -mel"
 CPP_FLAGS       = "-Iinclude -undef -Wall -lang-c -fno-builtin -Dmips -D__GNUC__=2 -D__OPTIMIZE__ -D__mips__ -D__mips -Dpsx -D__psx__ -D__psx -D_PSYQ -D__EXTENSIONS__ -D_MIPSEL -D_LANGUAGE_C -DLANGUAGE_C -DHACKS"
 
 ASM_DIR         = "asm"
