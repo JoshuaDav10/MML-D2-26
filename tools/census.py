@@ -93,6 +93,14 @@ def stub_census() -> int:
     return 0
 
 
+def _linked(c_path) -> bool:
+    """Is this TU's object actually referenced by the generated linker script?"""
+    ld = ROOT / "rock_neo.ld"
+    if not ld.is_file():
+        return True          # cannot tell; do not silently drop everything
+    return f"src/rock_neo/{c_path.name}.o" in ld.read_text()
+
+
 def matched_census() -> int:
     build = ROOT / "build" / "src" / "rock_neo"
     if not build.is_dir():
@@ -113,6 +121,16 @@ def matched_census() -> int:
             return 1
         obj_syms = objdump_text_symbols(obj_path)
         stub_names = {name for _folder, name in cpp_stubs(c_path)}
+        # 2026-07-26: a .c can compile to a .o that is NEVER LINKED — if rock_neo.ld has
+        # no entry for it, the binary still uses the raw-asm copy and the "match" is a
+        # phantom. This bit me for real: 6 phase-0 splits whose yaml insert was skipped
+        # produced .o files census happily counted, inflating 301 -> 307 while the hash
+        # stayed OK (because the asm original was what actually linked). Counting objects
+        # is not counting the binary.
+        if not _linked(c_path):
+            print(f"census: SKIP {c_path.name} — compiled but absent from rock_neo.ld "
+                  f"(not in the binary; would be a phantom match)", file=sys.stderr)
+            continue
         matched = len(set(obj_syms) - stub_names)
         print(
             f"{c_path.name:<22} {len(obj_syms):6d} {len(stub_names):6d} {matched:8d}"

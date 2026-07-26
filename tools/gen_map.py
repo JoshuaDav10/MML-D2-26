@@ -68,6 +68,20 @@ def parse_asm(path):
         yield cur
 
 
+def linked_chunks():
+    """Engine chunk basenames the generated linker script actually pulls in.
+
+    Stale chunk files linger in asm/rock_neo/ after a re-split changes segment
+    boundaries (they are gitignored, so nothing cleans them). Counting them
+    double-counts functions that also live in a live chunk — it inflated the engine
+    total from 1,119 to 1,345. Same principle as census's phantom guard: count what
+    the BINARY contains, not what happens to be on disk."""
+    ld = ROOT / "rock_neo.ld"
+    if not ld.is_file():
+        return None
+    return set(re.findall(r"build/asm/rock_neo/([0-9A-Fa-f]+)\.s\.o", ld.read_text()))
+
+
 def code_files(root_glob, skip_engine):
     """Asm files that hold CODE. Excludes data/ dirs and chunk headers - `glabel` also
     marks DATA labels, and forgetting that inflates the function count ~20x."""
@@ -80,6 +94,10 @@ def code_files(root_glob, skip_engine):
         b = os.path.basename(f)
         if "header" in b or f"{os.sep}data{os.sep}" in f:
             continue
+        if not skip_engine:
+            lk = linked_chunks()
+            if lk is not None and b[:-2] not in lk:
+                continue        # orphan chunk: on disk, not in the binary
         out.append(f)
     return sorted(out)
 
@@ -101,7 +119,14 @@ def cpp_stub_names():
 def objdump_engine_c():
     """Functions present in the built engine C objects, with instruction counts."""
     out = {}
+    ld = (ROOT / "rock_neo.ld").read_text() if (ROOT / "rock_neo.ld").is_file() else ""
     for o in glob.glob("build/src/rock_neo/*.o"):
+        # Skip stale objects whose .c no longer exists, and objects the linker script
+        # does not reference — neither is in the binary. (A deleted TU leaves its .o
+        # behind; counting it re-creates the phantom-match bug in a second tool.)
+        src = pathlib.Path("src/rock_neo") / os.path.basename(o)[:-2]
+        if ld and (not src.is_file() or f"src/rock_neo/{src.name}.o" not in ld):
+            continue
         try:
             txt = subprocess.run(["mipsel-elf-objdump", "-t", o],
                                  capture_output=True, text=True, check=True).stdout
@@ -154,7 +179,8 @@ def build():
     uniq_stage = len({r["body"] for r in rows if r["realm"] == "STAGE"})
     engine_n = sum(1 for r in rows if r["realm"] == "ENGINE")
     matched = sum(1 for r in rows if r["state"] == "MATCHED")
-    return rows, dict(engine_total=engine_n, stage_instances=sum(1 for r in rows if r["realm"] == "STAGE"),
+    unsplit_n = sum(1 for r in rows if r['state'] == 'UNSPLIT')
+    return rows, dict(engine_total=engine_n, unsplit_engine=unsplit_n, stage_instances=sum(1 for r in rows if r["realm"] == "STAGE"),
                       stage_unique=uniq_stage, whole_game=engine_n + uniq_stage, matched=matched)
 
 

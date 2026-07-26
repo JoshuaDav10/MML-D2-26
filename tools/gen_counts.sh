@@ -22,7 +22,15 @@ CENSUS=$(python3 tools/census.py --matched 2>/dev/null | grep -iE '^total:')
 CMAP=$(printf '%s' "$CENSUS" | grep -oE '[0-9]+ in object files'  | grep -oE '[0-9]+')
 STUBS=$(printf '%s' "$CENSUS" | grep -oE '[0-9]+ active stubs'    | grep -oE '[0-9]+')
 MATCHED=$(printf '%s' "$CENSUS" | grep -oE '[0-9]+ matched'       | grep -oE '[0-9]+')
-UNSPLIT=$(grep -h '^glabel' asm/rock_neo/*.s 2>/dev/null | wc -l | tr -d ' ')
+# UNSPLIT must come from the map, NOT a grep over asm/rock_neo/*.s: stale chunk files
+# linger there after a re-split (gitignored, nothing cleans them) and a raw grep
+# double-counts functions that also live in a linked chunk — it read 834 against a real
+# 614, pushing the main-exe total to 1339 against a real 1119. tools/gen_map.py filters
+# to chunks rock_neo.ld actually references.
+MAP=build/function_map.json
+[ -f "$MAP" ] || tools/gen_map.py >/dev/null 2>&1
+mapget() { python3 -c "import json;print(json.load(open('$MAP'))['summary']['$1'])" 2>/dev/null; }
+UNSPLIT=$(mapget unsplit_engine)
 RAWGREP=$(grep -c INCLUDE_ASM src/rock_neo/*.c 2>/dev/null | awk -F: '{s+=$2} END{print s+0}')
 TOTAL=$(( CMAP + UNSPLIT ))
 SHADOWED=$(( RAWGREP - STUBS ))
@@ -30,9 +38,7 @@ SHADOWED=$(( RAWGREP - STUBS ))
 # Whole-game denominator. Single source of truth is tools/gen_map.py, which derives it
 # from the asm itself. Two tools publishing different whole-game numbers (8129 vs 8183)
 # is the drift this project keeps getting bitten by, so read it from the map.
-OVL_UNIQUE=$(python3 -c "import json;print(json.load(open('build/function_map.json'))['summary']['stage_unique'])" 2>/dev/null \
-             || { tools/gen_map.py >/dev/null 2>&1; python3 -c "import json;print(json.load(open('build/function_map.json'))['summary']['stage_unique'])" 2>/dev/null; } \
-             || echo 7064)
+OVL_UNIQUE=$(mapget stage_unique)
 WHOLE=$(( TOTAL + OVL_UNIQUE ))
 
 pct() { awk "BEGIN{printf \"%.1f\", 100*$1/$2}"; }

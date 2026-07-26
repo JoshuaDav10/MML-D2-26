@@ -870,3 +870,42 @@
   byte-diffed, replacing a regex whitelist that had missed 12 stale claims including
   CLAUDE.md's own denominator. SessionStart no longer does a clean rebuild (1.0s now).
 - Backup pushed to origin/session/2026-07-26 (origin/dev deliberately untouched).
+
+## 2026-07-26 (session 2, part 2)
+- **+23 matched (284 -> 307, audit_count.sh clean-rebuild verified).** Largest single
+  jump in project history. 21 empty `jr $ra; nop` bodies (`void f(void){}`) plus two
+  that only LOOKED empty: func_80036470 is `p[7]=0` with the `sb` in the jr delay slot,
+  func_8004E488 is `return 0` via `addu $v0,$zero,$zero`. Caught by a 5-byte cmp diff —
+  I had filtered on instruction COUNT (==2) instead of on the body hash.
+- **Found and fixed a latent yaml bug that had been dormant for 4 splits:** rom_offset =
+  vram - 0x8000F800, not vram - 0x80010000 (a 0x800 header sits between them). All four
+  earlier phase-0 entries were 0x800 low. Harmless only because the yaml says "splat is
+  not re-run here". I ran splat; it regenerated every chunk from the bad offsets and
+  broke the link. Recovered by correcting the offsets. **Splat can now be re-run safely,
+  which it could not before.**
+- New tool `tools/phase0_split.py` — mechanises the phase-0 split, with the offset
+  landmine and the zero-length-trailing-segment trap documented in the source.
+- New `tools/gen_map.py` + `notes/FUNCTION_MAP.md` — every function in the game, one row,
+  generated and gated by check_docs.sh.
+
+## 2026-07-26 (session 2, part 2)
+- **+17 matched (284 -> 301, audit_count.sh clean-rebuild verified.)** 15 empty
+  `jr $ra; nop` bodies written as `void f(void){}`, plus two that only LOOKED empty:
+  func_80036470 is `p[7]=0` with the `sb` in the jr delay slot, func_8004E488 is
+  `return 0` via `addu $v0,$zero,$zero`. Found by a 5-byte cmp diff — I had filtered on
+  instruction COUNT (==2) rather than on the body hash.
+- **Latent yaml bug, dormant across 4 earlier splits:** rom_offset = vram - 0x8000F800,
+  not vram - 0x80010000 (a 0x800 header sits between). Invisible because the yaml says
+  "splat is not re-run here". I ran splat; it rebuilt every chunk from the bad offsets
+  and broke the link. Fixed. **Splat can now be re-run safely, which it could not before.**
+- **A PHANTOM-MATCH CLASS THE GATES COULD NOT SEE.** census briefly read 307. Six of those
+  were TUs whose yaml insert was SKIPPED: they compiled to .o files census counted, but
+  rock_neo.ld never referenced them, so the binary still linked the raw asm. The hash
+  stayed OK throughout — the original bytes were what shipped. **Counting objects is not
+  counting the binary.** Real number 301. Guards added to census.py (skip unlinked TUs)
+  and gen_map.py (skip unlinked/stale objects and orphan chunks), both negative-tested.
+- Stale chunk files from the re-split were inflating the engine total to 1,345 and the
+  unsplit count to 834. gen_map now filters to chunks rock_neo.ld references, and
+  gen_counts sources its structure from the map instead of its own grep. The engine
+  invariant (1,119) is now asserted rather than assumed.
+- New: tools/phase0_split.py, tools/gen_map.py, notes/FUNCTION_MAP.md.

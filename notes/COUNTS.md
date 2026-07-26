@@ -10,26 +10,26 @@ separate, slower step: `tools/audit_count.sh`.
 
 | Number | Value | Meaning |
 |---|---|---|
-| `F .text` in all rock_neo `.o` | **488** | Functions currently split into C TUs. **NOT the mission denominator.** |
-| Functions still unsplit (raw asm) | **631** | `glabel`s in `asm/rock_neo/*.s`, never split into a C TU. |
-| **Game functions in ROCK_NEO.EXE** | **1119** | 488 + 631. The MAIN-EXE denominator. |
+| `F .text` in all rock_neo `.o` | **505** | Functions currently split into C TUs. **NOT the mission denominator.** |
+| Functions still unsplit (raw asm) | **614** | `glabel`s in `asm/rock_neo/*.s`, never split into a C TU. |
+| **Game functions in ROCK_NEO.EXE** | **1119** | 505 + 614. The MAIN-EXE denominator. |
 | Unique overlay functions | **~7064** | Measured by `tools/overlay_scope.py`; deduped across 205 overlays. |
 | **Whole-game functions** | **~8183** | 1119 main exe + ~7064 overlay. THE whole-game denominator. |
-| Matched (real C in tree) | **284** | 488 − 204. |
+| Matched (real C in tree) | **301** | 505 − 204. |
 | Active INCLUDE_ASM stubs | **204** | Stubs still pulled in AFTER cpp (ifdef-aware). |
 | Raw `grep -c INCLUDE_ASM` | 210 | **DO NOT USE.** Blind to `#define ACCEPT_REORDERING_BULLSHIT` in game.c/sub_scrn.c; 6 stubs are shadowed by an active `#else` body. Un-gating one is a NO-OP that reads as +1 — this caused the 2026-07-19 inflation. |
-| By function count (C-mapped slice) | **58.2%** | 284 / 488 — the number historically quoted. Overstates the mission. |
-| By function count (main exe) | **25.4%** | 284 / 1119. |
-| **By function count (WHOLE GAME)** | **~3.5%** | 284 / ~8183. The honest number. |
+| By function count (C-mapped slice) | **59.6%** | 301 / 505 — the number historically quoted. Overstates the mission. |
+| By function count (main exe) | **26.9%** | 301 / 1119. |
+| **By function count (WHOLE GAME)** | **~3.7%** | 301 / ~8183. The honest number. |
 
 ## Splitting is not progress
 A phase-0 split MOVES a function from the unsplit bucket into the C-mapped bucket. It
-raises `488` and lowers `631` and leaves **1119 unchanged**. Only a rise in
+raises `505` and lowers `614` and leaves **1119 unchanged**. Only a rise in
 **matched** is progress.
 
 ## Always name which denominator
 The 2026-07-26 audit found this project had reported `matched/C-mapped` for months while
-631 functions sat in `asm/rock_neo/*.s`, linked by `rock_neo.ld` and invisible to
+614 functions sat in `asm/rock_neo/*.s`, linked by `rock_neo.ld` and invisible to
 `census.py` (which reads only `build/src/rock_neo/*.o`). Same defect class as the
 ACCEPT_REORDERING_BULLSHIT inflation: a completion metric defined by what a tool parses
 rather than by the target binary.

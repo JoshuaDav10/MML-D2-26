@@ -65,9 +65,17 @@ def insert_yaml(off, name, end):
     start, line, pos = max(encl, key=lambda e: e[0])
     if start == off:
         return False, "already at a segment boundary"
+    # A trailing asm segment that starts exactly where the NEXT segment starts is
+    # zero-length: splat emits no .s for it, but the generated rock_neo.ld still
+    # references its .o and the link dies with "cannot find .../2C640.s.o".
+    nxt = min((e[0] for e in entries if e[0] > off),
+              default=None)
+    after = [int(m.group(1), 16) for m in re.finditer(r"^      - \[0x([0-9A-Fa-f]+),", txt, re.M)
+             if int(m.group(1), 16) > off]
+    nxt = min(after) if after else None
+    tail = "" if nxt == end else f"\n      - [0x{end:X}, asm]"
     new = (f"      - [0x{start:X}, asm]\n"
-           f"      - [0x{off:X}, c, {name}]\n"
-           f"      - [0x{end:X}, asm]")
+           f"      - [0x{off:X}, c, {name}]{tail}")
     YAML.write_text(txt[:pos] + new + txt[pos + len(line):])
     return True, None
 

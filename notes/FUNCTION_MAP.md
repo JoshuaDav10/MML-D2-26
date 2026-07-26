@@ -10,9 +10,9 @@ is what produced a completion figure ~16x too high for months.
 
 | realm | what it is | functions | done |
 |---|---|---|---|
-| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **284** (25.4%) |
+| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **301** (26.9%) |
 | **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | 0 |
-| **WHOLE GAME** | | **8,183** | **284** (3.5%) |
+| **WHOLE GAME** | | **8,183** | **301** (3.7%) |
 
 ## States
 
@@ -22,9 +22,9 @@ once covers every copy.*
 
 | state | realm | meaning | functions | (raw instances) |
 |---|---|---|---|---|
-| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **284** | — |
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **301** | — |
 | `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 204 | — |
-| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 631 | — |
+| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 614 | — |
 | `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 10,107 |
 | | | **total distinct functions in the game** | **8,183** | |
 
@@ -35,29 +35,45 @@ once covers every copy.*
 
 | container | functions | matched | stub | unsplit |
 |---|---|---|---|---|
-| `10638.s` | 99 | 0 | 0 | 99 |
-| `1F9EC.s` | 39 | 0 | 0 | 39 |
-| `2187C.s` | 16 | 0 | 0 | 16 |
-| `22304.s` | 3 | 0 | 0 | 3 |
-| `22538.s` | 123 | 0 | 0 | 123 |
-| `32A38.s` | 190 | 0 | 0 | 190 |
-| `4C710.s` | 63 | 0 | 0 | 63 |
+| `10638.s` | 37 | 0 | 0 | 37 |
+| `17AD0.s` | 15 | 0 | 0 | 15 |
+| `1A960.s` | 2 | 0 | 0 | 2 |
+| `1B370.s` | 17 | 0 | 0 | 17 |
+| `1DB20.s` | 24 | 0 | 0 | 24 |
+| `201EC.s` | 39 | 0 | 0 | 39 |
+| `2207C.s` | 16 | 0 | 0 | 16 |
+| `22B04.s` | 3 | 0 | 0 | 3 |
+| `22D38.s` | 26 | 0 | 0 | 26 |
+| `260F0.s` | 4 | 0 | 0 | 4 |
+| `26C78.s` | 39 | 0 | 0 | 39 |
+| `29CA4.s` | 50 | 0 | 0 | 50 |
+| `32A38.s` | 29 | 0 | 0 | 29 |
+| `34600.s` | 6 | 0 | 0 | 6 |
+| `35134.s` | 6 | 0 | 0 | 6 |
+| `352A8.s` | 56 | 0 | 0 | 56 |
+| `383D0.s` | 20 | 0 | 0 | 20 |
+| `393EC.s` | 26 | 0 | 0 | 26 |
+| `3EC90.s` | 41 | 0 | 0 | 41 |
+| `4C710.s` | 13 | 0 | 0 | 13 |
+| `4D060.s` | 4 | 0 | 0 | 4 |
+| `4D1BC.s` | 20 | 0 | 0 | 20 |
+| `4E174.s` | 23 | 0 | 0 | 23 |
 | `52C0.s` | 6 | 0 | 0 | 6 |
 | `543A8.s` | 49 | 0 | 0 | 49 |
 | `77D4.s` | 43 | 0 | 0 | 43 |
-| `src/rock_neo` | 488 | 284 | 204 | 0 |
+| `src/rock_neo` | 505 | 301 | 204 | 0 |
 
 ### Engine work pools (not yet MATCHED)
 
 | pool | count |
 |---|---|
-| ≤10 instructions | 93 |
-| ≤20 instructions | 190 |
-| ≤30 instructions | 265 |
-| ≤50 instructions | 394 |
-| ≤120 instructions | 624 |
-| leaf (calls nothing) | 298 |
-| in a family of ≥2 (template transfers) | 168 |
+| ≤10 instructions | 76 |
+| ≤20 instructions | 173 |
+| ≤30 instructions | 248 |
+| ≤50 instructions | 377 |
+| ≤120 instructions | 607 |
+| leaf (calls nothing) | 281 |
+| in a family of ≥2 (template transfers) | 152 |
 | >120 instructions (**nothing this big has ever matched**) | 211 |
 
 ## Stages — where the volume is
@@ -80,11 +96,11 @@ once covers every copy.*
 
 ### Duplication — real match-once-cover-many
 
-1,225 distinct bodies appear more than once, covering 4,303 instances.
+1,225 distinct bodies appear more than once, covering 4,288 instances.
 
 | function | instructions | copies | leaf |
 |---|---|---|---|
-| `func_800272C8` | 2 | **363** | yes |
+| `func_800394A4` | 2 | **348** | yes |
 | `func_800153CC` | 8 | **145** | no |
 | `func_801083DC` | 10 | **72** | yes |
 | `func_80110834` | 8 | **60** | no |
