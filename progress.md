@@ -1,15 +1,20 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: **484** functions in linked object code (`tools/census.py
+- rock_neo main: **485** functions in linked object code (`tools/census.py
   --matched`; see `notes/COUNTS.md`). **475** have splat asm under
-  `asm/rock_neo/nonmatchings/`; **204** active INCLUDE_ASM stubs (cpp census, 2026-07-26);
+  `asm/rock_neo/nonmatchings/`; **203** active INCLUDE_ASM stubs (cpp census, 2026-07-26);
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
-- rock_neo main: **281** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
-  hash OK, raw cmp byte-identical, census 281. 484 total, 204 active stubs.
-  Mission %: 281/484 = **58.1%** by function count, ~19.8% by instruction volume.)
+- rock_neo main: **282** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
+  hash OK, raw cmp byte-identical, census 282. 485 total, 203 active stubs.
+  Denominators (name which — see notes/WORK_MAP.md): 282/485 = 58.1% C-slice ·
+  282/1119 = 25.2% main exe · 282/~8,000 ≈ 3.5% WHOLE GAME.)
+  - +1 (func_8002F9C4, 2026-07-26 autonomous chain): FIRST match harvested from the
+    newly-unlocked raw-asm queue via the Phase 0 split template. 10-insn wrapper
+    tail-calling func_8002FA38(a0, 0x8016C000, a1); called from 37 stage overlays
+    (high leverage). matched + hash + mutation-tested + census delta 281->282.
   - +1 (func_80040764, player): matched + hash + mutation-tested. Key-mask state
     chooser (two OR'd mask groups; equal-emptiness -> rand()&1, else pick by group 2).
     FIVE knobs, all from LESSONS: K&R decl (caller func_80040140 passes leftover $a0

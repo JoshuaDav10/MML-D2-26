@@ -19,11 +19,14 @@ N=$(python3 tools/census.py --matched 2>/dev/null | grep -oE '[0-9]+ matched' | 
 S=$(python3 tools/census.py --matched 2>/dev/null | grep -oE '[0-9]+ active stubs' | grep -oE '[0-9]+')
 [ -n "${N:-}" ] || { echo "cannot get census — build first (make CPP=cpp build_rock_neo_only)"; exit 2; }
 
-# The TRUE denominators. 484 is only the functions currently split into C TUs; the rest of
-# the game is still linked as raw asm and has never been counted. (2026-07-26 audit.)
+# The TRUE denominators. CMAP (matched + active stubs = census total) is only the functions
+# currently split into C TUs; the rest of the game is still linked as raw asm. CMAP is
+# computed DYNAMICALLY (was hardcoded 484 before 2026-07-26; the phase-0 split of a raw fn
+# into a C stub raised the C-slice and broke the hardcode, double-counting the moved fn).
+CMAP=$(( N + S ))
 UNSPLIT=$(grep -h '^glabel' asm/rock_neo/*.s 2>/dev/null | wc -l | tr -d ' ')
-TOTAL_FN=$(( 484 + UNSPLIT ))
-echo "authoritative: $N matched / 484 C-mapped ($(awk "BEGIN{printf \"%.1f\", 100*$N/484}")%)"
+TOTAL_FN=$(( CMAP + UNSPLIT ))
+echo "authoritative: $N matched / $CMAP C-mapped ($(awk "BEGIN{printf \"%.1f\", 100*$N/$CMAP}")%)"
 echo "               $N / $TOTAL_FN game functions in exe ($(awk "BEGIN{printf \"%.1f\", 100*$N/$TOTAL_FN}")%) — $UNSPLIT still unsplit raw asm"
 echo "               $S active stubs"
 
@@ -36,10 +39,15 @@ for f in progress.md HANDOFF.md notes/COUNTS.md; do
     case "$txt" in *"[SUPERSEDED"*) continue;; esac
     # take the number ADJACENT to the count word, not the first 3 digits on the line
     # (a date like 2026-07-25 would otherwise parse as "202")
-    num=$(printf '%s' "$txt" | grep -oE '(\*\*)?[0-9]{3}(\*\*)? matched|Matched: [0-9]{3}|count = \*\*[0-9]{3}' | grep -oE '[0-9]{3}' | head -1)
+    num=$(printf '%s' "$txt" | grep -oE '(\*\*)?[0-9]{3}(\*\*)? matched|Matched: [0-9]{3}|count = \*\*[0-9]{3}|rock_neo main: \*\*[0-9]{3}\*\* \(AUTHORITATIVE' | grep -oE '[0-9]{3}' | head -1)
     [ "$num" = "$N" ] || def "$f:$ln states count $num, authoritative is $N -> $(printf '%.90s' "$txt")"
-  done < <(grep -nE '(\*\*[0-9]{3}\*\*|[0-9]{3}) matched|Matched: [0-9]{3}|AUTHORITATIVE count = \*\*[0-9]{3}' "$f" 2>/dev/null)
+  done < <(grep -nE '(\*\*[0-9]{3}\*\*|[0-9]{3}) matched|Matched: [0-9]{3}|AUTHORITATIVE count = \*\*[0-9]{3}|rock_neo main: \*\*[0-9]{3}\*\* \(AUTHORITATIVE' "$f" 2>/dev/null)
 done
+
+# 1b. The C-slice headline in progress.md must equal CMAP (matched + stubs). This line
+#     tracks the split-into-C count, which rises when a raw fn is split (2026-07-26).
+cs=$(grep -oE 'rock_neo main: \*\*[0-9]{3}\*\* functions in linked object code' progress.md 2>/dev/null | grep -oE '[0-9]{3}' | head -1)
+[ -z "${cs:-}" ] || [ "$cs" = "$CMAP" ] || def "progress.md C-slice headline says $cs, authoritative C-mapped is $CMAP"
 
 # 2. Stub-count claims.
 c=$(grep -oE '\*\*[0-9]+\*\* active INCLUDE_ASM stubs' progress.md 2>/dev/null | grep -oE '[0-9]+' | head -1)
@@ -48,7 +56,7 @@ c=$(grep -oE '\*\*[0-9]+\*\* active INCLUDE_ASM stubs' progress.md 2>/dev/null |
 # 3. COUNTS.md must carry the current count AND both denominators.
 if [ -f notes/COUNTS.md ]; then
   grep -q "\b$N\b" notes/COUNTS.md || def "notes/COUNTS.md lacks the current count $N (it exists only to hold numbers)"
-  grep -q "\b$TOTAL_FN\b" notes/COUNTS.md || def "notes/COUNTS.md lacks the TRUE denominator $TOTAL_FN ($UNSPLIT unsplit fns are excluded from 484 — reporting only 484 overstates completion ~2.3x)"
+  grep -q "\b$TOTAL_FN\b" notes/COUNTS.md || def "notes/COUNTS.md lacks the main-exe denominator $TOTAL_FN ($UNSPLIT unsplit fns are excluded from the $CMAP C-slice — reporting only the C-slice overstates completion)"
 fi
 
 # 4. The rulebook must not contradict itself about which tool is authoritative.

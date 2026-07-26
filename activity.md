@@ -1,5 +1,16 @@
 # Activity Log
 
+## 2026-07-26 (Opus, autonomous chain) — whole-game scope + first raw-asm-queue match
+- Measured the TRUE whole-game denominator: ~8,000 unique functions (not 484/1119);
+  282 matched ~= 3.5%. Overlays hold ~7,010 unique undecompiled funcs (WORK_MAP.md).
+  Meta-lessons of the denominator saga captured (META_LESSONS.md) for the teaching goal.
+- Built leverage-ordered STRATEGY.md; priority queue (DEP_PRIORITY.md): main exe is the
+  shared runtime, 185 overlay-called targets (142 raw-asm), top ones tiny + universal.
+- Proved the Phase 0 split template (PHASE0_SPLIT_TEMPLATE.md): relocate a raw func into
+  an INCLUDE_ASM stub, build stays byte-identical.
+- **+1 matched: func_8002F9C4** (281->282) — first harvest from the raw-asm queue,
+  called from 37 stages. hash + mutation + census-delta verified.
+
 ## 2026-07-25 (Opus) — 53B40 verdict + 2 harvest wins
 - **func_80040764 (player) MATCHED** (280->281) — audit 281, hash OK, cmp identical,
   mutation-tested. Five knobs (see progress.md). Notable: retyping the callee
