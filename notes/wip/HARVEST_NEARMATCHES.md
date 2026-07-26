@@ -129,3 +129,17 @@ That is the live-range-split copy genus (LESSONS: cse folds any plain `b = a`), 
 the shared zero-block layout. Also note `xB4` is `u16` in PL_WORK but the asm uses
 `lh` -> access via `*(s16 *)&pl->xB4`; `xB6` sits in a pad array -> byte-offset cast.
 Good permuter candidate.
+
+## func_8001F828 (scene) — 5 rows, delay-slot/liveness (2026-07-25)
+Twin of func_8001FA94 (same `Game_work.x52` dispatch: ==1 / <2 / ==0 / <6). Sets
+D_800981BC then a second value into D_800981C2/C0/BE. Draft:
+notes/wip/func_8001F828_draft.c (5 differing rows, 495->45 words exact).
+Structure fully matches with the FA94 goto layout (==1 case last, x==0 out of line).
+RESIDUAL (all 5 rows are one issue): the target fills the `beqz` (x==0) delay slot with
+`li v0,0x32`, i.e. the value is assigned BEFORE the x==0 test. Hoisting the assignment
+in C DOES fill the slot — but it makes `v` live across the Sce_flag_test call in the
+zerocase arm, so cc1 moves it to $s0 and adds a save/restore (cascade to 1014 rows).
+So: hoist = right instruction, wrong register; no-hoist = right register, missing fill.
+Need a form where `v` is set pre-branch yet provably dead on the zerocase path.
+Type changes (s32/int/u16) do not help. Permuter workdir mml_F828 running.
+**Solving this likely solves func_8001FA94 too — identical shape.**
