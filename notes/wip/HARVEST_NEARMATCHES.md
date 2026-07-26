@@ -204,3 +204,16 @@ target `lhu v0,0x2e; nor v1,zero,a1; and v0,v0,v1`; ours has v0/v1 swapped.
 Hand knobs that did NOT flip it: hoisting the load to a temp; hoisting `~mask` to a
 temp; `~mask & x2E` operand swap; `(u16)~mask` cast. Permuter mml_12350 launched
 (register-mirror = the permuter's proven 3-for-3 lane).
+
+## func_8001DDE4 (scene) — 2 rows, base/displacement split (2026-07-25)
+`void func_8001DDE4(s32 arg0)` — Scene_work reset, gated on
+`*(s16 *)&Player_work[0x6E] < 0` (life, read SIGNED via lh). Sets x0=1, x1=arg0, clears
+x8/x9/xA/xB (bytes), x4/xC/x10/x14/x18/x1C (words), xA4, then clears x24[0..15]
+counting DOWN. Draft (40/40 words, 2 rows): notes/wip/func_8001DDE4_draft.c.
+Fields x4/xB/xC/x14 sit in SCENE_WORK pad arrays -> byte-offset casts.
+RESIDUAL (2 rows, same address, different base/displacement split): target keeps the
+induction variable at `&Scene_work + i*4` and puts the member offset in the store
+displacement (`addiu a1,v1,0x3c` … `sw zero,0x24(a1)`); ours folds the member offset
+into the IV (`addiu a1,v1,0x60` … `sw zero,0(a1)`). Knobs that did NOT reproduce it:
+`Scene_work.x24[i]`, `((u8**)&Scene_work)[i+9]`, `*(u8**)((u8*)&Scene_work + i*4 + 0x24)`,
+and an explicit walking `q` with `q[9]`. Permuter mml_DDE4 launched.
