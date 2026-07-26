@@ -3,12 +3,12 @@
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
 - rock_neo main: **484** functions in linked object code (`tools/census.py
   --matched`; see `notes/COUNTS.md`). **475** have splat asm under
-  `asm/rock_neo/nonmatchings/`; **203** active INCLUDE_ASM stubs (cpp census, 2026-07-25);
+  `asm/rock_neo/nonmatchings/`; **204** active INCLUDE_ASM stubs (cpp census, 2026-07-26);
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
 - rock_neo main: **281** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
-  hash OK, raw cmp byte-identical, census 281. 484 total, 203 active stubs.
+  hash OK, raw cmp byte-identical, census 281. 484 total, 204 active stubs.
   Mission %: 281/484 = **58.1%** by function count, ~19.8% by instruction volume.)
   - +1 (func_80040764, player): matched + hash + mutation-tested. Key-mask state
     chooser (two OR'd mask groups; equal-emptiness -> rand()&1, else pick by group 2).
