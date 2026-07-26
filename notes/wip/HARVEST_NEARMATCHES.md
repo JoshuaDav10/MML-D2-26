@@ -192,3 +192,15 @@ session came from user-supplied external research (`(void)&local`, which reprodu
 stack reservation I had wrongly declared impossible). One good answer from a PSX decomp
 community on forcing a reload live-range-split copy could unlock a whole genus. That is
 a forum post, not a session. See notes/DEEP_RESEARCH_PROMPT_reload.md.
+
+## func_80012350 (main) — 3 rows, pure register mirror (2026-07-25)
+`void func_80012350(s32 p, s32 mask, s32 off)` — per-item flag state machine.
+Gate: `!(p->x2E & mask) && (p->x2A & mask) == mask`. Then `q = p + off`;
+q[0x38] is a 3-state (0/1/2) with q[0x40] a retry counter capped at 6; sets/clears
+`mask` in the u16 at p+0x2E via a SHARED tail store. Draft (43/43 words, 3 rows):
+notes/wip/func_80012350_draft.c — landed structurally on the FIRST try.
+RESIDUAL: pure $v0/$v1 mirror in the clear-arm only —
+target `lhu v0,0x2e; nor v1,zero,a1; and v0,v0,v1`; ours has v0/v1 swapped.
+Hand knobs that did NOT flip it: hoisting the load to a temp; hoisting `~mask` to a
+temp; `~mask & x2E` operand swap; `(u16)~mask` cast. Permuter mml_12350 launched
+(register-mirror = the permuter's proven 3-for-3 lane).
