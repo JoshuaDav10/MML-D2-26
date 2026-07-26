@@ -43,6 +43,48 @@ Useful flags:
 - `--speed 1-100` — trade thoroughness for iteration rate.
 - multiple workdirs can be passed at once: `python3 permuter.py dirA dirB`.
 
+## ALWAYS pass `--no-ignore-branch-targets` too (2026-07-25 audit)
+
+`ign_branch_targets` **defaults to True** (`src/main.py:777`), so the scorer rewrites every
+branch/jump target to a literal placeholder. That is exactly how func_8001AE6C produced a
+**false score 0** (a `j` to the wrong label scored as perfect). The prophylactic is free and
+was never applied after that incident — apply it now:
+`--stack-diffs --no-ignore-branch-targets`.
+
+**LOCAL PATCH REQUIRED** (the clone is .gitignore'd, so re-apply after any re-clone):
+`src/objdump.py` ~line 358 crashes on the strict path with
+`ValueError: invalid literal for int() with base 0: 'a4'` — objdump emits some immediates
+as bare hex. Wrap it:
+```python
+try:    _immv = int(imm, 0)
+except ValueError: _immv = int(imm, 16)
+repl += "+" + imm if _immv > 0 else imm
+```
+Verified 2026-07-25: with the patch, `mml_12350` runs strict cleanly (base score 30).
+
+## KILL RULE + concurrency (2026-07-25 audit, measured)
+
+**Every zero this project has ever produced arrived in <= 14 minutes** (51s, 5m30s,
+14m02s; the false zero at 46s) — an upper bound of roughly 20k iterations. Ten workdirs
+have since exceeded that with zero hits, one to 154,511 iterations.
+- **Kill any run past ~20k iterations / ~20 minutes.** No win has ever come later.
+- **Do NOT oversubscribe cores.** A 2026-07-25 snapshot had 25 worker threads on 12 cores
+  (2x), which slows every run — including the first-20-minute window that is the ONLY
+  regime where wins occur. Concurrency was actively counterproductive.
+- Honest hit rate: **3 wins / 11 fair trials (27%)**, not the "3 for 3" claimed elsewhere.
+  `mml_12350` is a labelled "pure register mirror" that has NOT converged, so even the
+  register-mirror lane is 3-for-4, on n=4.
+
+## "Low score means close" is REFUTED (2026-07-25 audit)
+
+Score is NOT a distance. Counter-evidence from this repo:
+- `mml_DDE4` at base **20 (2 rows)** — the tightest residual in the set — produced zero
+  new-bests in 6,903 iterations. `mml_E4C4` started at **80** and zeroed.
+- `mml_F828` sat at score **10 (ONE row)** for 69 minutes / ~4.6 CPU-hours without closing.
+- A row-count metric has no partial credit: one early register mirror shifts every later
+  row, so it overstates trivial mirrors and understates unreachable residuals.
+Treat the score as "is it moving", never as "how far".
+
 ## ALWAYS pass `--stack-diffs` (2026-07-25 — we ran for weeks without it)
 
 **By default the permuter's score IGNORES stack positions.** If your residual involves

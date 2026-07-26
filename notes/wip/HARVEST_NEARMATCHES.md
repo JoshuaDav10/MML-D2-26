@@ -159,11 +159,11 @@ current rate that is ~40 more sessions; the last hour of Jul 25 produced 0.
 are five distinct causes with very different tractability:
 | residual | example | permuter record |
 |---|---|---|
-| register mirror | func_8001E4C4, func_80062C6C, func_80057924 | **3 for 3 — reliable** |
+| register mirror | func_8001E4C4, func_80062C6C, func_80057924 | 3 wins / 11 FAIR TRIALS = 27%. NOT "3 for 3" — that was survivorship bias (2026-07-25 audit). mml_12350 is a labelled register mirror that has NOT converged, so the lane is 3-for-4 on n=4. |
 | live-range-split copy (`move rX,rY`) | func_80042154, 53B40 render | 0; PROVEN source-unreachable (combine_regs+cse) |
 | delay-slot fill vs liveness | func_8001F828 | 0 |
 | preheader arg setup | func_80062A50 | 0 |
-| addressing base/index order | Sce_flag_off | 0 |
+| ~~addressing base/index order~~ | ~~Sce_flag_off~~ | **RETRACTED** — Sce_flag_off is 1 instruction SHORT (a structure bug), not an addressing genus. This genus now has ZERO exemplars. |
 | basic-block tail ordering | func_8001AE6C | 0 (and it FALSE-ZEROED) |
 Solving the copy genus would NOT unlock the others. Only the copy one has a proof
 against it; the rest are merely unsolved.
@@ -219,8 +219,12 @@ into the IV (`addiu a1,v1,0x60` … `sw zero,0(a1)`). Knobs that did NOT reprodu
 and an explicit walking `q` with `q[9]`. Permuter mml_DDE4 launched.
 
 ## BAD PERMUTER SEEDS — do not re-run as-is (2026-07-25)
-A base score in the 100000+ range means a WORD-COUNT mismatch, not a near-match: the
-permuter is scoring the length penalty and can never converge. Two seeds were in this
+A base score in the 100000+ range means a WORD-COUNT mismatch, not a near-match.
+**CORRECTION (2026-07-25 audit): the claim that it "can never converge" is FALSIFIED by
+this repo's own log** — mml_SCEOFF went 100430 -> 260 -> 220 within ~60 seconds; mutations
+close the word-count gap immediately. The ADVICE stands (don't seed at the wrong word
+count; you are paying a huge penalty term and the score is uninformative), but the stated
+mechanism was wrong. Two seeds were in this
 state and were killed to free cores:
 - `mml_SCEOFF` (Sce_flag_off): base 100430 — draft 45 words vs target 46 (1 short).
 - `mml_D58C`  (func_8001D58C): base 200430 — draft 45 words vs target 47 (2 short).
