@@ -227,3 +227,19 @@ state and were killed to free cores:
 FIX THE INSTRUCTION COUNT FIRST, then reseed.
 **Rule: only seed a permuter when `tools/bytecmp.sh` shows words expected == actual.**
 Otherwise you burn CPU on a penalty term that no mutation can remove.
+
+## func_800137D4 (Code800133D8) — 13 rows, register rotation (2026-07-25)
+Init/step routine: six calls (func_800175D8, func_80015428(Code800133D8_work),
+func_80016FD4, func_80038370(D_800979DC, D_800979EC), func_800175FC, func_80028DE0),
+then a GPU ordering-table link: `n = (*(u8*)0x1F800000) << 14; ot = D_800A4D40 + n;`
+`*ot = (*ot & 0xFF000000) | (dc->x80 & 0xFFFFFF);` and
+`dc->x80 = (dc->x80 & 0xFF000000) | ((u32)(D_800A4D40 + n + 0x3FFC) & 0xFFFFFF);`
+where `dc = (u8 *)D_80098934` (NOTE: already declared in game.h as
+`UnkStruc_80098934*` — cast it, do NOT redeclare; a duplicate decl is a hard error).
+Draft (47/47 words, 13 rows): notes/wip/func_800137D4_draft.c. Permuter mml_137D4
+(base 140) launched.
+RESIDUAL: pure register ROTATION, not a logic error — target first-use order is
+0xFFFFFF($a3), D_800A4D40($a0), 0xFF000000($t0), the lbu($a1), D_80098934($a2); ours
+rotates these ($t1/$a1/$a0...). Hoisting the constants into locals in the target's
+first-use order to steer allocation BACKFIRED badly (1009 rows) — it changes the
+instruction count. Leave the constants inline; this needs the permuter.
