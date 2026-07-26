@@ -55,6 +55,15 @@ Goal: C source that recompiles to a byte-for-byte identical binary.
 - Map functions in ascending address order when adding to the splat yaml.
 - Update progress.md and activity.md when a function is matched.
 
+## Session start (MANDATORY, before anything else)
+Run `tools/adversarial_audit.sh`. It self-tests that the gates still FAIL when they
+should, prints BOTH denominators, and asks what is not being measured. Then
+`tools/audit_count.sh` for the count. Report completion with BOTH denominators —
+`N/484` (C-mapped slice) AND `N/1119` (game functions actually in ROCK_NEO.EXE).
+Quoting only /484 overstates completion ~2.3x; 635 functions / 56,999 instructions
+(64.6% of the binary) sit in `asm/rock_neo/*.s`, are linked by `rock_neo.ld`, and were
+invisible to every count this project produced before 2026-07-26.
+
 ## Progress-counting integrity (MANDATORY — the 2026-07-19 session over-claimed +7 by violating these)
 - **The ONLY authoritative matched count is `tools/audit_count.sh`** (clean
   `rm -rf build` + hash + raw cmp + `census.py --matched`, which reads the built
