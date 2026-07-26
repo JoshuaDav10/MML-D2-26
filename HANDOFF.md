@@ -12,34 +12,56 @@
 <!-- END GENERATED COUNTS -->
 
 
-**Authoritative state (2026-07-26, `tools/check_docs.sh` clean; the +1 match & first split
-were clean-rebuild verified — see caveat):**
+**Live numbers are the generated block above** — produced by `tools/gen_counts.sh` /
+`tools/sync_docs.sh` and byte-diffed by `tools/check_docs.sh`. Never hand-type a count
+into this file; the stale table that used to sit here said 282 long after it was 301.
 
-| metric | value |
-|---|---|
-| matched functions | **282** |
-| C-mapped slice | 282 / **488** = 57.8% |
-| main executable | 282 / **1119** = **25.2%** by function |
-| **WHOLE GAME** | 282 / **~8,000** = **~3.5%** (main exe + ~7,010 unique overlay funcs) |
-| active INCLUDE_ASM stubs | 206 |
-| still unsplit raw asm | **631 functions** in `asm/rock_neo/*.s` (was 635; 4 split out this session) |
+> **Always name WHICH denominator.** `/505` = C-slice · `/1119` = main exe (invariant) ·
+> `/~8183` = whole game. A *split* MOVES a function between buckets — it is bookkeeping,
+> not progress. Only a rise in **matched** counts.
 
-> **Always quote WHICH denominator.** `/488` = C-slice; `/1119` = main exe; `/~8,000` =
-> whole game. A "split" MOVES a fn between buckets (C-slice up, unsplit down) — total 1119
-> is invariant. `tools/check_docs.sh` (SessionStart + pre-commit hook) blocks count drift.
+> ## ⭐ NEXT SESSION — goal is MATCHES; skip the meta
+> The full inventory is `notes/FUNCTION_MAP.md` (generated, gated). Query it directly:
+> ```
+> tools/gen_map.py --query UNSPLIT --max-insns 20 --leaf
+> ```
+> **Best pools right now (engine, 818 unmatched):**
+> - **≤10 insn: 76 functions.** The 2-instruction `jr $ra; nop` freebies are gone (landed
+>   this session) — what remains needs real reading, but it is small.
+> - **families: 62 groups covering 168 functions** — identical mnemonic skeletons differing
+>   only in registers/constants. Solve one, template the siblings. Biggest live family:
+>   15 x 15-insn starting `func_800433C0`. `func_80031824` (matched) has **six siblings**
+>   in `2207C.s` — same "divide byte-offset by stride, set bit, AND mask, clear byte" shape.
+> - **`func_80032488` is 3 rows off.** Do not re-try the five source shapes listed in
+>   `src/rock_neo/Code80032488.c` — read that note first. Permuter-ready.
+>
+> **The ritual for every claim:** write C → `make CPP=cpp check_rock_neo_only` = OK →
+> `tools/audit_count.sh` (clean rebuild) must show the count RISE → `make CPP=cpp chunks`
+> (the clean rebuild deletes the overlay BINs) → commit.
 
-> ## ⭐ NEXT SESSION — the explicit goal is MATCHES, skip the meta
-> Three tiny, high-leverage functions are **already mapped as stubs and ready to decompile**
-> (each called by ~36 stage overlays — highest leverage on the board):
-> - `func_800322A8` (23 insn, 37 stages) → `src/rock_neo/Code800322A8.c`
-> - `func_80031824` (22 insn, 35 stages) → `src/rock_neo/Code80031824.c`
-> - `func_80032488` (44 insn, 36 stages) → `src/rock_neo/Code80032488.c`
-> **Do this:** for each, read its `asm/rock_neo/nonmatchings/CodeXXXX/*.s`, write real C,
-> then verify with the FULL ritual (`make CPP=cpp check_rock_neo_only` = OK → mutation test
-> → `tools/audit_count.sh` count must rise). Template match this session: `func_8002F9C4`.
-> More targets: `notes/wip/DEP_PRIORITY.md` (142 raw funcs ranked by leverage).
-> **⚠️ FIRST: verify the 3 maps hold under a clean rebuild** (`tools/audit_count.sh` should
-> print 282 / 488). They were worker-build-gated but not clean-audited by me last turn.
+> ## ⚠️ TWO LANDMINES FOUND 2026-07-26 — read before touching the build
+> **1. splat offsets.** `rom_offset = vram - 0x8000F800`, NOT `vram - 0x80010000`. A 0x800
+> header sits between them (`- [0x800, header]` then `start: 0x800, vram: 0x80010000`).
+> Four earlier phase-0 splits used the wrong formula; it stayed invisible because the yaml
+> notes *"splat is not re-run here"*. Running splat regenerated every chunk from the bad
+> offsets, truncated a chunk mid-function and broke the link — and `asm/` is gitignored, so
+> there was no backup. **Now fixed: splat IS safe to re-run.** Use `tools/phase0_split.py`,
+> which has the correct constant.
+>
+> **2. PHANTOM MATCHES — a green hash cannot detect them.** A `.c` can compile to a `.o`
+> that `rock_neo.ld` never references. census counts it; the binary still links the raw
+> asm; the full-binary hash stays **OK** because the original bytes are what shipped. This
+> briefly read 307 against a real 301. Guards are now in `census.py` and `gen_map.py`
+> (both negative-tested), and `gen_map` asserts the engine invariant of 1,119 — which had
+> silently drifted to 1,345 from stale chunk files. **Counting objects is not counting the
+> binary.**
+
+> ## Research farmed out
+> `notes/RESEARCH_QUESTIONS.md` — five scoped questions with the numbers that make each one
+> matter. A later session should expand these into a full deep-research prompt (house style:
+> `notes/DEEP_RESEARCH_PROMPT_reload.md`). The highest-value one: **is the >120-instruction
+> wall ours or everyone's?** It moves the realistic engine target between ~908 and 1,119.
+> The reload prompt itself was launched in a separate session on 2026-07-26; result pending.
 
 > **Key docs (this session, read once):** `notes/WORK_MAP.md` (measured scope + evidence),
 > `notes/STRATEGY.md` (leverage-ordered plan; main exe = shared runtime, 681 overlay

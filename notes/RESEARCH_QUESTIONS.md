@@ -1,0 +1,139 @@
+# Open research questions — raw material for a deep-research prompt
+
+**Status: NOT YET RESEARCHED.** These are scoped questions, not answers. A later session
+should expand these into a full deep-research prompt (see
+`notes/DEEP_RESEARCH_PROMPT_reload.md` for the house style — it is specific, names primary
+sources, and explicitly asks for artifacts and prior art rather than tutorials).
+
+Each question below states **why it matters in numbers**, so the eventual prompt can be
+written against a decision rather than against curiosity. Ordered by expected value.
+
+Context every prompt needs: byte-exact matching decompilation of **Mega Man Legends**
+(PSX, US, `ROCK_NEO.EXE`), PSY-Q SDK, compiler reports `GNU C 2.7.2.SN32.3.7 Build 0001`
+— an **SN Systems patched gcc 2.7.2**, not stock FSF. Flags:
+`-mcpu=3000 -O2 -G8 -msoft-float -fpcc-struct-return -mgas -funsigned-char`.
+Live figures: `notes/COUNTS.md`. Full inventory: `notes/FUNCTION_MAP.md`.
+
+---
+
+## 1. Is the >120-instruction wall ours, or everyone's?  ← highest value
+
+**The observation.** The largest function this project has ever matched is
+`MojiTaskExec` at **119 instructions**. Nothing above 120 has ever matched, across the
+project's entire history. Meanwhile **211 of the remaining engine functions are over 120
+instructions** (28 over 200, 11 over 300, largest 2,383).
+
+**The question.** Do other gcc 2.7.2 / PSY-Q decompilation projects — Symphony of the
+Night, Spyro, Crash Bandicoot, Ape Escape, Silent Hill, Metal Gear Solid, Legend of
+Dragoon, Tomb Raider — **routinely** match 300–800 instruction functions? What techniques
+do they use at that size that we are not using?
+
+**Why it matters.** This single answer moves the realistic engine target between **~908
+and 1,119**:
+- If they do → our ceiling is a *skill gap*, and 211 functions are recoverable.
+- If they don't → it is a real property of the toolchain, and our projection stands.
+
+**What a good answer contains:** named functions of that size in public repos with their
+matching C, the workflow used (permuter? m2c draft? hand iteration? diff-driven?), and
+whether large matches cluster in projects with better compiler-internals documentation.
+
+---
+
+## 2. Does m2c actually accelerate the small-function pool?
+
+**The observation.** `matt-kempster/m2c` (formerly mips_to_c) turns MIPS into draft C for
+hand-refinement. It is **not installed here**, though `tools/m2ctx.py` exists to generate
+its context files, so someone previously intended to use it. High-output decomp projects
+lean on it heavily.
+
+**The question.** For 20–60 instruction functions, does an m2c draft meaningfully reduce
+time-to-match versus reading the asm and writing C directly? Or is the draft usually
+*worse* than starting fresh — because it optimises for behavioural equivalence, not for
+the source shape that reproduces the original codegen?
+
+**Why it matters.** The engine has **265 unmatched functions ≤30 instructions** and 394
+≤50. If m2c halves the per-function time on that pool, it is the single biggest throughput
+lever available. If it produces C that must be rewritten anyway, installing it is a
+distraction.
+
+**What a good answer contains:** testimony from projects using the same compiler
+generation, m2c flags/settings that matter for PSX gcc 2.7.2 specifically, and whether
+teams use it for a first draft or only for understanding control flow.
+
+---
+
+## 3. How do other projects handle one function living in N binaries?
+
+**The observation.** The 37 code-bearing stage archives hold **10,107 function instances
+but only 7,064 unique bodies**. **1,218 distinct bodies appear more than once, covering
+4,261 instances — about 3.5x each.** One body (`jr $ra; nop`) occurs 363 times game-wide.
+Separately, a handful of engine functions have byte-identical twins inside stage files.
+
+**The question.** How do comparable projects structure a function that must appear,
+byte-identical, in many separate binaries? A shared source file compiled per-overlay? A
+per-overlay `#include` of a common body? Symbol aliasing at link time? Something else?
+What does the build system look like?
+
+**Why it matters.** This decides whether the stage-file workload is **7,064 units of work
+or closer to 1,800**. It is the difference between "not in this lifetime" and "large but
+finite". It also determines whether the overlay C pipeline should be built once generically
+or per-archive.
+
+**Local context:** exactly **1 of 37** code archives has been converted to a C segment so
+far (`ST1A`, yaml line `- [0x2C0E4, c, eve19]`, containing 12 `INCLUDE_ASM` stubs and no
+real C). The mechanism works; it is simply unused.
+
+---
+
+## 4. Can PSY-Q SDK and libgcc functions be matched from published source?
+
+**The observation.** `notes/wip/SDK_CANDIDATES.md` flags candidates by structural
+heuristic — memset, memcpy, strcpy/strlen, GTE-heavy, libgcc-style shift/divide helpers,
+small math leaves. **Zero are confirmed.** The note itself says false-positive rate is
+moderate and manual confirmation is required.
+
+**The question.** Are PSY-Q library sources, official disassemblies, or authoritative
+reconstructions published anywhere? Same for the libgcc 2.7.2 MIPS helpers (`__divdi3`,
+`__ashldi3`, soft-float routines) that SN would have shipped. Have other PSX projects
+built a *fingerprint database* of SDK functions?
+
+**Why it matters.** SDK and libgcc functions are matchable from **known source** rather
+than reverse-engineered — a fundamentally cheaper class of work. If even 50 of the 614
+unsplit engine functions are library code, that is a fast, low-risk block. It also stops
+us burning hours reverse-engineering something whose source is a download away.
+
+---
+
+## 5. How do high-throughput projects actually run decomp-permuter?
+
+**The observation.** Measured here: **3 wins in 11 fair trials = 27%**, not the "3 for 3"
+survivorship impression an earlier session recorded. Two beliefs were refuted by our own
+logs: *"a low score means you are close"* (one function sat at score 20 for 6,903
+iterations with zero improvement, another started at 80 and zeroed) and *"it cannot
+converge from a high score"* (one went 100,430 → 260 in ~60 seconds).
+
+Also known locally: **a permuter score of 0 is not a byte match** — it normalises jump
+targets, and one scratch scored 0 with a `j` to the wrong label. And **a genuine workdir
+zero can fail to transfer in-tree** when the scratch used stub types instead of the real
+struct.
+
+**The question.** What settings, seeds, iteration counts, and workflow do projects with
+high match throughput actually use? When do they reach for the permuter versus hand
+iteration? Do they gate every permuter result through an in-tree byte comparison?
+
+**Why it matters.** The permuter is the only tool we have that scales without human
+attention. A 27% hit rate is worth improving, and knowing *when* to deploy it matters more
+than the hit rate itself — currently the decision is intuition, not policy.
+
+**Local docs:** `notes/PERMUTER_GUIDE.md` (the `--stack-diffs` requirement, the
+`--no-ignore-branch-targets` flag and its required local `objdump.py` patch, the kill rule,
+the concurrency cap).
+
+---
+
+## Related, already written
+
+- `notes/DEEP_RESEARCH_PROMPT_reload.md` — the SN gcc 2.7.2 reload / live-range-split
+  question. Written 2026-07-25, **launched 2026-07-26 in a separate session**, result
+  pending. Overlaps question 1: if reload behaviour becomes predictable, the >120 wall may
+  fall regardless of what other projects do.
