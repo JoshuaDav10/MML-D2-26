@@ -6,13 +6,24 @@
 |---|---|
 | matched functions | **281** |
 | C-mapped slice | 281 / **484** = 58.1% |
-| **actual executable** | 281 / **1119** = **25.1%** by function, **~7.0% by volume** |
+| main executable | 281 / **1119** = **25.1%** by function, **~7.0% by volume** |
+| **WHOLE GAME** | 281 / **~8,000** = **~3.5%** (main exe + ~7,010 unique overlay funcs) |
 | active INCLUDE_ASM stubs | 203 |
 | never split into C at all | **635 functions / 227,996 bytes** in `asm/rock_neo/*.s` |
+| overlay code (measured 2026-07-26 PM) | ~7,010 unique funcs / 464,382 insn in ~51 stage programs; ALL un-decompiled (but build byte-identical) |
 
-> **Always quote both denominators.** `/484` is a slice someone once carved out; `/1119` is
-> the game. Quoting only the first overstates completion by 2.3x. `tools/check_docs.sh` now
-> blocks commits stating a count that disagrees with the built objects.
+> **Always quote WHICH denominator.** `/484` = a hand-carved slice; `/1119` = the main
+> executable; `/~8,000` = the whole game (main exe + disc overlays). Quoting `/484`
+> overstates completion ~16x vs the whole game. `tools/check_docs.sh` blocks commits whose
+> count disagrees with the built objects.
+>
+> **New this session (2026-07-26 PM), read before working:**
+> - `notes/WORK_MAP.md` — measured whole-game scope + evidence (§7 overlay de-dup).
+> - `notes/STRATEGY.md` — the leverage-ordered plan (Phase 0 infra → Phase 4 grind).
+> - `notes/META_LESSONS.md` — the measurement-integrity saga, written to teach from.
+> - Tools: `tools/overlay_scope.py`, `tools/leverage_analysis.py`, `tools/analyze_raw_asm.py`.
+> **Next concrete action: STRATEGY.md Phase 0** — split the 7 giant `asm/rock_neo/*.s`
+> files, then splat-config one stage program (ST00) as the overlay template.
 
 ---
 

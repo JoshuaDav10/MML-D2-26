@@ -4,6 +4,16 @@ Running log of what's been *proven against the hash* (not theorized). Every
 future session should read this before matching. Add to it whenever a diff
 iteration teaches something; this file is how the project gets smarter.
 
+> **Companion docs (read alongside this one):**
+> - `notes/META_LESSONS.md` — how the project learned to MEASURE itself honestly
+>   (the 484→1,119→~8,000 denominator saga + portable integrity lessons). Teach from it.
+> - `notes/WORK_MAP.md` — measured whole-game scope: ~8,000 unique functions,
+>   281 done (~3.5% whole game / 25% main exe / 58% C-slice — name which, always).
+> - `notes/STRATEGY.md` — leverage-ordered plan to tackle the ~8,000.
+> **Scope fact:** the game is ~8,000 unique functions across ROCK_NEO.EXE (1,119) +
+> ~51 stage-program overlays (~7,010 unique, currently all un-decompiled asm but
+> byte-identical in the build). See WORK_MAP §7 for the de-dup evidence.
+
 ## How knowledge persists between sessions
 - `CLAUDE.md` — auto-loaded rules (build commands, gotchas, branch policy).
 - This file — compiler idioms and matching tactics, growing per session
