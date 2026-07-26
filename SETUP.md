@@ -245,10 +245,20 @@ Version-drift fixes made while validating the asm-diff inner loop:
 First matched function: `func_800542FC` (moji.c) — `arg0[5]++` accessor,
 verified byte-for-byte (sha1 `ffc08fd2...` holds).
 
-## Pre-push verification hook
+## Verification hooks
 
-After your first successful `make CPP=cpp`, install the local pre-push gate with
-`make install_hooks`. Before every `git push`, the hook runs
+After your first successful `make CPP=cpp`, install the local gates with
+`make install_hooks`. This installs two symlinks into `.git/hooks/`.
+
+**pre-commit** — if the staged change touches `progress.md`, `HANDOFF.md`,
+`activity.md`, `notes/COUNTS.md`, or `src/rock_neo/`, it runs
+`tools/check_docs.sh` and aborts the commit when a doc states a matched count
+that disagrees with the built objects. Added after the 2026-07-26 audit, which
+found the project's completion denominator had silently excluded 64.6% of the
+binary for months while every "safeguard" reported success. Bypass deliberately
+with `git commit --no-verify`.
+
+**pre-push** — before every `git push`, the hook runs
 `make CPP=cpp check_rock_neo_only` and `make CPP=cpp check_overlays` against
 your current `build/` tree (it does not `rm -rf build`). If either gate fails,
 the push is aborted with the gate name; rebuild and re-check, or use

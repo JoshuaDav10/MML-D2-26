@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# Blocks a commit whose docs disagree with the built objects.
+# Added 2026-07-26 after an audit found the project's completion denominator had
+# excluded 64.6% of the binary for months and BOTH hand-built gates exited 0 on failure.
+# Enforced by git, so it holds regardless of which tool or session makes the commit.
+# Bypass (only with a stated reason): git commit --no-verify
+set -uo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
+[ -x "$ROOT/tools/check_docs.sh" ] || exit 0
+# Only gate commits that touch count-bearing docs or source (not pure notes/tooling churn).
+if git diff --cached --name-only | grep -qE '^(progress\.md|HANDOFF\.md|activity\.md|notes/COUNTS\.md|src/rock_neo/)'; then
+  if ! "$ROOT/tools/check_docs.sh" >/tmp/precommit_docs.txt 2>&1; then
+    echo "pre-commit: DOC/COUNT INCONSISTENCY — commit blocked."
+    cat /tmp/precommit_docs.txt
+    echo "Fix, or bypass deliberately with: git commit --no-verify"
+    exit 1
+  fi
+fi
+exit 0
