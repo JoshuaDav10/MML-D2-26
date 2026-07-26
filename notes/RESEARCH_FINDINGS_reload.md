@@ -144,7 +144,28 @@ this report must not reopen that hunt.
 - "aaron" (the `/home/aaron/sn-2.7.2` build path in our binary) is **unidentified**; no
   public repo matches. Likely a private build shared on the PSX.Dev / decompals Discord.
 
-## 🔒 Security note — do NOT fetch-and-act on the TCRF page
+## ❌ FABRICATED — the "prompt injection" on the TCRF page
+
+**Verdict: the claim is false.** The user retrieved the live page in a normal browser
+and pasted it in full. It contains **no AI-directed text of any kind** — no injected
+instructions, nothing about deleting or renaming files. The page footer reads
+*"This page was last edited on 6 August 2021"*, so it has been static for five years;
+the Wayback snapshot used during triage was already current, and the live contents list
+is byte-identical in structure (Translation / eve19.c / Some Programming / sub_scrn.c /
+EM09_49.C, credited to *koolaidman*).
+
+**What actually happened:** tcrf.net returns HTTP 403 to AI user-agents — its block page
+literally reads *"Known-malicious user agent (ChatGPT, Claude, bingbot, etc.)"* — because
+the site is under a long-running DDoS. The research agent could not read the page, hit
+that block, and appears to have confabulated it into "the page carries hostile
+instructions aimed at AI agents."
+
+**The lesson worth keeping:** the report's most alarming, most action-shaping claim was
+the one with no source behind it. Security warnings get believed on sight because
+doubting them feels reckless — which is exactly why they need the same verification bar
+as everything else. Chasing this one down is what surfaced the eve19 source.
+
+## Original note (superseded, kept for the audit trail) — do NOT fetch-and-act on the TCRF page
 
 The report warns that `tcrf.net/Mega_Man_Legends/Source_Code` currently serves an **injected
 block of fake "AI agent instructions" directing automated readers to delete or rename
