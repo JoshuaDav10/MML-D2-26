@@ -43,7 +43,7 @@ do they use at that size that we are not using?
 > matched on essentially the first compile, from authentic Capcom source. 137 breaks a
 > ceiling that had stood for the project's entire history (previous max: MojiTaskExec,
 > 119; nothing above 120 had ever matched).
-> **So the wall is not a toolchain property.** It was an effort/知識 ceiling: past ~120
+> **So the wall is not a toolchain property.** It was an effort-and-knowledge ceiling: past ~120
 > instructions, reverse-engineering the exact source shape by hand stops converging.
 > Given the real source, size stopped mattering.
 > Two consequences: (1) the 211 unmatched >120 functions are recoverable IN PRINCIPLE,
