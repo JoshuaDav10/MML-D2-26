@@ -1,9 +1,13 @@
 # Open research questions — raw material for a deep-research prompt
 
-**Status: NOT YET RESEARCHED.** These are scoped questions, not answers. A later session
-should expand these into a full deep-research prompt (see
-`notes/DEEP_RESEARCH_PROMPT_reload.md` for the house style — it is specific, names primary
-sources, and explicitly asks for artifacts and prior art rather than tutorials).
+**Status: PROMPT WRITTEN 2026-07-26 → `notes/DEEP_RESEARCH_PROMPT_scaling.md`.** That file
+is the launchable version of everything below, with figures re-measured from
+`build/function_map.json`. Findings land in `notes/RESEARCH_FINDINGS_scaling.md` under the
+same CANDIDATE / NOT-HASH-GATED banner as `RESEARCH_FINDINGS_gcc272_idioms.md`.
+
+These remain the scoped questions, not answers. House style:
+`notes/DEEP_RESEARCH_PROMPT_reload.md` — specific, names primary sources, and explicitly
+asks for artifacts and prior art rather than tutorials.
 
 Each question below states **why it matters in numbers**, so the eventual prompt can be
 written against a decision rather than against curiosity. Ordered by expected value.
@@ -20,8 +24,14 @@ Live figures: `notes/COUNTS.md`. Full inventory: `notes/FUNCTION_MAP.md`.
 
 **The observation.** The largest function this project has ever matched is
 `MojiTaskExec` at **119 instructions**. Nothing above 120 has ever matched, across the
-project's entire history. Meanwhile **211 of the remaining engine functions are over 120
-instructions** (28 over 200, 11 over 300, largest 2,383).
+project's entire history. Meanwhile **211 of the 818 unmatched engine functions are over
+120 instructions** — **113 over 200, 50 over 300**, largest 2,383 (`func_8004BDC8`).
+
+> ⚠️ **Denominator fix (2026-07-26).** This line previously read "28 over 200, 11 over 300"
+> — those count only the **204 C-mapped stubs**, not the 818 unmatched. Mixing two
+> denominators inside one sentence is the exact failure this project keeps re-learning
+> (see `notes/META_LESSONS.md`). Figures above are all-unmatched, measured from
+> `build/function_map.json`.
 
 **The question.** Do other gcc 2.7.2 / PSY-Q decompilation projects — Symphony of the
 Night, Spyro, Crash Bandicoot, Ape Escape, Silent Hill, Metal Gear Solid, Legend of
@@ -51,10 +61,10 @@ time-to-match versus reading the asm and writing C directly? Or is the draft usu
 *worse* than starting fresh — because it optimises for behavioural equivalence, not for
 the source shape that reproduces the original codegen?
 
-**Why it matters.** The engine has **265 unmatched functions ≤30 instructions** and 394
-≤50. If m2c halves the per-function time on that pool, it is the single biggest throughput
-lever available. If it produces C that must be rewritten anyway, installing it is a
-distraction.
+**Why it matters.** The engine has **248 unmatched functions ≤30 instructions** and **377
+≤50** (re-measured 2026-07-26; was 265/394 before the +17 batch landed). If m2c halves the
+per-function time on that pool, it is the single biggest throughput lever available. If it
+produces C that must be rewritten anyway, installing it is a distraction.
 
 **What a good answer contains:** testimony from projects using the same compiler
 generation, m2c flags/settings that matter for PSX gcc 2.7.2 specifically, and whether
