@@ -1,15 +1,15 @@
 # MML-D2-26 Progress
 
 ## Mapped (functions in splat config / INCLUDE_ASM stubs, main exe)
-- rock_neo main: **487** functions in linked object code (`tools/census.py
-  --matched`; see `notes/COUNTS.md`). **477** have splat asm under
-  `asm/rock_neo/nonmatchings/`; **205** active INCLUDE_ASM stubs (cpp census, 2026-07-26);
+- rock_neo main: **488** functions in linked object code (`tools/census.py
+  --matched`; see `notes/COUNTS.md`). **478** have splat asm under
+  `asm/rock_neo/nonmatchings/`; **206** active INCLUDE_ASM stubs (cpp census, 2026-07-26);
   **9** extra symbols in `game.c` only (no nonmatching `.s`).
 
 ## Matched (recompiles to identical bytes)
 - rock_neo main: **282** (AUTHORITATIVE — tools/audit_count.sh: clean rm -rf build,
-  hash OK, raw cmp byte-identical, census 282. 487 total, 205 active stubs.
-  Denominators (name which — see notes/WORK_MAP.md): 282/487 = 57.9% C-slice ·
+  hash OK, raw cmp byte-identical, census 282. 488 total, 206 active stubs.
+  Denominators (name which — see notes/WORK_MAP.md): 282/488 = 57.8% C-slice ·
   282/1119 = 25.2% main exe · 282/~8,000 ≈ 3.5% WHOLE GAME.)
   - +1 (func_8002F9C4, 2026-07-26 autonomous chain): FIRST match harvested from the
     newly-unlocked raw-asm queue via the Phase 0 split template. 10-insn wrapper
