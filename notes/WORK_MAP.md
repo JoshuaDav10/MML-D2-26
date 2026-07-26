@@ -30,7 +30,15 @@ already satisfy line A. Do not let the overlay count stampede the plan (see §4)
 | Raw asm in ROCK_NEO.EXE, never split | ~628–635 | 56,459 insn, 64.6% of the exe by volume |
 | **ROCK_NEO.EXE TOTAL** | **~1119** | the honest primary denominator |
 | **Real completion** | **281 / 1119 = 25.1%** | ~7% by volume |
-| Overlay `func_` labels (205 BINs) | ~10,000 | SEPARATE scope; already byte-match; heavy dup |
+| Overlay `func_` labels (raw) | 10,087 | before de-dup (tools/overlay_scope.py) |
+| Overlay UNIQUE functions | **~7,010** | after de-dup (1.4x); 464,382 insn; ALL undecompiled |
+| **WHOLE-GAME unique functions** | **~8,100** | 1,119 main + ~7,010 overlay (minus untested main∩overlay overlap) |
+| **Whole-game completion** | **281 / ~8,100 ≈ 3.5%** | by unique-function count |
+
+**THREE denominators, all true, name which every time:** 281/484 = 58% (C-slice, the
+old inflating frame) · 281/1119 = 25% (main exe) · 281/~8100 ≈ 3.5% (whole game).
+Plus the finish-line axis: overlays already BUILD byte-identical (line A = done) but
+are 0% C (line B). See §7 for the de-dup evidence.
 
 Binary builds byte-identical to the disc. The 281 are real and none is invalidated.
 
@@ -111,7 +119,35 @@ This is the correct use of premium (Fable) tokens; grinding small leaves is not.
 4. **`src/ST1A/` exists** — one overlay is partially C. Confirm whether its progress is
    counted anywhere or is itself an untracked slice.
 
+## 7. Overlay scope — MEASURED, de-dup verified (tools/overlay_scope.py, 2026-07-26)
+
+The "205 overlays" are NOT 205 code blobs. Only ~51 of them are code
+(`PROGBIN_R3_ST*` stage programs, `.bin`/`.BIN`); the other ~154 are DATA
+(`.TIM` textures, `.MSG` text, `.STG/.MDT/.IDX/.HED` maps, `.vab` audio) with zero
+`func_` labels. All 10,087 overlay function labels live in the stage programs.
+
+De-dup (hash of instruction words, exact + relocation-normalized):
+- 10,087 labels → **7,046 unique (exact bytes) / 7,010 (normalized)** — only **1.4x**
+  duplication, far LESS than the "heavy dup" I assumed. Verified the de-dup is real,
+  not a bug: whole-stage sibling copies (ST04≡ST04B, byte-identical) collapse, AND the
+  shared engine-core functions collapse (copies-per-function tail: one func appears
+  342x, one 144x, one 72x, several 24–37x = the R3 engine linked into every stage).
+- Structure: **5,905 unique functions live in exactly ONE stage**; only 1,141 are
+  shared across stages. So the overlays are mostly genuine one-off stage/enemy logic,
+  not a giant shared library. That is why dedup is only 1.4x.
+- Unique overlay code is **464,382 instructions ≈ 5x the entire main exe.** Most of the
+  GAME'S code is in the stage programs, and all of it is currently un-decompiled asm.
+- Size profile of the ~7,010 unique: ≤10:211 · 11–25:1,814 · 26–60:2,300 · 61–150:2,055
+  · 151–400:602 · >400:28. So ~2,025 are small (≤25 insn) — a second fast-win reservoir,
+  but behind the T0 split + a splat config for the stage programs.
+
+Caveats (still to tighten): (a) exact-byte dedup UNDERCOUNTS same-source/different-
+address duplication — true unique may be a bit below 7,010; (b) main-exe ∩ overlay
+overlap is UNMEASURED — some of the ~7,010 may also be in the 1,119, so ~8,100 whole-
+game is a slight over-count; (c) 10,087 vs earlier 10,090 = label-parse noise.
+
 ## Reproduce everything here
 - Counts: `tools/audit_count.sh`, `tools/adversarial_audit.sh`
-- Size distribution: `tools/analyze_raw_asm.py` (parses `asm/rock_neo/*.s`)
-- Overlay labels: `grep -rhE '^glabel func_' asm/ --include=*.s | wc -l`
+- Main-exe size distribution: `tools/analyze_raw_asm.py` (parses `asm/rock_neo/*.s`)
+- Overlay scope + de-dup: `tools/overlay_scope.py`
+- Overlay labels (raw): `grep -rhE '^glabel func_' asm/ --include=*.s | wc -l`
