@@ -1,5 +1,15 @@
 #include "common.h"
 
+/* --- decls: parallel grind wave 1, 2026-07-26 --- */
+/* func_8001B644 */
+extern u16 D_800AD142[];
+extern u8 D_800988D0;
+extern u8 D_80098964;
+extern u8 D_80098B42;
+void func_8001D394(u8);
+void func_8001CB7C(void);
+void func_8001CAAC(void);
+
 typedef struct {
     s32 cmd;   // 0x0 — command id (1, 4, 6 seen so far)
     s32 arg0;  // 0x4
@@ -22,9 +32,54 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B4CC);
 
 void func_8001B63C(void) {}
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B644);
+/* CD state machine step (twin of func_8001B6FC, differs only in the
+   D_80098B42 value). switch on D_800989C4 with case 0 FALLING THROUGH
+   into case 1 — the beqz / beq-1 / j-default ladder is the switch
+   expander's sparse-case shape; an if/else chain gets jump-inverted. */
+void func_8001B644(void) {
+    s32 i;
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/cd", func_8001B6FC);
+    switch (D_800989C4) {
+    case 0:
+        for (i = 0x7F; i > 0; i--) {
+            func_8001D394(i);
+        }
+        D_800AD142[0] |= 0x8000;
+        func_8001CB7C();
+        D_800988D0 = 1;
+        D_800989C4 += 1;
+        /* fallthrough */
+    case 1:
+        if (D_80098964 != 0) {
+            D_80098B42 = 1;
+            func_8001CAAC();
+        }
+        break;
+    }
+}
+
+/* Twin of func_8001B644; identical except D_80098B42 = 2. */
+void func_8001B6FC(void) {
+    s32 i;
+
+    switch (D_800989C4) {
+    case 0:
+        for (i = 0x7F; i > 0; i--) {
+            func_8001D394(i);
+        }
+        D_800AD142[0] |= 0x8000;
+        func_8001CB7C();
+        D_800988D0 = 1;
+        D_800989C4 += 1;
+        /* fallthrough */
+    case 1:
+        if (D_80098964 != 0) {
+            D_80098B42 = 2;
+            func_8001CAAC();
+        }
+        break;
+    }
+}
 
 extern u16 D_800AD142[];
 extern u16 D_800AD146;

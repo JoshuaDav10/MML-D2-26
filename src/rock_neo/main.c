@@ -4,6 +4,25 @@
 #include "rock_neo/cd.h"
 #include "rock_neo/moji.h"
 
+/* --- decls: parallel grind wave 1, 2026-07-26 --- */
+/* func_800120A8 */
+/* Double-buffer pair at 0x800C0C48, stride 0x90 (it lives at +0x48 inside the
+   0x168-stride screen struct that starts at D_800C0C00; D_800C0D68, already
+   extern'd in main.c, is the next one).  DISPENV 0x14 + DRAWENV 0x5C + OT 0x20
+   = 0x90.  Layout confirmed by func_8001215C, whose writes land exactly on
+   disp.screen.y (+0xA) and draw.dtd/dfe/isbg/r0/g0/b0 (+0x2A..+0x2F). */
+typedef struct DB {
+    DISPENV disp;
+    DRAWENV draw;
+    unsigned long ot[8];
+} DB;
+
+extern DB D_800C0C48[2];
+
+void SetDefDrawEnv(DRAWENV* env, int x, int y, int w, int h);
+void SetDefDispEnv(DISPENV* env, int x, int y, int w, int h);
+void func_8001215C(u8* x); /* defined at main.c:36, i.e. BELOW this call site */
+
 extern volatile s32 idk_framecounter_maybe; // 0x80098888, lui-accessed (not sdata);
                                             // volatile: original reloads after store
 extern s32 D_80098158;             // sdata ($gp)
@@ -31,7 +50,14 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", main);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", idk_Init_system_maybe);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_800120A8);
+void func_800120A8(void) {
+    SetDefDrawEnv(&D_800C0C48[0].draw, 0, 0, 320, 240);
+    SetDefDispEnv(&D_800C0C48[0].disp, 0, 256, 320, 240);
+    SetDefDrawEnv(&D_800C0C48[1].draw, 0, 256, 320, 240);
+    SetDefDispEnv(&D_800C0C48[1].disp, 0, 0, 320, 240);
+    func_8001215C((u8 *)&D_800C0C48[0]);
+    func_8001215C((u8 *)&D_800C0C48[1]);
+}
 
 void func_8001215C(u8 *x) {
     ClearOTagR((unsigned long *)(x + 0x70), 8);
@@ -66,7 +92,34 @@ void func_800122D0(s32 p) {
     func_80012350(p, 0x800, 5);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012350);
+void func_80012350(s32 p, s32 mask, s32 idx) {
+    u8 v;
+    u8 c;
+
+    if ((*(u16 *)(p + 0x2E) & mask) == 0 && (*(u16 *)(p + 0x2A) & mask) == mask) {
+        v = *(u8 *)(p + idx + 0x38);
+        *(u8 *)(p + idx + 0x40) = 0;
+        if (v == 0) {
+            *(u8 *)(p + idx + 0x38) = 1;
+        } else {
+            *(u8 *)(p + idx + 0x38) = 2;
+            *(u16 *)(p + 0x2E) |= mask;
+        }
+    } else {
+        v = *(u8 *)(p + idx + 0x38);
+        if (v != 0) {
+            if (v != 2) {
+                c = *(u8 *)(p + idx + 0x40);
+                *(u8 *)(p + idx + 0x40) = c + 1;
+                if (c < 6) {
+                    return;
+                }
+            }
+            *(u8 *)(p + idx + 0x38) = 0;
+            *(u16 *)(p + 0x2E) &= ~mask;
+        }
+    }
+}
 
 s32 vsync_cb(void) {
     idk_framecounter_maybe += 1;

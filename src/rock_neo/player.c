@@ -4,6 +4,16 @@
 #include "rock_neo/scene.h"
 #include "rock_neo/sound.h"
 
+/* --- decls: parallel grind wave 1, 2026-07-26 --- */
+/* func_8003F188 */
+s32 abs(s32);   /* gcc-2.7 builtin: expands inline to the mips abssi2 triple
+                   `bgez $a1,1f / move $v0,$a1 / neg $v0,$v0` — no libc call,
+                   no undefined symbol. No header in include/ declares it. */
+/* func_80040E00 */
+/* add above func_80040E00 in src/rock_neo/player.c (player.h is already
+   included there; nothing else calls func_80040E9C from this TU) */
+s32 func_80040E9C(PL_WORK* pl, s16 no);
+
 s32 func_800406A8(PL_WORK*);
 void func_8003BE6C(PL_WORK*, s32);
 s32 func_80041DDC(PL_WORK*, s32, s32, s32);
@@ -70,7 +80,28 @@ void func_8003EE68(PL_WORK* pl) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003EEC0);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F188);
+void func_8003F188(PL_WORK* pl, s32 diff, s32 flag) {
+    if (abs(diff) < 0x80) {
+        pl->xB4 = 0;
+        pl->x56 = *(u16*)pl->x10A;
+        if (flag != 0) {
+            func_80041DDC(pl, 0, 0, 0);
+        }
+    } else {
+        /* the signed rate MUST go through an s32 local: assigning the ternary
+           straight to the u16 field folds -0x80 to 0xFF80 and emits ori
+           (0x3402FF80) instead of the original's addiu (0x2402FF80).
+           Written (diff <= 0) ? 0x80 : -0x80 so cc1's inversion yields
+           bgtz + (-0x80 in the delay slot); the (diff > 0) ? -0x80 : 0x80
+           spelling produces blez with the arms swapped. */
+        s32 v = (diff <= 0) ? 0x80 : -0x80;
+        pl->xB4 = v;
+        if (flag != 0) {
+            func_80041DDC(pl, 0xD, 0, 0);
+        }
+        pl->x56 += pl->xB4;
+    }
+}
 
 s32 func_8003F224(PL_WORK *pl) {
     u16 k = pl->x11C;
@@ -97,7 +128,26 @@ one:
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F288);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_8003F3E8);
+void func_8003F3E8(PL_WORK* pl) {
+    switch (*(u8*)&pl->xA) {
+    case 0:
+        func_80041DDC(pl, 0x30, 0, 1);
+        *(u8*)&pl->xA += 1;
+        break;
+    case 1:
+        break;
+    case 2:
+        func_80041DDC(pl, 0x31, 0, 1);
+        *(u8*)&pl->xA += 1;
+        break;
+    case 3:
+        if (*(s8*)((u8*)pl + 0xA7) == -1) {
+            pl->x9 = 0;
+            *(u8*)&pl->xA = 0;
+        }
+        break;
+    }
+}
 
 void func_8003F498(PL_WORK* pl) {
     if (*(u8*)&pl->xA == 0) {
@@ -490,7 +540,34 @@ s32 func_80040B34(PL_WORK* pl) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040B68);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040E00);
+s32 func_80040E00(PL_WORK* pl, s16 a1, s16 a2, s16 a3) {
+    /* three SEPARATE call sites are load-bearing: post-reload cross-jumping
+       merges the identical `sll/sra/jal/li 1` tails, which keeps the s16 param
+       in $a1 (case 0 does `addiu $a1,$a1,1` in place).  A single trailing
+       `func_80040E9C(pl, a1); return 1;` with `a1++; break;` in case 0 makes a1
+       an assigned pseudo, costs an entry `move $v1,$a1`, and pushes
+       `sw $ra,0x10($sp)` out of the first branch delay slot. */
+    switch (a2) {
+    case 0:
+        func_80040E9C(pl, a1 + 1);
+        return 1;
+    case 1:
+        if (a3 == 0) {
+            pl->x9 = 0;
+            pl->xA = 0;
+            return 0;
+        }
+        func_80040E9C(pl, a1);
+        return 1;
+    case 2:
+        if (a3 == 0) {
+            return 0;
+        }
+        func_80040E9C(pl, a1);
+        return 1;
+    }
+    return 1;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80040E9C);
 
@@ -599,7 +676,47 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041AB0);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041B8C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80041DDC);
+/* xA4/xAC/xAD fall inside PL_WORK pad arrays -> byte-offset form.
+   K&R definition: the narrow declared types are load-bearing -- `u8 a3` gives the
+   in-place entry `andi $a3,$a3,0xff`, `s32 a1` + explicit (u8) casts give the two
+   separate use-site `andi ..,$a1,0xff`, and `s16 a2` (HImode) is what turns the
+   final `a2 >>= 1` into `sll 16 / sra 17`.  Promoted K&R types are int/int/int, so
+   the ANSI prototype at player.c:9 stays byte-for-byte untouched (callers unaffected).
+   No value is returned: every caller ignores it and the original never writes $v0. */
+s32 func_80041DDC(pl, a1, a2, a3)
+PL_WORK *pl;
+s32 a1;
+s16 a2;
+u8 a3;
+{
+    if (a3 != 0) {
+        *(u8 *)((u8 *)pl + 0xAD) = 0xFF;
+    } else if ((u8)a1 == *(u8 *)((u8 *)pl + 0xAD)) {
+        return;
+    }
+    /* case 0xC first: its body must fall through from the 2-leg beq dispatch */
+    switch ((u8)a1) {
+    case 0xC:
+        if (*(u8 *)((u8 *)pl + 0xAD) == 1) {
+            a2 = *(u8 *)((u8 *)pl + 0xA4) * 2 + 4;
+            if (a2 >= 0x20) {
+                a2 -= 0x20;
+            }
+        }
+        break;
+    case 1:
+        if (*(u8 *)((u8 *)pl + 0xAD) == 0xC) {
+            a2 = *(u8 *)((u8 *)pl + 0xA4) - 4;
+            if (a2 < 0) {
+                a2 += 0x20;
+            }
+            a2 >>= 1;
+        }
+        break;
+    }
+    *(u8 *)((u8 *)pl + 0xAC) = a1;
+    *(u8 *)((u8 *)pl + 0xA4) = a2;
+}
 
 void func_8002FEA4(PL_WORK *, s16, s16, s16);
 
@@ -617,7 +734,45 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80042044);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80042094);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/player", func_80042154);
+/* xB6 falls inside a PL_WORK pad array -> byte-offset form.
+   The two per-arm `s16 v` HImode locals are load-bearing: they buy the otherwise
+   unexplained `addiu $sp,-0x10` frame and the `lh` + `move $v1,$v0` copy in each
+   arm (LESSONS 2026-07-11).  `ret` accumulated in a local (not direct returns)
+   is what produces the trailing `move $v0,$a3`.  `-a2` written inline at both
+   use sites (not hoisted to `a2 = -a2;`) keeps the `negu` AFTER the sll/sra. */
+s32 func_80042154(PL_WORK *pl, s32 a1, s32 a2, s32 a3) {
+    s32 ret;
+
+    if (pl->x11C & a3) {
+        s16 v = (s16)pl->xB4;
+        ret = 1;
+        if (v < 0) {
+            pl->xB4 = 0;
+        } else {
+            v += a1;
+            pl->xB4 = v;
+            if (v > a2) {
+                pl->xB4 = a2;
+            }
+            *(s16 *)((u8 *)pl + 0xB6) = a1;
+        }
+    } else {
+        s16 v = (s16)pl->xB4;
+        ret = 2;
+        if (v > 0) {
+            pl->xB4 = 0;
+        } else {
+            v -= a1;
+            pl->xB4 = v;
+            if (v < -a2) {
+                pl->xB4 = -a2;
+            }
+            *(s16 *)((u8 *)pl + 0xB6) = -a1;
+        }
+    }
+    pl->x56 = (pl->x56 + pl->xB4) & 0xFFF;
+    return ret;
+}
 
 s32 func_80042208(void) {
     if (*(s16*)&Player_work.life >= 0) {

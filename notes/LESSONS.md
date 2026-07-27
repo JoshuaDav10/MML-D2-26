@@ -1095,3 +1095,37 @@ match, so not hash-gated; the 53B40 verdict that uses these is still PENDING).
   and drafting C parallelise cleanly. The build tree and `build/` are shared and the
   verification gate is global, so integration + `make` + hash-check must stay serial in
   one thread. Agents are read-only and return C as text.
+
+## 2026-07-26 (parallel self-verifying agent wave) — 17 matches in one build cycle
+
+- **The harness that worked: producers self-verify, integration stays serial.**
+  10 concurrent agents, 2 functions each, every agent proving its own work with
+  `tools/bytecmp.sh` before reporting. 18/20 verified; 17 landed in ONE build cycle
+  (306 -> 323). The main thread never debugged a function — only integrated.
+  `bytecmp` now takes `BYTECMP_OBJ=<path>` so concurrent agents do not clobber each
+  other's scratch object; without that they silently corrupt each other's results.
+  Agents must be READ-ONLY on the tree (scratch `.c` in /tmp + their own object) —
+  the build tree and `build/` are shared and the hash gate is global.
+- **⚠️ A SCRATCH TU MUST START WITH `__asm__(".include \"macro.inc\"\n");`**
+  In a real build that arrives free via `common.h` -> `include/include_asm.h`.
+  `macro.inc` overrides GNU as's builtin `move` (which assembles to `or rd,rs,$zero`,
+  0x…25) with `addu \a,\b,$zero` (0x…21). Without the include, ANY scratch TU
+  containing a register-to-register move shows **phantom hard mismatches** — one agent
+  chased three of them. `tools/bytecmp.sh` and `tools/tryfn.sh` do NOT add it.
+  **Past bytecmp verdicts on move-containing functions may have been false failures.**
+- **A "small" alias can defeat an unwanted address CSE** (func_8001F158). `Scene_work`
+  is 0xA8 bytes, so with -G8 its address is "expensive" and cc1 CSEs it into a register
+  (`la $3,Scene_work+164`), costing an instruction and losing a load-delay fill.
+  Declaring a 1-byte alias for the same symbol —
+  `extern u8 Scene_work_b __asm__("Scene_work");` — makes the address cheap, so cc1
+  emits independent bare refs and fills the delay slot, matching the target.
+- **Two agents can pick incompatible views of the same symbol in one TU.** In scene.c
+  one wanted `#include "rock_neo/player.h"` (`PL_WORK Player_work`) and another needed
+  `extern u8 Player_work[]` — and scalar-vs-array extern changes addressing, so they
+  cannot coexist. Detect at merge time; land the majority and defer the odd one out
+  rather than "fixing" a verified function's source shape on a hunch.
+- **Integration hazards, all hit for real:** (1) a prose-stripping heuristic cut inside
+  a multi-line comment and left an unterminated `/*` that swallowed later declarations
+  — any such stripper must track comment depth; (2) de-duplicating declarations by
+  substring match silently dropped needed ones — duplicate compatible `extern`s are
+  legal C, so just emit them and let the compiler flag real conflicts.

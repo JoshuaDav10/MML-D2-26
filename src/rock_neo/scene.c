@@ -2,6 +2,37 @@
 #include "rock_neo/game.h"
 #include "rock_neo/scene.h"
 
+/* --- decls: parallel grind wave 1, 2026-07-26 --- */
+/* func_8001F158 */
+extern u8 Scene_work_b __asm__("Scene_work");
+#define SW(off, type) (*(type *)((u8 *)&Scene_work_b + (off)))
+/* func_8001F798 */
+/* 0x80089248 — per-stage u16 copy job: {count, src, dst}, 0xC stride.
+   src points into 0x80097Axx (staged values), dst into 0x800981xx (the live
+   $gp sdata HUD/menu words that func_8001F8DC/F9AC/FA94/... then override).
+   MUST be one struct array, not three parallel arrays — see notes. */
+typedef struct {
+    s32 num;
+    u16 *src;
+    u16 *dst;
+} SCE_COPY;
+
+extern SCE_COPY D_80089248[];
+/* func_8001FA94 */
+extern s16 D_800981EE; // sdata ($gp)
+extern s16 D_800981F2;
+/* func_8001EAE8 */
+u8 *func_8001E968(s32, s32, s32, u8 *);
+/* Sce_flag_off */
+/* 0x800B51B0; +0x450 rb_parts_equip_data[4], +0x454 rb_parts_sort_data[0x20]
+   (names from include/rock_neo/player.h).  Declared flat here on purpose:
+   scene.c must not #include rock_neo/player.h — that drags in rock_neo.h and
+   would put new prototypes in scope for the already-matched functions in this
+   file.  Same local-extern style scene.c already uses for Sce_flag. */
+extern u8 Player_work[];
+
+/* `extern u8 Sce_flag[];` is already present twice in scene.c (lines 61, 105) */
+
 extern u8 D_80098198;
 extern u8 D_80098199;
 extern u8 D_800C356E[];
@@ -116,7 +147,35 @@ s32 Sce_flag_test(s32 flagno) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", Sce_flag_on);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", Sce_flag_off);
+unknown_t Sce_flag_off(unknown_t flagno) {
+    u8 *p;
+    s32 mask;
+    s32 i;
+
+    p = Sce_flag;
+    p += (u32)flagno >> 3;
+    /* the mask MUST be built in two statements: cc1 has to materialise the
+       li 0x80 BEFORE the andi.  Inline `~(0x80 >> (flagno & 7))` emits andi
+       first, which swaps the $v0/$v1 assignment, which in turn lets the sb
+       migrate into the beqz delay slot and drops the nop (+3 mismatches). */
+    mask = 0x80;
+    mask >>= flagno & 7;
+    *p &= ~mask;
+    if ((u32)(flagno - 0x500) < 0x20) {
+        for (i = 0; i < 0x20; i++) {
+            if (Player_work[0x454 + i] == flagno - 0x4FF) {
+                Player_work[0x454 + i] = 0;
+                break;
+            }
+        }
+        for (i = 0; i < 3; i++) {
+            if (Player_work[0x450 + i] == flagno - 0x4FF) {
+                Player_work[0x450 + i] = 0;
+                break;
+            }
+        }
+    }
+}
 
 extern u8 *D_80098B60;
 
@@ -263,7 +322,28 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E83C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001E968);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001EAE8);
+/* Old-style definition ON PURPOSE: an ANSI prototype here makes
+   func_8001EB98's zero-arg `func_8001EAE8()` call a hard error. */
+u8 *func_8001EAE8(e)
+u8 *e;
+{
+    u8 *p = func_8001E968(e[0], e[1], e[3], e + 0xC);
+
+    if (p == 0) {
+        return 0;
+    }
+    switch (e[3]) {
+    case 0x20:
+    case 0x40:
+    case 0x60:
+    case 0xE0:
+        p[3] = e[4];
+        p[4] = e[2];
+        *(s32 *)(p + 0xC) = *(s32 *)(e + 8);
+        break;
+    }
+    return p;
+}
 
 void func_8001EB98(u8 *p) {
     u8 pad[8]; /* dead frame space, present in the original */
@@ -282,7 +362,32 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001EC0C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F070);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F158);
+/* Scene_work is 0xA8 bytes, so -G8 makes cc1 treat its address as expensive: it
+ * CSEs &Scene_work.xA4 into a register (`la $3,Scene_work+164`) because the field
+ * is read AND written in this basic block -- one instruction more than the target,
+ * and it also loses the load-delay fill.  A 1-byte alias for the same symbol is
+ * "small" to ENCODE_SECTION_INFO, so the constant address is free, cc1 emits two
+ * independent bare refs and hoists the Scene_work+8 load into the delay slot --
+ * exactly the target.  gprel.py drops the resulting `.extern Scene_work,1`, and
+ * Scene_work is not gp-accessed in the original, so GAS -G0 gives lui/%lo. */
+extern u8 Scene_work_b __asm__("Scene_work");
+#define SW(off, type) (*(type *)((u8 *)&Scene_work_b + (off)))
+
+void func_8001F158(void) {
+    u8 *p = SW(0xA4, u8 *); /* Scene_work.xA4 */
+
+    SW(0xA4, u8 *) = p + 8;
+    if (SW(0x8, u8) != p[8]) { /* Scene_work.x8 */
+        SW(0x18, s32) = 0;
+        SW(0x1C, s32) = 0;
+    }
+    SW(0x8, u8) = p[8];
+    if (SW(0x9, u8) != p[9]) { /* Scene_work.x9 */
+        SW(0x1C, s32) = 0;
+    }
+    SW(0x9, u8) = p[9];
+    SW(0x10, s32) = 0;
+}
 
 void func_8001F1DC(void) {
     Scene_work.x10 = 0;
@@ -347,7 +452,13 @@ void func_8001F740(void) {
     D_8008980C[*p]();
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F798);
+void func_8001F798(s32 n) {
+    s32 i;
+
+    for (i = 0; i < D_80089248[n].num; i++) {
+        D_80089248[n].dst[i] = D_80089248[n].src[i];
+    }
+}
 
 void func_8001F820(void) {}
 
@@ -437,7 +548,34 @@ void func_8001F9AC(void) {
     D_800981E2 = out;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001FA94);
+void func_8001FA94(void) {
+    s8 v = Game_work.x52;
+    s16 out;
+
+    switch (v) {
+    case 0:
+        D_800981EE = 0x59;
+        if (Sce_flag_test(0x630)) {
+            D_800981F2 = 0x61;
+        } else {
+            D_800981F2 = 0x5F;
+        }
+        return;
+    case 1:
+        out = 0x5A;
+        break;
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+        out = 0x5B;
+        break;
+    default:
+        out = 0x5C;
+        break;
+    }
+    D_800981EE = out;
+}
 
 void func_8001FB24(void) {
     if (Game_work.x52 == 6) {

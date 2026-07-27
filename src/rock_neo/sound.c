@@ -1,5 +1,12 @@
 #include "common.h"
 
+/* --- decls: parallel grind wave 1, 2026-07-26 --- */
+/* func_8001AE6C */
+extern u8 D_80098840;   /* fade step; written by func_80019DE0 (still INCLUDE_ASM) */
+/* func_8001B33C */
+void func_80070114(s16);
+void func_8007013C(s16, u8);
+
 s32 func_80071220();
 void SpuSetKey(s32, u32);
 
@@ -264,7 +271,27 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001AA8C);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001AC58);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001AE6C);
+s32 func_8001AE6C(s32 arg0, s16 *arg1) {
+    s32 ret = 0;
+
+    if (arg0 & 3) {
+        ret = 1;
+        if (arg0 & 1) {
+            *arg1 -= D_80098840;
+            if (*arg1 <= 0) {
+                *arg1 = 0;
+                ret = 0;
+            }
+        } else {
+            *arg1 += D_80098840;
+            if (*arg1 >= 0x7F) {
+                *arg1 = 0x7F;
+                ret = 0;
+            }
+        }
+    }
+    return ret;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001AEF0);
 
@@ -276,4 +303,26 @@ void func_8001B314(void) {
     SpuSetKey(0, 0xFF8000);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001B33C);
+void func_8001B33C(void) {
+    s32 i;
+    s16 *seqp;
+    u8 *volp;
+    s16 seq;
+    s8 f;
+
+    seqp = D_80098AF8;
+    for (i = 0; i < 4; i++, seqp += 4) {
+        volp = &D_80098AFC[i * 8];
+        seq = *seqp;
+        if (seq != -1) {
+            f = ((s8 *)volp)[-2];
+            if (f != -1) {
+                if (f == 0) {
+                    func_80070114(seq);
+                } else {
+                    func_8007013C(seq, *volp);
+                }
+            }
+        }
+    }
+}

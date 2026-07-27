@@ -13,7 +13,9 @@ usage: tools/bytecmp.sh FUNC_NAME SCRATCH.c [REFERENCE.s]
   SCRATCH.c   single-function translation unit
   REFERENCE.s splat nonmatching asm (default: asm/rock_neo/nonmatchings/**/FUNC.s)
 
-Writes build/scratch/bytecmp.o only. Exits 0 when hard mismatches == 0.
+Writes a scratch object (BYTECMP_OBJ, default build/scratch/bytecmp.o) only.
+  Set BYTECMP_OBJ to a unique path when running several instances concurrently.
+  Exits 0 when hard mismatches == 0.
 Reloc-sensitive slots (%hi/%lo/jal/branch labels) are flagged, not hard-fail.
 EOF
     exit 1
@@ -43,8 +45,9 @@ fi
 
 [[ -f "$REF" ]] || { echo "bytecmp.sh: no such file: $REF" >&2; exit 1; }
 
-OBJ="build/scratch/bytecmp.o"
-mkdir -p build/scratch
+# Unique-able so parallel agents do not clobber each other's scratch object.
+OBJ="${BYTECMP_OBJ:-build/scratch/bytecmp.o}"
+mkdir -p "$(dirname "$OBJ")"
 
 tools/tryfn.sh "$SCRATCH" "$OBJ" >/dev/null
 
