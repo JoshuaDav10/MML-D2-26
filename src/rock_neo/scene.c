@@ -2,6 +2,38 @@
 #include "rock_neo/game.h"
 #include "rock_neo/scene.h"
 
+/* --- decls: parallel grind wave 2, 2026-07-26 --- */
+extern s8 D_800C356C;
+
+extern void (*D_80088FA8[])(void);
+
+extern void (*D_80089024[])(SCENE_WORK *);
+
+/* func_8001DF10 -- these two already exist VERBATIM two lines below the stub
+   (scene.c:231-232); they only need to be above func_8001DF10.  Nothing sits
+   between the stub and them, so moving (or duplicating) them is codegen-neutral. */
+extern u8 *D_800ACD40[];
+
+u8 *func_8001EAE8(); /* unprototyped: func_8001EB98 must call it with no arg setup */
+
+/* func_8001DF10's argument: {count, base} of the same 0x14-stride entry table
+   that func_8001DFEC indexes one element of.  It MUST be a struct pointer, not
+   the `u8 **st` view func_8001DFEC uses: GCC 2.7.2 true_dependence() only lets
+   the loop-bound reload (`lw $v0,0($s2)`) hop above the plain-scalar store to
+   D_800988E8 when the reload is MEM_IN_STRUCT_P with a varying address, i.e. a
+   COMPONENT_REF.  With `st[0]` it is an INDIRECT_REF on a scalar and the two
+   stay ordered (+2 mismatches at the loop tail). */
+typedef struct {
+    u32 num;
+    u8 *list;
+} SCE_TBL;
+
+extern s16 D_80089200[];
+
+extern s16 D_80089204[];
+
+extern s16 D_80089208[];
+
 /* --- decls: parallel grind wave 1, 2026-07-26 --- */
 /* func_8001F158 */
 extern u8 Scene_work_b __asm__("Scene_work");
@@ -131,7 +163,27 @@ void func_8001D974(void) {
     Game_work.x53++;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001D990);
+void func_8001D990(void) {
+    /* the local base pointer is load-bearing: with bare `Scene_work.xN` refs
+       cc1 re-materialises the base as &Scene_work+1 after the first call,
+       costing a second lui/addiu pair and an `addiu $a0,$s0,-1` (+3 insns). */
+    SCENE_WORK *sw = &Scene_work;
+
+    if (sw->x0 == 0) {
+        if (D_800C356C == 0) {
+            D_80088FA8[Game_work.stage_no]();
+        }
+        if (sw->x0 == 0) {
+            return;
+        }
+    }
+    if (sw->x1 != 0xFF) {
+        D_80089024[sw->x1](sw);
+    }
+    if (sw->x0 == 0) {
+        Sce_flag_on(sw->x1 + 0x380);
+    }
+}
 
 extern u8 Sce_flag[];
 
@@ -226,9 +278,25 @@ void func_8001DEE4(void) {
     }
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001DF10);
+void func_8001DF10(SCE_TBL *st) {
+    s16 i;
+    u8 *e;
+    s32 k;
 
-extern u8 *D_800ACD40[];
+    for (i = 0; (u32)i < st->num; i++) {
+        e = (u8 *)(i * 0x14 + (s32)st->list); /* integer add keeps the scaled index in $rs */
+        k = e[0];
+        func_8001EAE8(e);
+        /* D_800ACD40 must be NAMED TWICE: that is what makes loop-invariant
+           motion park its address in $s3 (lui+addiu in the preheader).  With a
+           single use cc1 hoists the OTHER symbol (Scene_work+0x24) instead and
+           folds this one into the store -- the mirror image of the target. */
+        D_800ACD40[k] = Scene_work.x24[k];
+        D_800ACD40[k][6] &= 0xDF;
+        D_800988E8 |= 0x80000000 >> k;
+    }
+}
+
 u8 *func_8001EAE8(); /* unprototyped: func_8001EB98 must call it with no arg setup */
 
 void func_8001DFEC(u8 **st, s32 n) {
@@ -360,7 +428,37 @@ void func_8001EB98(u8 *p) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001EC0C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F070);
+/* Same tail as func_8001F158 (already matched) — the Scene_work_b 1-byte alias
+ * keeps &Scene_work "cheap" under -G8 so cc1 emits bare lui/%lo refs instead of
+ * CSEing the address into a register. See the note above func_8001F158. */
+void func_8001F070(void) {
+    u8 *p;
+    s32 t;
+
+    SW(0x14, s32)++;
+    SW(0x18, s32)++;
+    SW(0x1C, s32)++;
+    SW(0x10, s32)++;
+    p = SW(0xA4, u8 *);
+    t = *(s16 *)(p + 2);
+    if (t == -1) {
+        return;
+    }
+    if (t != SW(0x10, s32)) {
+        return;
+    }
+    SW(0xA4, u8 *) = p + 8;
+    if (SW(0x8, u8) != p[8]) {
+        SW(0x18, s32) = 0;
+        SW(0x1C, s32) = 0;
+    }
+    SW(0x8, u8) = p[8];
+    if (SW(0x9, u8) != p[9]) {
+        SW(0x1C, s32) = 0;
+    }
+    SW(0x9, u8) = p[9];
+    SW(0x10, s32) = 0;
+}
 
 /* Scene_work is 0xA8 bytes, so -G8 makes cc1 treat its address as expensive: it
  * CSEs &Scene_work.xA4 into a register (`la $3,Scene_work+164`) because the field
@@ -424,7 +522,37 @@ void func_8001F580(u16 no, s32 flag, s32 flag2) {
     Cd_read_comb((s16)no);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/scene", func_8001F5E4);
+void func_8001F5E4(void) {
+    /* `a` MUST be s32, not s16: with s16 cc1 re-loads the table element for the
+       store (lhu) and spills 8 bytes of frame (vars=8 -> frame 0x20). With s32
+       the value stays in $a0 for compare + store + call arg, and cc1 emits the
+       `la $v1, Game_work+0x70` address CSE on the FIRST Game_work reference
+       only (0x72/0x74 stay absolute) — that asymmetry is the compiler's, not
+       the source's. */
+    s32 a;
+    s32 n;
+
+    a = D_80089200[*(s8 *)&Player_work[0x16A]];
+    if (Game_work.x70 != a) {
+        Game_work.x70 = a;
+        Cd_read_comb(a);
+    }
+
+    a = D_80089204[(Player_work[0x16B] << 24) >> 25];
+    if (Game_work.x72 != a) {
+        Game_work.x72 = a;
+        Cd_read_comb(a);
+    }
+
+    n = *(s8 *)&Player_work[0x172];
+    if (n >= 2) {
+        a = D_80089208[n];
+        if (Game_work.x74 != a) {
+            Game_work.x74 = a;
+            Cd_read_comb(a);
+        }
+    }
+}
 
 void func_8001F6C4(void) {
     s16 *p = D_800893BC[D_800C356E[0]];

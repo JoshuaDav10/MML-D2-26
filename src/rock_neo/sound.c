@@ -1,5 +1,97 @@
 #include "common.h"
 
+/* --- decls: parallel grind wave 2, 2026-07-26 --- */
+/* func_80019D18 */
+extern u16 *D_80082320[]; /* 0x80082320: per-stage u16 sound-code table ptrs */
+/* 1-byte alias of Game_work: Game_work is large, so with -G8 its address is
+   "expensive" and cc1 CSEs &Game_work+0x50 into a callee-saved register.
+   The alias makes the address cheap, so cc1 emits independent bare refs and
+   GAS -G0 expands them to the target's lui/%lo(Game_work+0x50) form.
+   Game_work has no %gp_rel( hit in the extracted asm, so gprel.py drops the
+   resulting `.extern Game_work,1` (no COMMON leak) and does not gp-rewrite. */
+extern u8 Game_work_b __asm__("Game_work");
+
+#define GWB(off, type) (*(type *)((u8 *)&Game_work_b + (off)))
+/* both defined later in this file (lines ~172 / ~306); forward-declare */
+void Sound_call(s32 code, s32 arg1, s32 arg2);
+
+void func_8001B33C(void);
+
+extern u8 D_80098AFD[];
+
+
+extern u8 D_8008241C[];
+
+
+void func_8001AEF0(void);
+
+/* --- func_8001A744: SPU key-on from a VAB tone attribute --- */
+typedef struct {
+    s16 left;
+    s16 right;
+} SpuVolume;
+
+typedef struct {
+    u32 voice;
+    u32 mask;
+    SpuVolume volume;
+    SpuVolume volmode;
+    SpuVolume volumex;
+    u16 pitch;
+    u16 note;
+    u16 sample_note;
+    s16 envx;
+    u32 addr;
+    u32 loop_addr;
+    s32 a_mode;
+    s32 s_mode;
+    s32 r_mode;
+    u16 ar;
+    u16 dr;
+    u16 sr;
+    u16 rr;
+    u16 sl;
+    u16 adsr1;
+    u16 adsr2;
+} SpuVoiceAttr; /* 0x40 — PSYQ libspu voice attributes */
+
+typedef struct {
+    u8 prior, mode, vol, pan;
+    u8 center, shift, min, max;
+    u8 vibW, vibT, porW, porT;
+    u8 pbmin, pbmax, reserved1, reserved2;
+    u16 adsr1;
+    u16 adsr2;
+    s16 prog;
+    s16 vag;
+    s16 reserved[4];
+} VagAtr; /* 0x20 — PSYQ libsnd tone attribute (matches caller's 0x20 stride) */
+
+typedef struct {
+    u8 x0;
+    u8 x1;
+    u8 x2; /* low nibble -> D_80098B48[ch] */
+    u8 x3; /* low 5 bits -> SPU voice number */
+} SND_VOICE; /* 0x4 — entry of D_8008241C */
+
+extern u8 D_80098B48[];
+
+void func_8001A274(void *, u16, s16 *, s16 *, s16);
+
+s32 func_8001A6DC(s32, s32);
+
+s32 SsUtGetVagAddr(s16, s16);
+
+void SpuSetKeyOnWithAttr(SpuVoiceAttr *);
+
+extern u16 *D_80082320[];
+
+extern u8 D_800C356E;
+
+extern u8 D_800C356F;
+
+void func_8001D854(u8);
+
 /* --- decls: parallel grind wave 1, 2026-07-26 --- */
 /* func_8001AE6C */
 extern u8 D_80098840;   /* fade step; written by func_80019DE0 (still INCLUDE_ASM) */
@@ -138,9 +230,61 @@ void func_80019AE0(void) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019B14);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019C20);
+void func_80019C20(void) {
+    void (*fn)(s32);
+    u16 *p;
+    u16 cur;
+    s32 chg;
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019D18);
+    fn = Unk_stage_func_tbl[D_800C356E];
+    if (fn != 0) {
+        fn(1);
+    }
+
+    chg = 0;
+    p = D_80082320[D_800C356E];
+    if (p == 0) {
+        chg = 1;
+    } else {
+        cur = p[D_800C356F];
+        if (cur == 0xFFFF) {
+            chg = 1;
+        } else {
+            p = D_80082320[Game_work[0x50]];
+            if (p[Game_work[0x51]] != cur) chg = 1;
+        }
+    }
+    if (chg != 0) {
+        func_8001D854(0x10);
+        D_80098958 |= 0x800;
+    }
+}
+
+void func_80019D18(void) {
+    void (*fn)(s32);
+    u16 *p;
+    u16 code;
+    s32 ok;
+
+    fn = Unk_stage_func_tbl[GWB(0x50, s8)];
+    if (fn != 0) {
+        fn(0);
+    }
+
+    p = D_80082320[GWB(0x50, s8)];
+    code = 0;
+    ok = 0;
+    if (p != 0) {
+        code = p[GWB(0x51, s8)];
+        ok = code != 0xFFFF;
+    }
+    if (ok) {
+        Sound_call(code, 0, 0);
+    } else {
+        func_8001B33C();
+    }
+    D_80098958 &= ~0x800;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_80019DE0);
 
@@ -165,6 +309,10 @@ typedef struct {
     s32 xC;
     s32 x10;
 } SND_CMD; // 0x14 — sound command queue entry
+
+/* moved below the SND_CMD typedef (it is defined mid-file, not at the top) */
+extern SND_CMD D_800BE4F8[];
+extern void (*D_80082C64[])(SND_CMD *);
 
 extern SND_CMD *D_80098938;
 extern SND_CMD D_800BE6D8; // queue-full sentinel slot
@@ -215,7 +363,30 @@ s32 func_8001A0A8(s32 n) {
     return ret;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A110);
+// Sound frame tick: poll the 4 seq slots, then drain the command queue by
+// dispatching each entry through a 4-entry handler table selected by the top
+// 2 bits of a per-sound-code attribute byte.
+// Two IVs (i and off) keep the D_80098AFD store in the symbol-indexed
+// lui/$at + addu + sb form (COMPILER_IDIOMS s4: one IV would pointer-march).
+void func_8001A110(void) {
+    SND_CMD *q;
+    s32 i, off;
+
+    if (D_80098958 != 0) {
+        func_8001AEF0();
+        for (i = 0, off = 0; i < 4; i++, off += 8) {
+            D_80098AFD[off] = func_8001A0A8(i);
+        }
+        q = D_800BE4F8;
+        if (D_80098938 != q) {
+            do {
+                D_80082C64[D_8008241C[q->x2 * 4] >> 6](q);
+                q++;
+            } while (q != D_80098938);
+        }
+        D_80098938 = D_800BE4F8;
+    }
+}
 
 // 5-entry table at Game_work+0x1BA, stride 8; the separate `off` variable
 // (not i*8) keeps the per-iteration lui/$at symbol-indexed lbu form
@@ -261,7 +432,22 @@ s32 func_8001A63C(s32 arg0) {
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A6DC);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A744);
+void func_8001A744(s32 vabId, SND_VOICE *v, VagAtr *tone, void *src) {
+    SpuVoiceAttr attr;
+    s32 ch;
+
+    ch = v->x3 & 0x1F;
+    func_8001A274(src, tone->vol, &attr.volume.left, &attr.volume.right,
+                  ((s16 *)&Game_work[0x1E0])[ch]);
+    attr.voice = 1 << ch;
+    attr.mask = 0x60093;
+    attr.addr = SsUtGetVagAddr(vabId, tone->vag);
+    attr.pitch = func_8001A6DC(tone->min - tone->center, tone->shift);
+    attr.adsr1 = tone->adsr1;
+    attr.adsr2 = tone->adsr2;
+    D_80098B48[ch] = v->x2 & 0xF;
+    SpuSetKeyOnWithAttr(&attr);
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sound", func_8001A834);
 

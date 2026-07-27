@@ -1129,3 +1129,48 @@ match, so not hash-gated; the 53B40 verdict that uses these is still PENDING).
   — any such stripper must track comment depth; (2) de-duplicating declarations by
   substring match silently dropped needed ones — duplicate compatible `extern`s are
   legal C, so just emit them and let the compiler flag real conflicts.
+
+## 2026-07-26 (grind wave 2: 30 agents) — 27 matches; the integration hazards are the bottleneck
+
+323 -> 350 engine. 30 agents (10 concurrent, 3 internal waves), 1 function each,
+29/30 self-verified with bytecmp. 27 landed; 2 pulled at integration.
+
+**Agent verification is now reliable; MY INTEGRATION was the failure surface.** Every
+single build failure this wave was mine, not the agents'. Recorded so they are never
+re-invented:
+1. **Dedup whole DECLARATIONS, never lines.** Line-level dedup deleted the shared
+   `typedef struct {` opener that several agents emitted, orphaning the struct bodies.
+   Split on `;` at brace depth 0 and dedup the resulting units.
+2. **`#define` has no trailing `;`** — a declaration splitter that keys on `;` silently
+   drops every macro. Cost a build cycle chasing `OT_LENGTH undeclared`.
+3. **Duplicate `typedef` is a C89 ERROR** even when byte-identical (duplicate `extern`
+   is fine). Two agents emitting the same struct will not compile.
+4. **A declaration the file already has may be defined BELOW the insertion point.**
+   `SND_CMD` (sound.c) and `CD_CMD` (cd.c) are declared mid-file. Either hoist the
+   existing definition or move the dependent externs down; skipping the decl as
+   "already present" produces a parse error at the top of the file.
+5. **Two agents can give one function different prototypes** (`void*` vs `GAME_WORK*`).
+   Return type steers caller codegen; parameter type usually does not, so keep the
+   specific one — but detect it, do not let the compiler find it.
+
+**Two functions verified in scratch but failed in-tree** — the standing warning, now
+measured on real cases:
+- `func_800137D4`: 172 bytes in-tree vs 188 target (4 insns short). Scratch TU had
+  different types in scope than the tree file provides.
+- `func_8005ECE0`: needs `jtbl_8001124C`, a jump table living in the asm rodata.
+  Splicing the C orphaned the `.L8005ED30..` labels -> undefined references at LINK
+  time, not compile time. **Any function whose asm mentions `jtbl_` needs a rodata
+  carve first** — check before assigning it to an agent.
+
+**Diagnostic that actually works.** Comparing an unlinked `.o` against target words
+flags EVERY function (relocations are unresolved placeholders — it reported 28/28 bad,
+all false). Two reliable checks instead: (a) per-function LENGTH from
+`objdump -t` vs the target's instruction count — this found the real culprit
+immediately; (b) `cmp` the LINKED exe. If `cmp` reports EOF/truncation, some function
+is SHORT and everything after it shifted — go straight to the length check.
+
+**cc1-27 allocates bit-fields MSB-first.** `{unsigned addr:24; len:8;}` puts addr in
+bits 31..8; the real GPU packet layout needs `{len:8; addr:24;}`. libgpu.h's `P_TAG`
+uses the first order and matched for the sub_scrn addPrims tails, while
+Code800133D8.c needed the reversed `OT_TAG`. Both verified — pick per site, do not
+assume one is universally right.

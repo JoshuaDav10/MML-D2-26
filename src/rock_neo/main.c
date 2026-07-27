@@ -4,6 +4,16 @@
 #include "rock_neo/cd.h"
 #include "rock_neo/moji.h"
 
+/* --- decls: parallel grind wave 2, 2026-07-26 --- */
+/* func_80012BC4 */
+/* 9-entry thread-API vector table (func_80012E10 .. func_800130D0), copied
+   wholesale to 0x801F8000.  lui/%hi + addiu/%lo + 0(reg) => unsized array. */
+extern u32 D_80080870[];
+
+extern u16 D_800C0D8E_a[] __asm__("D_800C0D8E");
+
+void func_800122D0(s32);
+
 /* --- decls: parallel grind wave 1, 2026-07-26 --- */
 /* func_800120A8 */
 /* Double-buffer pair at 0x800C0C48, stride 0x90 (it lives at +0x48 inside the
@@ -70,7 +80,35 @@ void func_8001215C(u8 *x) {
     x[0x2F] = 0;
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_800121AC);
+void func_800121AC(u8 *x) {
+    s32 t;
+
+    if (x[0] == 0xFF) {
+        x[0x24] = 0xFF;
+        x[0x25] = 0;
+        *(u16 *)(x + 0x26) = 0;
+        *(s32 *)(x + 0x30) = 0;
+        *(s32 *)(x + 0x28) = 0;
+        return;
+    }
+
+    x[0x24] = x[1] >> 4;
+    *(u16 *)(x + 0x28) = *(u16 *)(x + 0x26);
+    *(s32 *)(x + 0x30) = *(s32 *)(x + 4);
+    *(u16 *)(x + 0x26) = ~*(u16 *)(x + 2);
+    *(u16 *)(x + 0x2A) = *(u16 *)(x + 0x26) & ~*(u16 *)(x + 0x28);
+    *(u16 *)(x + 0x2C) = *(u16 *)(x + 0x28) & ~*(u16 *)(x + 0x26);
+    func_800122D0((s32)x);
+
+    if ((x[0x25] & 3) == 1) {
+        x[0x36] = 1;
+    }
+    if ((x[0x25] & 3) == 2) {
+        x[0x36] = 0;
+    }
+    t = (x[0x25] & 1) << 1;
+    x[0x25] = (x[0x25] & 0xFD) | t;
+}
 
 void func_800121AC(u8 *);
 extern u8 D_800C0C00[];
@@ -145,11 +183,106 @@ void func_80012938(void) {
     func_8007FF80();
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012988);
+/* Debug memory-viewer address stepper. The pad modifier bits pick a step
+   size; D-pad left/right (0x10 / 0x40) move *p by step*8. The new address is
+   then range-checked against main RAM (0x80000000..0x801FFF80) or scratchpad
+   (0x1F800000..0x1F800380), matching the sign of the old address, and rolled
+   back when it leaves the region. */
+void func_80012988(s32 *p) {
+    u8 unused[8];
+    s32 orig;
+    s32 step;
+    u16 keys;
+    u32 lo;
+
+    keys = D_800C0D8E_a[0];
+    orig = *p;
+    step = 1;
+    if (keys & 0x8000) {
+        step = 0x10;
+    }
+    if (keys & 0x4000) {
+        step = 0x100;
+    }
+    if (keys & 0x2000) {
+        step = 0x1000;
+    }
+    if (keys & 0x10) {
+        *p = orig - (step * 8);
+    }
+    if (D_800C0D8E_a[0] & 0x40) {
+        *p += step * 8;
+    }
+    lo = 0x7FFFFFFF;
+    if (orig < 0) {
+        if ((u32)*p > lo) {
+            if ((u32)*p <= 0x801FFF80) {
+                return;
+            }
+        }
+    } else {
+        lo = 0x1F7FFFFF;
+        if ((u32)*p > lo) {
+            if ((u32)*p <= 0x1F800380) {
+                return;
+            }
+        }
+    }
+    *p = orig;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012A5C);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012BC4);
+/* Thread-slot table init: 4 slots of 0x80 at 0x801F8100.
+   ktab = the PSX kernel "table of tables" at 0x100; ktab[4] (= *(u32*)0x110)
+   is the TCB table base, TCBs are 0xC0 bytes, +0x78 is reg[gp] and +0x94 is
+   reg[SR].  Slot i gets TCB[i+1], a 0x400 stack at 0x801FEC00+0x400*i, the
+   current gp, and SR = 0x40000404 (CU2 | IM2 | IEp).
+   q is the 0x801F8170 (= slot+0x70) cursor the original addresses the slot
+   through; its accesses must be volatile -- that is what keeps them off a
+   strength-reduced giv (so all four land on one +0x70-based register) and
+   what forces the +0x0C reload right after the +0x0C store.  Raw constant
+   pointers (not the D_801F81xx externs) are required for the lui/ori pairs. */
+void func_80012BC4(void) {
+    u32 *ktab = (u32 *)0x100;
+    u32 gp;
+    s32 i;
+    u8 *p;
+    volatile u8 *q;
+    u8 *stack;
+    u32 off;
+    u32 sr;
+    u32 tcb;
+    u32 *d;
+
+    gp = *(u32 *)(ktab[4] + 0x78);
+    i = 0;
+    sr = 0x40000404;
+    q = (volatile u8 *)0x801F8170;
+    stack = (u8 *)0x801FEC00;
+    off = 0xC0;
+    p = (u8 *)0x801F8100;
+    for (; i < 4; i++) {
+        *(u16 *)p = 0;
+        tcb = ktab[4] + off;
+        *(volatile u32 *)(q - 0x60) = (u32)stack;
+        *(volatile u32 *)(q - 0x2C) = gp;
+        *(volatile u32 *)(q - 0x64) = tcb;
+        *(u32 *)(*(volatile u32 *)(q - 0x64) + 0x94) = sr;
+        *q = 0;
+        stack += 0x400;
+        off += 0xC0;
+        p += 0x80;
+        q += 0x80;
+    }
+
+    d = (u32 *)0x801F8000;
+    for (i = 0; i < 9; i++) {
+        *d++ = D_80080870[i];
+    }
+
+    D_801F8300 = (u16 *)0x801F8100;
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_80012C80);
 
@@ -223,7 +356,30 @@ void func_80012FEC(s32 n, char *name) {
     func_80012E10(n, D_801F8114[n << 5]);
 }
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/main", func_800130D0);
+void func_800130D0(char *name) {
+    s32 fd;
+    u8 buf[0x10];
+    u8 *p;
+    u8 **q;
+
+    fd = PCopen(name, 0, 0);
+    PCread(fd, buf, 0x10);
+    /* the raw-constant pointer (lui/ori) must be materialized HERE, not in the
+       declaration's initializer -- an initializer hoists the lui/ori pair into
+       the prologue ahead of the PCopen argument setup (12 hard mismatches). */
+    q = (u8 **)0x801F8300;
+    PCread(fd, *q + 0x14, 0x3C);
+    PCread(fd, ((u8 **)*q)[7], 0x7B4);
+    p = ((u8 **)*q)[7];
+    while (PCread(fd, p, 0x800) == 0x800) {
+        p += 0x800;
+    }
+    func_8007699C(fd);
+    FlushCache();
+    /* symbol form (%hi/%lo), unlike the raw constant above -- same split as
+       func_80012E98 vs func_80012ECC in this file. */
+    func_80012F78(*(s32 *)((u8 *)D_801F8300 + 0x14));
+}
 
 void func_8001319C(void) {
     s32 i;

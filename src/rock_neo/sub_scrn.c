@@ -11,6 +11,9 @@
 #include "rock_neo/sound.h"
 #include "rock_neo/sub_scrn.h"
 
+/* --- decls: parallel grind wave 2, 2026-07-26 --- */
+extern u8 D_8008DAF4[];
+
 void func_8005EC34(void) {
     Sub_screen_back_ground_set();
     D_8008DBB0[D_800A38F0.routine_0](&D_800A38F0);
@@ -40,7 +43,25 @@ INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_8005F608);
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_8005F9E8);
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_8005FAE4);
+void func_8005FAE4(SUB_SCREEN_WORK* subp) {
+    switch (((s8*)subp)[2]) {
+    case 0:
+        if (Sce_flag_test(D_8008DAF4[((u8*)subp)[4]] + 0x520)) {
+            Sound_call(SE_DECISION, 1, 0);
+            MojiTaskExec(0, 0x801F2000, ((u8*)subp)[5]);
+        } else {
+            Sound_call(SE_CANCEL, 1, 0);
+        }
+        ((s8*)subp)[2]++;
+        break;
+    case 1:
+        if (!((*(u32*)0x80098A58) & MOJI_TASK0_ON)) {
+            ((s8*)subp)[1] = 2;
+            ((s8*)subp)[2] = 0;
+        }
+        break;
+    }
+}
 
 INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/sub_scrn", func_8005FBB4);
 
