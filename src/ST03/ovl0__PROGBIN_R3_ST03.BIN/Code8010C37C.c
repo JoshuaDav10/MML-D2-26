@@ -213,7 +213,10 @@ void func_80110128(void) {
 
 INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_80110148);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8011027C);
+/* Empty. This 2-instruction body is the single most duplicated function in
+ * the game: 342 instances across the level files. */
+void func_8011027C(void) {
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_80110284);
 

@@ -30,7 +30,10 @@ void func_80104B40(ENTITY_WORK *work) {
 
 INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80104B40", func_80104B80);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80104B40", func_80104CFC);
+/* Empty. This 2-instruction body is the single most duplicated function in
+ * the game: 342 instances across the level files. */
+void func_80104CFC(void) {
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80104B40", func_80104D04);
 
