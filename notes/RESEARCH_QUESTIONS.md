@@ -1,9 +1,17 @@
 # Open research questions — raw material for a deep-research prompt
 
-**Status: PROMPT WRITTEN 2026-07-26 → `notes/DEEP_RESEARCH_PROMPT_scaling.md`.** That file
-is the launchable version of everything below, with figures re-measured from
-`build/function_map.json`. Findings land in `notes/RESEARCH_FINDINGS_scaling.md` under the
-same CANDIDATE / NOT-HASH-GATED banner as `RESEARCH_FINDINGS_gcc272_idioms.md`.
+**Status: ANSWERED 2026-07-26 → [`RESEARCH_FINDINGS_scaling.md`](RESEARCH_FINDINGS_scaling.md)**
+(CANDIDATE / NOT-HASH-GATED). Prompt: `DEEP_RESEARCH_PROMPT_scaling.md`.
+
+Headlines: **Q1 the >120 ceiling is ours, not the toolchain's** (MGS's ~626 KB main exe is
+100% matched on PSY-Q GCC 2.x — and we independently broke it ourselves at 137 insns).
+**Q2 install m2c** as a draft generator, `--target mips-gcc-c`, output must be rewritten.
+**Q3 solved pattern** — one shared `.c` compiled per overlay + SOTN's `dups`/`mipsmatch`
+dedup tooling; count unique bodies. **Q4 PSY-Q libs are obtainable** via `psyq-obj-parser`
++ `ghidra_psx_ldr` FLIRT signatures; **no** public per-function hash DB. **Q5 permuter is a
+late-stage regalloc tool only**; gate every score-0 through an in-tree SHA-1.
+
+The questions below are kept as written, for the record of what was asked and why.
 
 These remain the scoped questions, not answers. House style:
 `notes/DEEP_RESEARCH_PROMPT_reload.md` — specific, names primary sources, and explicitly

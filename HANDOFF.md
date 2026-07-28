@@ -57,6 +57,24 @@ into this file; the stale table that used to sit here said 282 long after it was
 > silently drifted to 1,345 from stale chunk files. **Counting objects is not counting the
 > binary.**
 
+> ## ✅ RESEARCH ANSWERED 2026-07-26 → `notes/RESEARCH_FINDINGS_scaling.md`
+> CANDIDATE / not hash-gated — verify before trusting paths and flags.
+> - **The >120 ceiling is OURS, not the toolchain's.** MGS's ~626 KB main exe is 100%
+>   matched on PSY-Q GCC 2.x. Corroborates what we proved ourselves at 137 insns. The
+>   engine target moves from ~908 toward **1,119**; 97 unmatched sit in 120-200, 63 in
+>   200-300, 50 above 300. The lever is anything that supplies **source shape**, not more
+>   hand-iteration.
+> - **Install m2c** (`--target mips-gcc-c`) against the existing `tools/m2ctx.py`; aim it
+>   at the 354 unmatched functions ≤50 insns. Draft only — rewrite expressions. Keep it if
+>   time-to-first-draft drops ≥30%.
+> - **Stage dedup is a solved pattern:** one shared `.c` compiled per overlay; port SOTN's
+>   `dups` / `mipsmatch` / `function_finder_psx.py`. Do this BEFORE converting archive #2.
+> - **PSY-Q/libgcc can be obtained, not RE'd:** `psyq-obj-parser` (PCSX-Redux) converts
+>   Sony `.OBJ`/`.LIB` to ELF; `ghidra_psx_ldr` has FLIRT signatures; `sozud/psy-q-decomp`
+>   is reference C. No public per-function hash DB exists.
+> - **Permuter policy:** late-stage regalloc only, always `-j`, and **never accept score 0
+>   without an in-tree rebuild + full-binary SHA-1** (score 0 ≠ byte match by design).
+
 > ## Research farmed out
 > `notes/RESEARCH_QUESTIONS.md` — five scoped questions with the numbers that make each one
 > matter. A later session should expand these into a full deep-research prompt (house style:
