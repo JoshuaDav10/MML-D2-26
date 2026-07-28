@@ -11,7 +11,7 @@ is what produced a completion figure ~16x too high for months.
 | realm | what it is | functions | done |
 |---|---|---|---|
 | **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **407** (36.4%) |
-| **STAGES** | 37 code archives (168 more are asset-only). 10,752 copies of 7,064 unique bodies. | **7,064** | **55** (0.8%) |
+| **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | **55** (0.8%) |
 | **SDK** | Sony PSY-Q library linked into the exe (`asm/rock_neo/psxsdk/code.s`). NOT Capcom code — matchable from published source, a cheaper class of work. | **446** | 0 |
 | **WHOLE GAME** | | **8,629** | **462** (5.4%) |
 
@@ -23,8 +23,8 @@ once covers every copy.*
 
 | state | realm | meaning | functions | (raw instances) |
 |---|---|---|---|---|
-| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **737** | — |
-| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 1,575 | — |
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **635** | — |
+| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 1,032 | — |
 | `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 553 | — |
 | `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 9,006 |
 | | | **total distinct functions in the game** | **8,629** | |
@@ -142,31 +142,31 @@ once covers every copy.*
 | `ST06` | 597 |
 | `ST00` | 519 |
 | `ST0B` | 433 |
-| `ST0C` | 430 |
-| `ST0CB` | 430 |
-| `ST0CC` | 430 |
 | `ST19` | 415 |
 | `ST17` | 402 |
+| `ST13` | 385 |
+| `ST03` | 340 |
+| `ST03B` | 340 |
 | … 27 more | |
 
 ### Duplication — real match-once-cover-many
 
-1,233 distinct bodies appear more than once, covering 4,985 instances.
+1,233 distinct bodies appear more than once, covering 4,340 instances.
 
 | function | instructions | copies | leaf |
 |---|---|---|---|
-| `func_8003FFA8` | 2 | **402** | yes |
-| `func_800153CC` | 8 | **160** | no |
-| `func_801083DC` | 10 | **81** | yes |
-| `func_80110834` | 8 | **66** | no |
-| `func_8004493C` | 8 | **46** | no |
-| `func_80068D64` | 16 | **38** | no |
+| `func_8003FFA8` | 2 | **381** | yes |
+| `func_800153CC` | 8 | **145** | no |
+| `func_801083DC` | 10 | **72** | yes |
+| `func_80110834` | 8 | **60** | no |
+| `func_8004493C` | 8 | **43** | no |
+| `func_80068D64` | 16 | **35** | no |
 | `func_80114148` | 8 | **28** | no |
-| `func_801080E4` | 7 | **28** | yes |
-| `func_80108404` | 31 | **27** | no |
-| `func_80108648` | 47 | **27** | no |
-| `func_80108828` | 13 | **27** | yes |
-| `func_80108CF4` | 42 | **27** | no |
+| `func_801080E4` | 7 | **25** | yes |
+| `func_80108404` | 31 | **24** | no |
+| `func_80108648` | 47 | **24** | no |
+| `func_80108828` | 13 | **24** | yes |
+| `func_80108CF4` | 42 | **24** | no |
 
 > Do not confuse this with *callers*. "Called by 37 stages" moves the matched
 > count by **one** — stages `jal` into the resident engine, they hold no copy.

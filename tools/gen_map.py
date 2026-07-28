@@ -278,6 +278,29 @@ def build():
                              body=hashlib.md5("".join(fn["words"]).encode()).hexdigest(),
                              skel=hashlib.md5(",".join(fn["ops"]).encode()).hexdigest()))
 
+    # ---- GUARD: stale bulk .s shadowing carved functions ---------------------
+    # When a yaml subsegment changes from `[OFF, asm]` to `[OFF, c, Name]`, splat
+    # writes the new nonmatchings/*.s but does NOT delete the old bulk OFF.s. The
+    # recursive glob above then sees every function TWICE and every instance count
+    # doubles. Caught 2026-07-29 on the ST0C triplet: 645 phantom rows, 34 real C
+    # functions reported as 68. The headline unique-BODY count was UNAFFECTED (a
+    # duplicate row carries the same body hash), which is exactly why this could
+    # have sat unnoticed — so fail loudly rather than dedupe quietly.
+    _keys = collections.Counter((r.get("container"), r["name"]) for r in rows)
+    _dupes = {k: v for k, v in _keys.items() if v > 1}
+    if _dupes:
+        _arch = sorted({k[0] for k in _dupes})
+        sys.stderr.write(
+            "gen_map: FATAL — %d duplicate rows across %d (archive, function) keys.\n"
+            "  affected archives: %s\n"
+            "  Cause: a stale bulk .s still holds functions now carved into a C segment,\n"
+            "  so they are counted twice. asm/ is generated and gitignored — delete the\n"
+            "  stale file(s) and re-run. To find them: in each chunk dir, a *.s whose\n"
+            "  glabels also appear under that chunk's nonmatchings/ tree.\n"
+            % (sum(v - 1 for v in _dupes.values()), len(_dupes), ", ".join(_arch))
+        )
+        raise SystemExit(1)
+
     # ---- duplication + families ---------------------------------------------
     bodies = collections.Counter(r["body"] for r in rows if r["body"])
     skels = collections.Counter(r["skel"] for r in rows if r["skel"])

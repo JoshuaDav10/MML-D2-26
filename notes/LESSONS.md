@@ -1343,3 +1343,27 @@ C shape can fix it.**
   `[0x10]` overlapped a real field at 0x46. Declaring it `[0x8]` matched byte-for-byte —
   the asm only does `addiu $a0,$work,0x38`. Shrink such blocks freely to keep a merged
   struct consistent; do NOT widen them and shift later fields.
+
+## 2026-07-29 — COUNT INTEGRITY: stale bulk .s double-counts every carved function
+
+Changing a yaml subsegment from `[OFF, asm]` to `[OFF, c, Name]` makes splat write the new
+`nonmatchings/*.s` but **it does not delete the old bulk `OFF.s`**. `gen_map`'s recursive
+`asm/**/*.s` glob then sees every function in that range TWICE.
+
+Caught on the ST0C triplet: 645 phantom rows, and 34 real C functions reported as 68 per
+archive. **The headline unique-BODY count was completely unaffected** (a duplicate row
+carries the same body hash), so nothing in `COUNTS.md` was ever wrong — which is exactly
+why this could have sat there indefinitely and later produced a bogus instance-level claim.
+
+Now guarded: `gen_map.py` fails loudly on any duplicate `(archive, function)` key, naming
+the affected archives and how to find the stale file. Negative-tested both directions
+(recreated the stale file → exit 1; removed it → exit 0).
+
+**Generalised, third instance of the same family this session:** the project's recurring
+defect is a *denominator set by what a glob matches rather than by the binary*.
+- 484 vs 1119 — glob missed whole files.
+- psxsdk 446 — non-recursive glob missed a subdirectory.
+- this one — recursive glob counted a stale file twice.
+**When a count moves in a way you did not cause, or fails to move when you did cause it,
+suspect the glob before the code.** And prefer failing loudly over quiet dedupe: a silent
+correction hides the config error that produced it.
