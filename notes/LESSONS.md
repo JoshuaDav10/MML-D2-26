@@ -1307,3 +1307,26 @@ C shape can fix it.**
 - **`w->a = expr; w->b = w->a;` and `w->b = w->a = expr;` are not interchangeable.**
   func_80108828 needed the two-statement form; the chained form ordered the two
   source-value loads differently and swapped `$v0`/`$v1`.
+- **A scalar global load hoists above a struct store; an AGGREGATE one does not.** Same
+  `MEM_IN_STRUCT_P` machinery as the func_80036B00 entry, seen from the other side:
+  `extern s8 SYM; if (SYM == 0)` after a `work->field = …` store lets GCC 2.7 prove no
+  alias, hoist the `lb` above the `sh`, and fill the branch delay slot with the store
+  instead of the constant — one word short. `extern s8 SYM[]; if (SYM[0] == 0)` restores
+  the barrier and reproduces the load-delay `nop`. **Rule: if the target loads a scalar
+  global AFTER a pointer store but your build hoists it, make the global an aggregate.**
+  (ST03 func_8010A224.)
+- **Taking the base pointer into a local changes which register holds a global struct.**
+  `PL_WORK *pl = &Player_work; … &pl->x14` keeps the BASE in a callee-saved reg and emits
+  `addiu $a1,$s1,0x14`; writing `&Player_work.x14` directly emits a single
+  `lui/addiu %hi/%lo(Player_work+0x14)` — one word fewer and no saved reg. The two are
+  freely chosen per site, and a function can need BOTH spellings at once: ST03
+  func_8010A02C wants `pl->x0` (base in $s2, computed before the call) but direct
+  `Player_work.x9`/`.xA` (so cc1 emits $at-based %hi/%lo singles).
+- **Read struct fields into `s32` locals to pin long-lived register assignment.** ST03
+  func_8010A4EC: inline field reads gave 9 hard mismatches, `s16` locals also 9, `s32`
+  locals gave 0 — the wider locals are what keep the two offsets in $a1/$a2 across the
+  call and leave $v0 free for the result.
+- **`if (a) { if (b) return 1; } return 0;` is the shape cc1 folds back into an `slt`**
+  in $v0 with `addu $v0,$zero,$zero` in the delay slot. The accumulator and `&&` forms
+  put the accumulator in $a2 and cost a trailing `move`; goto and two-return forms cost
+  an extra `j`. (Fourth distinct conditional-return shape — see the decision table.)

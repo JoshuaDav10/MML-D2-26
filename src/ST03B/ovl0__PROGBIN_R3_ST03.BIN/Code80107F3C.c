@@ -57,6 +57,72 @@ typedef struct WORK {
 void func_80031824(void);
 s16  func_80031D5C(s16 target, s16 current, s16 step);
 
+/* A second object genus in this cluster: actor/NPC handlers that talk to the
+ * player. Kept as its own typedef because its 0x14 block is three u16 world
+ * coords (not WORK's PosXYZ) and its 0x56 angle is u16 (not s16) -- and
+ * signedness here is load-bearing, so merging the two would break both. */
+typedef struct ACTOR_WORK {
+    u8      pad0[0x9];
+    u8      x9;                  /* 0x009 routine */
+    u8      padA[0xC - 0xA];
+    u8      xC;                  /* 0x00C */
+    u8      xD;                  /* 0x00D next-routine; bit 7 = force */
+    u8      padE[0x14 - 0xE];
+    u16     x14;                 /* 0x014 world X */
+    u16     x16;                 /* 0x016 */
+    u16     x18;                 /* 0x018 world Z */
+    u8      pad1A[0x56 - 0x1A];
+    u16     x56;                 /* 0x056 facing angle (12-bit) */
+    u8      pad58[0xAC - 0x58];
+    u8      xAC;                 /* 0x0AC requested action id */
+    u8      padAD[0x348 - 0xAD];
+    u16     x348;                /* 0x348 flag bits */
+    u8      x34A;                /* 0x34A action id to run on arrival */
+    u8      x34B;                /* 0x34B subtask refcount */
+    s16     x34C;                /* 0x34C target angle */
+    s16     x34E;                /* 0x34E turn rate */
+} ACTOR_WORK;
+
+typedef struct PL_WORK2 {
+    u8      x0;                  /* 0x000 status flag bits */
+    u8      pad1[0x9 - 0x1];
+    u8      x9;                  /* 0x009 routine */
+    u8      xA;                  /* 0x00A sub-routine */
+    u8      padB[0x14 - 0xB];
+    u16     x14;                 /* 0x014 world X */
+    u16     x16;
+    u16     x18;                 /* 0x018 world Z */
+} PL_WORK2;
+extern PL_WORK2 Player_work;
+
+typedef struct GAME_WORK2 {
+    s8      routine_0;
+} GAME_WORK2;
+extern GAME_WORK2 Game_work;
+
+typedef struct OFS {
+    s16 x0;
+    s16 x2;                      /* X offset */
+    s16 x4;
+    s16 x6;
+    s16 x8;
+    s16 xA;                      /* Z offset */
+    s16 xC;
+    s16 xE;
+} OFS;
+
+/* Aggregate spelling is load-bearing: as a scalar, GCC 2.7 proves it cannot
+ * alias a struct store and hoists the load above it. See LESSONS. */
+extern s8 D_800987B0[];
+
+s32  func_8003A13C(void);
+s32  func_80063BC8(void *, s32, s32, s32);
+s16  func_80031BEC(void *, void *, s16, s16);
+s16  func_80031D5C(s16, s16, s16);
+void func_80030058(OFS *, s16, s16, s32, s32);
+s32  MojiTaskKill();
+s32  MojiTaskExec2(s32, s32);
+
 void func_80107F3C(void) {
     func_80031824();
 }
@@ -219,19 +285,55 @@ INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_S
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_80109D34);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_80109E94);
+void func_80109E94(ACTOR_WORK *work) {
+    PL_WORK2 *pl = &Player_work;
+
+    if (func_8003A13C() == 0) {
+        func_80063BC8(&work->x14, 0xD, 0, work->xC);
+        work->x34B++;
+    }
+    work->x56 = (work->x56 + func_80031BEC(&work->x14, &pl->x14, work->x56, work->x34E)) & 0xFFF;
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_80109F1C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_80109FD4);
+void func_80109FD4(ACTOR_WORK *work) {
+    if (Game_work.routine_0 == 3) {
+        MojiTaskKill();
+        MojiTaskExec2(0, 0xDC);
+        work->x34B--;
+    }
+}
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_8010A02C);
+void func_8010A02C(ACTOR_WORK *work) {
+    PL_WORK2 *pl = &Player_work;
+    s16 turn = func_80031D5C(work->x34C, work->x56, work->x34E);
+
+    if ((turn == 0) || (work->xD & 0x80)) {
+        if (func_8003A13C() == 0) {
+            pl->x0 |= 2;
+            Player_work.x9 = 0;
+            Player_work.xA = 0;
+            work->xAC = work->x34A;
+            work->x348 |= 2;
+            work->x9 = work->xD & 7;
+        }
+    }
+    work->x56 = (work->x56 + turn) & 0xFFF;
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_8010A100);
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_8010A13C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_8010A224);
+void func_8010A224(ACTOR_WORK *work) {
+    work->x56 = (work->x56 + func_80031BEC(&work->x14, &Player_work.x14, work->x56, work->x34E)) & 0xFFF;
+    if (D_800987B0[0] == 0) {
+        work->xAC = 9;
+        work->x348 &= ~4;
+        work->x34B++;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_8010A2A4);
 
@@ -247,4 +349,22 @@ INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_S
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_8010A49C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code80107F3C", func_8010A4EC);
+s32 func_8010A4EC(ACTOR_WORK *work, s16 arg1, s32 range) {
+    OFS ofs;
+    s32 ox;
+    s32 oz;
+    s32 dx;
+    s32 dz;
+
+    func_80030058(&ofs, work->x56, arg1 << 4, 0, 0);
+    ox = ofs.x2;
+    oz = ofs.xA;
+    dx = range + (work->x14 + ox - Player_work.x14);
+    dz = range + (work->x18 + oz - Player_work.x18);
+    if ((u16)dx < (u16)range * 2) {
+        if ((u16)dz < (u16)range * 2) {
+            return 1;
+        }
+    }
+    return 0;
+}
