@@ -32,6 +32,10 @@ segments:
     subalign: 4
     subsegments:
       - [0x800, rodata, r3_st10_0]
-      - [0xAEC, asm]
+      # Whole text as one C segment: a stub per function, so the bodies already
+      # solved in ST03/ST0C drop straight in. Jump-table users stay INCLUDE_ASM,
+      # so this file emits no .rodata and cannot shift the tables.
+      # ST10 == ST10B over the whole code chunk (sha1-verified).
+      - [0xAEC, c, Code801002EC]
       - [0xF800, data]
   - [0x152C4]

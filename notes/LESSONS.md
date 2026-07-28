@@ -1417,3 +1417,32 @@ against its reference asm. Now `tools/checksizes.py` (negative-tested both ways)
   widespread corruption. Find the length error, don't read the byte diff.
 - Sizes matching does not prove a byte match; it proves nothing was dropped. Both checks
   have their place.
+
+## 2026-07-29 — cc1-27 ACCEPTS AN UNKNOWN STRUCT MEMBER (K&R member namespace)
+
+The worst failure of the session, because it is silent at every normal checkpoint.
+
+Transplanting solved bodies between overlay C files, I deduped typedefs **by name**. Two
+different files both define `WORK`, with different layouts — ST0C's has an `x328` field,
+ST03's does not. My dedup kept ST03's. The landed body still said `work->x328`.
+
+**That compiled.** cc1-27 in `-lang-c` mode keeps the pre-ANSI behaviour where struct
+member names live in one global namespace, so an unknown member resolves against some other
+struct's field instead of erroring. The two affected functions then compiled to **2 words
+each (an empty body)** instead of 17.
+
+Detection chain, in the order things looked fine:
+- `make chunks` exit 0.
+- No compiler error, no warning I noticed.
+- The whole-binary `cmp` said "differ: byte 2245" — a shift, uninformative.
+- `tools/checksizes.py` named both functions in one second: *reference 17 words, built 2*.
+
+**Rules:**
+- **Never dedupe typedefs by NAME across files.** Either give each genus a distinct name, or
+  verify the definitions are identical, or prefer the strict superset — and assert the field
+  you need is present. I now assert `'x328' in definition` before substituting.
+- **A function that builds to 2 words is an empty body.** If a function you wrote compiles
+  to `jr ra; nop`, its body was eliminated — suspect a member/type that silently resolved
+  elsewhere, not a scheduling problem.
+- `checksizes.py` earns its keep: this is the second transcription-class bug in one session
+  that it localised instantly and that no other gate caught.
