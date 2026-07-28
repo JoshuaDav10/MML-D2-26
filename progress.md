@@ -3,13 +3,13 @@
 <!-- BEGIN GENERATED COUNTS -->
 | metric | value |
 |---|---|
-| matched functions | **363** |
-| C-mapped slice | 363 / **522** = 69.5% |
-| main executable | 363 / **1119** = **32.4%** |
+| matched functions | **381** |
+| C-mapped slice | 381 / **561** = 67.9% |
+| main executable | 381 / **1119** = **34.0%** |
 | **stage overlays** | 12 / **~7064** |
-| **whole game** | 375 / **~8629** = **~4.3%** |
-| active INCLUDE_ASM stubs | **159** |
-| still unsplit raw asm | **597** functions in `asm/rock_neo/*.s` |
+| **whole game** | 393 / **~8629** = **~4.6%** |
+| active INCLUDE_ASM stubs | **180** |
+| still unsplit raw asm | **558** functions in `asm/rock_neo/*.s` |
 <!-- END GENERATED COUNTS -->
 
 
