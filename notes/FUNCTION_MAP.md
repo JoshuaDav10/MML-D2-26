@@ -10,10 +10,10 @@ is what produced a completion figure ~16x too high for months.
 
 | realm | what it is | functions | done |
 |---|---|---|---|
-| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **350** (31.3%) |
+| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **363** (32.4%) |
 | **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | **12** (0.2%) |
 | **SDK** | Sony PSY-Q library linked into the exe (`asm/rock_neo/psxsdk/code.s`). NOT Capcom code — matchable from published source, a cheaper class of work. | **446** | 0 |
-| **WHOLE GAME** | | **8,629** | **362** (4.2%) |
+| **WHOLE GAME** | | **8,629** | **375** (4.3%) |
 
 ## States
 
@@ -23,9 +23,9 @@ once covers every copy.*
 
 | state | realm | meaning | functions | (raw instances) |
 |---|---|---|---|---|
-| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **362** | — |
-| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 155 | — |
-| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 614 | — |
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **375** | — |
+| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 159 | — |
+| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 597 | — |
 | `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 10,095 |
 | | | **total distinct functions in the game** | **8,629** | |
 
@@ -36,45 +36,60 @@ once covers every copy.*
 
 | container | functions | matched | stub | unsplit |
 |---|---|---|---|---|
-| `10638.s` | 37 | 0 | 0 | 37 |
+| `10638.s` | 4 | 0 | 0 | 4 |
+| `1124C.s` | 32 | 0 | 0 | 32 |
 | `17AD0.s` | 15 | 0 | 0 | 15 |
 | `1A960.s` | 2 | 0 | 0 | 2 |
 | `1B370.s` | 17 | 0 | 0 | 17 |
-| `1DB20.s` | 24 | 0 | 0 | 24 |
+| `1DB20.s` | 23 | 0 | 0 | 23 |
 | `201EC.s` | 39 | 0 | 0 | 39 |
 | `2207C.s` | 16 | 0 | 0 | 16 |
 | `22B04.s` | 3 | 0 | 0 | 3 |
 | `22D38.s` | 26 | 0 | 0 | 26 |
 | `260F0.s` | 4 | 0 | 0 | 4 |
 | `26C78.s` | 39 | 0 | 0 | 39 |
-| `29CA4.s` | 50 | 0 | 0 | 50 |
+| `29CA4.s` | 6 | 0 | 0 | 6 |
+| `2A0F8.s` | 5 | 0 | 0 | 5 |
+| `2A3BC.s` | 37 | 0 | 0 | 37 |
 | `32A38.s` | 29 | 0 | 0 | 29 |
 | `34600.s` | 6 | 0 | 0 | 6 |
 | `35134.s` | 6 | 0 | 0 | 6 |
-| `352A8.s` | 56 | 0 | 0 | 56 |
+| `352A8.s` | 25 | 0 | 0 | 25 |
+| `3614C.s` | 2 | 0 | 0 | 2 |
+| `361C0.s` | 27 | 0 | 0 | 27 |
 | `383D0.s` | 20 | 0 | 0 | 20 |
 | `393EC.s` | 26 | 0 | 0 | 26 |
-| `3EC90.s` | 41 | 0 | 0 | 41 |
-| `4C710.s` | 13 | 0 | 0 | 13 |
+| `3EC90.s` | 18 | 0 | 0 | 18 |
+| `41374.s` | 22 | 0 | 0 | 22 |
+| `4C710.s` | 4 | 0 | 0 | 4 |
+| `4CA24.s` | 1 | 0 | 0 | 1 |
+| `4CA3C.s` | 1 | 0 | 0 | 1 |
+| `4CA58.s` | 4 | 0 | 0 | 4 |
 | `4D060.s` | 4 | 0 | 0 | 4 |
-| `4D1BC.s` | 20 | 0 | 0 | 20 |
-| `4E174.s` | 23 | 0 | 0 | 23 |
+| `4D1BC.s` | 6 | 0 | 0 | 6 |
+| `4DCD4.s` | 1 | 0 | 0 | 1 |
+| `4DCF8.s` | 10 | 0 | 0 | 10 |
+| `4E174.s` | 1 | 0 | 0 | 1 |
+| `4E18C.s` | 11 | 0 | 0 | 11 |
+| `4E74C.s` | 4 | 0 | 0 | 4 |
+| `4F3B4.s` | 1 | 0 | 0 | 1 |
+| `4F3D4.s` | 2 | 0 | 0 | 2 |
 | `52C0.s` | 6 | 0 | 0 | 6 |
 | `543A8.s` | 49 | 0 | 0 | 49 |
 | `77D4.s` | 43 | 0 | 0 | 43 |
-| `src/rock_neo` | 505 | 350 | 155 | 0 |
+| `src/rock_neo` | 522 | 363 | 159 | 0 |
 
 ### Engine work pools (not yet MATCHED)
 
 | pool | count |
 |---|---|
-| ≤10 instructions | 76 |
-| ≤20 instructions | 173 |
-| ≤30 instructions | 248 |
-| ≤50 instructions | 354 |
-| ≤120 instructions | 559 |
-| leaf (calls nothing) | 298 |
-| in a family of ≥2 (template transfers) | 165 |
+| ≤10 instructions | 63 |
+| ≤20 instructions | 160 |
+| ≤30 instructions | 235 |
+| ≤50 instructions | 341 |
+| ≤120 instructions | 546 |
+| leaf (calls nothing) | 285 |
+| in a family of ≥2 (template transfers) | 155 |
 | >120 instructions (**nothing this big has ever matched**) | 210 |
 
 ## Stages — where the volume is

@@ -909,3 +909,25 @@
   gen_counts sources its structure from the map instead of its own grep. The engine
   invariant (1,119) is now asserted rather than assumed.
 - New: tools/phase0_split.py, tools/gen_map.py, notes/FUNCTION_MAP.md.
+
+## 2026-07-28 (overnight)
+- **+13 matched (350 -> 363 engine, audit_count.sh clean-rebuild verified).** Landed from
+  the Lane B m2c drafts: gp-relative setters/getters and small leaf functions. 3 of the
+  17 drafts did not compile (undefined types) and were reverted to stubs in a single
+  verified pass rather than left to rot.
+- **DENOMINATOR BUG, same class as 484-vs-1119.** `gen_map` globbed `asm/rock_neo/*.s`,
+  which does not descend into subdirectories, so `asm/rock_neo/psxsdk/code.s` — **446
+  functions, genuinely linked via rock_neo.ld** — was invisible to every count ever
+  produced. Now counted as its own SDK realm. Whole game 8,183 -> **8,629**. Found by an
+  agent, not by any gate.
+- **Worktree parallelism does NOT work** and is recorded UNRESOLVED in LESSONS.md:
+  `-gcoff` embeds the absolute source path in every C object, so a worktree cannot produce
+  a matching build. Equalising path length did not fix it. Build-gated work must stay in
+  the main tree until this is understood.
+- Three read-only analysis lanes landed in `notes/wip/`: library ID (ZERO of the 614
+  unsplit engine functions are library code — SDK_CANDIDATES.md is 100% false positives;
+  libgcc absent because gcc 2.7.2/mips emits divsi3 as a define_insn and MML uses BIOS
+  string routines), 244 m2c drafts in four tiers, and the ST03 conversion recipe
+  (ST03 == ST03B verified by hash).
+- `Sub_screen_status_calc` (123 insn) attempted and parked at 82 rows — m2c understood it
+  immediately; register allocation is the blocker, not comprehension.
