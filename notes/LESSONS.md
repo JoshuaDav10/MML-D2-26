@@ -1387,3 +1387,33 @@ correction hides the config error that produced it.
   byte-identical to the fully inline form, but hoisting the mask into the temp
   (`r = rand() & 0x3F`) is NOT (4 hard) — the `& 0x3F` has to stay inside the sum so the
   `andi` lands after the `li`.
+
+## 2026-07-29 — LANDING IS A TRANSCRIPTION STEP, AND TRANSCRIPTION DROPS CODE
+
+Verified-by-bytecmp C still has to be pasted into a real TU by hand (renaming symbols,
+merging structs, adapting field access). That paste is a fresh chance to introduce an
+error, and **the per-function proof does not carry over to the pasted copy.**
+
+I lost an `if (work->xD == 0)` guard while landing an agent-verified body into an ST0C
+overlay file. Consequences, in the order they appeared:
+1. `make chunks` **succeeded** — short-but-valid C compiles fine.
+2. `check_overlays` printed **205/205** — because the *previous* run had failed, leaving
+   stale BINs. (The documented trap, hit for real: always read the chunks exit code.)
+3. Once rebuilt, `cmp` reported **41,209 differing bytes from 0x834 onward** — which reads
+   like catastrophe but is just a 20-byte shift: one function 5 words short moves every
+   byte after it.
+
+Diagnosis took one step with the right tool: compare each built function's WORD COUNT
+against its reference asm. Now `tools/checksizes.py` (negative-tested both ways):
+
+    tools/checksizes.py --overlay ST0C     # or <built.o> <nonmatchings-dir>
+
+**Rules adopted:**
+- After landing C by hand, re-verify. Either re-run `bytecmp` on the pasted body or run
+  `checksizes.py`. Twice today adaptation changed behaviour: once a helper's `u16` coords
+  where the file's struct had a signed `PosXYZ` (caught by re-verifying), once this
+  dropped guard (caught only by the build).
+- A whole-binary diff of tens of thousands of bytes starting at one offset is a SHIFT, not
+  widespread corruption. Find the length error, don't read the byte diff.
+- Sizes matching does not prove a byte match; it proves nothing was dropped. Both checks
+  have their place.

@@ -159,6 +159,50 @@ typedef struct SCE_TBL {
 void func_8001DF10(SCE_TBL *st);
 extern SCE_TBL D_8010CB40;
 
+/* Views of the actor struct used by the ST0C step/sweep handlers. Kept as
+ * separate typedefs (rather than merged into WORK/ACTOR_WORK) because only the
+ * OFFSETS matter and separate views cannot shift each other's fields. */
+typedef struct SWEEP_WORK {
+    u8  pad0[0x9];
+    u8  x9;                      /* 0x009 routine */
+    u8  padA[0xC - 0xA];
+    s16 xC;                      /* 0x00C */
+    u8  padE[0x22 - 0xE];
+    u8  x22;                     /* 0x022 */
+    u8  pad23[0x38 - 0x23];
+    s16 x38;                     /* 0x038 */
+    s16 x3A;                     /* 0x03A */
+} SWEEP_WORK;
+
+typedef struct LATCH_WORK {
+    u8  pad0[0xD];
+    s8  xD;                      /* 0x00D pending-next-routine */
+    u8  padE[0x168 - 0xE];
+    u8  x168;
+    u8  x169;
+    u8  pad16A[0x448 - 0x16A];
+    u8  x448;                    /* 0x448 requested action */
+} LATCH_WORK;
+
+typedef struct FLAG_WORK {
+    u8  pad0[0xFF];
+    s8  xFF;
+    u8  pad100[0x103 - 0x100];
+    s8  x103;
+    u8  pad104[0x107 - 0x104];
+    s8  x107;
+} FLAG_WORK;
+
+extern SCE_TBL D_8010CB48;
+void func_8003786C(s32 id);
+extern u8 D_800C1B60;
+extern s8 D_800C356C;
+extern u8 D_800C356D;
+extern u8 D_800C356E;
+extern u8 D_800C356F;
+extern u8 D_800C3570;
+extern u8 D_800C3571;
+
 u8  pad0[0x4];
 void func_80103AB0(s32 idx);
 void func_80101B70(void);
@@ -259,7 +303,13 @@ void func_801010AC(void) {
     }
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801010DC);
+void func_801010DC(EVE_WORK *evp) {
+    if (evp->x4 == 0) {
+        func_8001DF10(&D_8010CB48);
+        func_8003786C(0x19D);
+        evp->x4 = 0xFF;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80101130);
 
@@ -278,15 +328,37 @@ s32 func_80101330(void) {
     return 0;
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80101350);
+void func_80101350(u8 arg0) {
+    D_800C356C = -1;
+    D_800C356F = arg0;
+    D_800C356D = 0;
+    D_800C3571 = 0xFF;
+    D_800C3570 = 0xFF;
+    D_800C356E = D_800C1B60;
+}
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80101398);
+void func_80101398(LATCH_WORK *work) {
+    if (work->xD == 0) {
+        /* Store first: writing xD++ first reuses the cached lb and emits a
+         * spurious frame; store-first forces a genuine lbu reload of xD and the
+         * scheduler sinks the store into its load-delay slot. See LESSONS. */
+        work->x448 = 0;
+        work->xD++;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801013C0);
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010143C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010148C);
+void func_8010148C(LATCH_WORK *work) {
+    if (work->xD == 0) {
+        work->x448 = 0x80;
+        work->x168 = 0;
+        work->x169 = 0;
+        work->xD++;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801014BC);
 
@@ -622,9 +694,23 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80105E98);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80105F60);
+void func_80105F60(FLAG_WORK *p, u8 f) {
+    if (f) {
+        p->x107 = 0;
+    } else {
+        p->x107 = -1;
+    }
+}
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80105F80);
+void func_80105F80(FLAG_WORK *p, u8 f) {
+    if (f) {
+        p->xFF = 0;
+        p->x103 = 0;
+    } else {
+        p->xFF = -1;
+        p->x103 = -1;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80105FA8);
 
@@ -858,12 +944,23 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_s
 void func_8010B500(EVE_WORK *evp) {
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B508);
+void func_8010B508(SWEEP_WORK *work) {
+    work->x38 += 2;
+    work->x3A -= 1;
+    if (work->x3A == -0x64) {
+        work->x9++;
+    }
+}
 
 void func_8010B54C(EVE_WORK *evp) {
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B554);
+void func_8010B554(SWEEP_WORK *work) {
+    work->x38 -= 2;
+    if (++work->x3A == 0) {
+        work->x9 = 0;
+    }
+}
 
 void func_8010B580(u8 *o) {
     D_8010D81C[o[0x9]]();
@@ -872,12 +969,24 @@ void func_8010B580(u8 *o) {
 void func_8010B5BC(EVE_WORK *evp) {
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B5C4);
+void func_8010B5C4(SWEEP_WORK *work) {
+    work->x38 -= 2;
+    work->x3A += 1;
+    if (work->x3A == 0x64) {
+        work->x9++;
+    }
+}
 
 void func_8010B608(EVE_WORK *evp) {
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B610);
+void func_8010B610(SWEEP_WORK *work) {
+    work->x38 += 2;
+    work->x3A -= 1;
+    if (work->x38 == 0) {
+        work->x9 = 0;
+    }
+}
 
 void func_8010B640(u8 *o) {
     D_8010D82C[o[0x9]]();
@@ -886,7 +995,9 @@ void func_8010B640(u8 *o) {
 void func_8010B67C(EVE_WORK *evp) {
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B684);
+void func_8010B684(SWEEP_WORK *work) {
+    work->xC += 0x11;
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B698);
 
@@ -900,4 +1011,10 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010BBD4);
 
+/* PARKED: the C form needs a symbol reference (lui %hi + lhu %lo folded) to
+ * reproduce the target's 7 words, but ST0C ovl0's linker inputs do not define
+ * System_timer (0x1F800002) -- the original baked the address in as a literal,
+ * so splat never added it to undefined_syms_auto. A raw-address deref builds the
+ * address in a register instead and costs a word (8 vs 7). Needs a symbol added
+ * to this chunk's linker inputs; not worth destabilising the build for one fn. */
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010BE64);
