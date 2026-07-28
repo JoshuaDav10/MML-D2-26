@@ -1174,3 +1174,33 @@ bits 31..8; the real GPU packet layout needs `{len:8; addr:24;}`. libgpu.h's `P_
 uses the first order and matched for the sub_scrn addPrims tails, while
 Code800133D8.c needed the reversed `OT_TAG`. Both verified — pick per site, do not
 assume one is universally right.
+
+## Parallel worktrees cannot produce a matching build (2026-07-28) — UNRESOLVED
+
+`CC_FLAGS` carries `-gcoff`, and the **absolute source path is embedded in every C object**.
+A git worktree therefore builds a *different binary* from identical sources:
+
+```
+/home/X/Documents/MML-D2-26   -> moji.c.o 69420 bytes   exe 825344  (matches)
+/home/X/Documents/mml-wt-wt-test -> moji.c.o 69452       exe 825516  (+172)
+/home/X/Documents/MML-WT-a1   -> moji.c.o 69444          exe 825516  (+172)
+```
+
+Equalising the path LENGTH (27 chars either way) did **not** fix it — still +24 on the
+object. `diff <(strings a.o) <(strings b.o)` shows exactly ONE difference: the path string
+itself. Assembly objects (`32A38.s.o`) are byte-identical; only C objects differ. First
+binary difference is at `0x800`, the start of code — not a trailing debug section.
+
+**Unresolved:** why a same-length path swap changes object size by 24 bytes, and why it
+reaches the stripped output at all. If the path genuinely reached the shipped exe we could
+never match the retail binary from any path, so something subtler is going on.
+
+**Practical consequence until solved: do NOT run build-gated work in a worktree.** Its
+baseline does not match, so nothing it produces can be verified. Read-only analysis in a
+worktree is fine. `tools/mkworktree.sh` exists and sets one up correctly in every other
+respect; it prints a WARNING and exits nonzero when the baseline fails, so it will not
+silently hand you a poisoned tree.
+
+**Worth trying next:** build with debug off to see whether the delta vanishes; check
+whether `-fverbose-asm` or the `.comment` section carries the command line; try a worktree
+whose path is not merely the same length but sorts identically in the string table.
