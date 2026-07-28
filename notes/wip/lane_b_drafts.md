@@ -62,10 +62,13 @@ for **far more prefixes** than that:
 Every symbol using the normal `addu $at,$at,$reg` order is a real in-image symbol
 (0x8008xxxx / 0x8009xxxx). That is almost certainly the ASPSX rule.
 
-**Consequence:** func_8003ACF4, func_8003786C, func_80037C14 (`D_8015C0xx`) **cannot match
-from any C source** until `"D_8015C"` is added to that tuple. They are listed in Tier D
-below as *blocked-on-tooling*, not as bad drafts. Do the one-line tool change first;
-it likely unblocks a whole family (58 reg-first `D_8015C` sites in the corpus).
+**RESOLVED 2026-07-29 — all three are now MATCHED.** The tuple was completed from a full
+census (six prefixes were missing, not one: `D_8015C`, `D_8013A`, `D_80164`, `D_800D`,
+`STAGE_IDX_LOAD_ADDRESS` joined `D_801F8`); see LESSONS "ASPSX reg-first operand order".
+func_8003ACF4 and func_8003786C matched as the drafted one-liners. func_80037C14 needed
+the **goto-shared-return** shape, not the drafted early return — see the LESSONS decision
+table. Remaining lead: **func_80037738** (17 insns, same D_8015C family) should now be
+reachable and is untouched.
 
 ### 3. `asm/rock_neo/77D4.s` is hand-written assembly — do not assign it
 

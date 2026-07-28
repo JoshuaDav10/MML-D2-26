@@ -1247,3 +1247,38 @@ whose path is not merely the same length but sorts identically in the string tab
   A generator that parsed each dispatcher's own asm for load type / index offset / table
   symbol got 17/18 first try, and the 18th exposed a documented-but-wrong note
   (func_800153EC is a TWO-arg call — the computed address lands in `$a1`, not `$a0`).
+
+### Conditional-return shapes: a DECISION TABLE (2026-07-29, supersedes the pairwise note above)
+
+There are **three** non-interchangeable C forms for "conditionally return a computed
+value". Read which register the flag lands in, then pick:
+
+| target shows | write | wrong choice costs |
+|---|---|---|
+| flag in `$v0`, result in a *different* reg | accumulator: `s32 r = DEFAULT; if (c) r = X; return r;` | — |
+| flag in `$v1`, result in `$v0` | early return: `if (!c) return DEFAULT; return X;` | trailing `move $v0,$v1` |
+| flag in `$v0` **and result REUSES `$v0`** (default materialised in the branch *delay slot*) | goto-shared-return: `s32 r; if (c) { r = DEFAULT; goto end; } r = X; end: return r;` | accumulator → `move $v0,$v1`; early return → an extra `j` |
+
+The third case is the giveaway: if the default value appears **in the branch delay slot**,
+the flag and the result share one hard register — the flag dies at the branch and the
+result is born immediately after. An accumulator initialised *before* the compare has a
+live range overlapping the flag, so they cannot share and one spills to `$v1`.
+Measured on func_80037C14 (15 insns): accumulator 3 hard, early-return 8 hard, goto 0.
+
+### ASPSX reg-first operand order — the rule, censused (2026-07-29)
+
+`tools/maspx/maspsx/__init__.py:ASPSX_REGFIRST_SYM_PREFIXES` decides whether a
+bare-symbol+reg access expands `addu $at,$reg,$at` (reg-first) or `addu $at,$at,$reg`.
+Full census of `asm/rock_neo`: **52 reg-first sites / 21 symbols vs 1093 normal-order /
+466 symbols.** Two facts that make it mechanical rather than guesswork:
+* **No symbol ever uses both orders** — the choice is per-symbol and deterministic.
+* Every reg-first symbol is at an address **above the end of the loaded image**
+  (0x800D9xxx+) — an absolute/undefined extern. Every normal-order symbol is a real
+  in-image symbol (0x8008xxxx/0x8009xxxx). That is the ASPSX rule.
+The tuple had only `D_801F8`, covering 5 of 21 symbols; six prefixes were missing, so
+the D_8015C family (58 sites) **could not match from any C source**. Now
+`("D_801F8","D_8015C","D_8013A","D_80164","D_800D","STAGE_IDX_LOAD_ADDRESS")`, each
+checked for collisions against all 466 normal-order symbols (zero false positives, zero
+reg-first symbols uncovered), then regression-tested with a forced full recompile.
+**If a function mismatches ONLY in an `addu $at` operand order, add its prefix here — no
+C shape can fix it.**

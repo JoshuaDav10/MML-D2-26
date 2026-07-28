@@ -10,30 +10,30 @@ separate, slower step: `tools/audit_count.sh`.
 
 | Number | Value | Meaning |
 |---|---|---|
-| `F .text` in all rock_neo `.o` | **563** | Functions currently split into C TUs. **NOT the mission denominator.** |
-| Functions still unsplit (raw asm) | **556** | `glabel`s in `asm/rock_neo/*.s`, never split into a C TU. |
-| **Game functions in ROCK_NEO.EXE** | **1119** | 563 + 556. The MAIN-EXE denominator. |
+| `F .text` in all rock_neo `.o` | **566** | Functions currently split into C TUs. **NOT the mission denominator.** |
+| Functions still unsplit (raw asm) | **553** | `glabel`s in `asm/rock_neo/*.s`, never split into a C TU. |
+| **Game functions in ROCK_NEO.EXE** | **1119** | 566 + 553. The MAIN-EXE denominator. |
 | Unique overlay functions | **~7064** | Measured by `tools/overlay_scope.py`; deduped across 205 overlays. |
 | Sony PSY-Q SDK in the exe | **446** | `asm/rock_neo/psxsdk/code.s`, linked by rock_neo.ld. NOT Capcom code; matchable from published source. Invisible to every count before 2026-07-28 because the map globbed `asm/rock_neo/*.s` and never descended into subdirectories. |
 | **Whole-game functions** | **~8629** | 1119 main exe + ~7064 overlay + 446 SDK. THE whole-game denominator. |
-| Matched — ENGINE (real C in tree) | **404** | 563 − 159. `census.py --matched`, authoritative for the main exe. |
+| Matched — ENGINE (real C in tree) | **407** | 566 − 159. `census.py --matched`, authoritative for the main exe. |
 | Matched — STAGE (unique bodies) | **12** | Stage overlay functions with real C. Invisible to `census.py` (it globs only `build/src/rock_neo/*.o`); read from `gen_map.py`, which proves linkage from each overlay's own `.map`. |
-| **Matched — WHOLE GAME** | **416** | 404 engine + 12 stage. |
+| **Matched — WHOLE GAME** | **419** | 407 engine + 12 stage. |
 | Active INCLUDE_ASM stubs | **159** | Stubs still pulled in AFTER cpp (ifdef-aware). |
 | Raw `grep -c INCLUDE_ASM` | 166 | **DO NOT USE.** Blind to `#define ACCEPT_REORDERING_BULLSHIT` in game.c/sub_scrn.c; 7 stubs are shadowed by an active `#else` body. Un-gating one is a NO-OP that reads as +1 — this caused the 2026-07-19 inflation. |
-| By function count (C-mapped slice) | **71.8%** | 404 / 563 — the number historically quoted. Overstates the mission. |
-| By function count (main exe) | **36.1%** | 404 / 1119. |
+| By function count (C-mapped slice) | **71.9%** | 407 / 566 — the number historically quoted. Overstates the mission. |
+| By function count (main exe) | **36.4%** | 407 / 1119. |
 | By function count (stage realm) | **0.2%** | 12 / ~7064. |
-| **By function count (WHOLE GAME)** | **~4.8%** | 416 / ~8629. The honest number. |
+| **By function count (WHOLE GAME)** | **~4.9%** | 419 / ~8629. The honest number. |
 
 ## Splitting is not progress
 A phase-0 split MOVES a function from the unsplit bucket into the C-mapped bucket. It
-raises `563` and lowers `556` and leaves **1119 unchanged**. Only a rise in
+raises `566` and lowers `553` and leaves **1119 unchanged**. Only a rise in
 **matched** is progress.
 
 ## Always name which denominator
 The 2026-07-26 audit found this project had reported `matched/C-mapped` for months while
-556 functions sat in `asm/rock_neo/*.s`, linked by `rock_neo.ld` and invisible to
+553 functions sat in `asm/rock_neo/*.s`, linked by `rock_neo.ld` and invisible to
 `census.py` (which reads only `build/src/rock_neo/*.o`). Same defect class as the
 ACCEPT_REORDERING_BULLSHIT inflation: a completion metric defined by what a tool parses
 rather than by the target binary.
