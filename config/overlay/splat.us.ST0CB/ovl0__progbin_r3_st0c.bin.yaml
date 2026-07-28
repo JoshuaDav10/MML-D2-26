@@ -32,6 +32,12 @@ segments:
     subalign: 4
     subsegments:
       - [0x800, rodata]
-      - [0x13B0, asm]
+      # Whole text as one C segment: generates a stub per function, and the 34
+      # bodies already solved in ST03 drop straight in. Functions using jump
+      # tables stay INCLUDE_ASM, so this file emits no .rodata and the
+      # "C rodata must be a text suffix" rule does not bite.
+      # ST0C == ST0CB == ST0CC over the whole code chunk (sha1-verified), so the
+      # same C serves all three.
+      - [0x13B0, c, Code80100BB0]
       - [0xC680, data]
   - [0x131C0]
