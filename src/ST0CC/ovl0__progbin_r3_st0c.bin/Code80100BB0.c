@@ -1,5 +1,22 @@
 #include "common.h"
 
+extern void (*D_8010D414[])(void);
+extern void (*D_8010D444[])(void);
+extern void (*D_8010D494[])(void);
+extern void (*D_8010D530[])(void);
+extern void (*D_8010D58C[])(void);
+void func_8001DDE4(s32);
+
+extern void (*D_8010D608[])(void);
+extern void (*D_8010D640[])(void);
+extern void (*D_8010D62C[])(void);
+extern void (*D_8010D82C[])(void);
+extern void (*D_8010D614[])(void);
+extern void (*D_8010D808[])(void);
+extern void (*D_8010D81C[])(void);
+extern void (*D_8010D5F8[])(void);
+extern void (*D_8010D6FC[])(void);
+
 /* ST0C ovl0 (== ST0CB == ST0CC, sha1-verified over the whole code chunk).
  * Whole text is one C segment; the 34 bodies below were already solved in ST03
  * and are byte-identical here (the body hash is over raw instruction words, so
@@ -202,7 +219,6 @@ extern s32  rand(void);
 extern void func_80032538(ENEMY_WORK *);
 extern void func_800334C4(ENEMY_WORK *);
 extern s32  func_80048C60(void *);
-extern s32  Sce_flag_test(s32);
 extern u8   D_800B51C4[];
 void (*init)(void *);
 void (*act)(void *);
@@ -237,7 +253,11 @@ void func_80100FF8(EVE_WORK *evp) {
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80101000);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801010AC);
+void func_801010AC(void) {
+    if (Sce_flag_test(0x28)) {
+        func_8001DDE4(0x18);
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801010DC);
 
@@ -310,7 +330,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80102A60);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80102CB8);
+void func_80102CB8(u8 *o) {
+    D_8010D414[o[0x8]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80102CF4);
 
@@ -320,7 +342,9 @@ void func_80103070(void) {
     func_80031824();
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80103090);
+void func_80103090(u8 *o) {
+    D_8010D444[o[0xA]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801030CC);
 
@@ -334,7 +358,9 @@ void func_80103218(WORK *p) {
     }
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80103234);
+void func_80103234(u8 *o) {
+    D_8010D494[o[0xA]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80103270);
 
@@ -386,7 +412,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801038DC);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80103920);
+void func_80103920(u8 *o) {
+    D_8010D530[o[0xA]]();
+}
 
 void func_8010395C(WORK *w) {
     w->x35C = 0;
@@ -427,7 +455,9 @@ void func_80103E28(WORK *w) {
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80103ED0);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80103F5C);
+void func_80103F5C(u8 *o) {
+    D_8010D58C[o[0xA]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80103F98);
 
@@ -454,7 +484,9 @@ void func_8010448C(WORK *w) {
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801044F0);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104540);
+void func_80104540(u8 *o) {
+    D_8010D5F8[o[0x34B]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010457C);
 
@@ -466,7 +498,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104864);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104928);
+void func_80104928(u8 *o) {
+    D_8010D608[o[0x34B]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104964);
 
@@ -474,7 +508,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104B24);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104BE8);
+void func_80104BE8(u8 *o) {
+    D_8010D614[o[0x34B]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104C24);
 
@@ -482,7 +518,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104DC8);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104E2C);
+void func_80104E2C(u8 *o) {
+    D_8010D62C[o[0x34B]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80104E68);
 
@@ -523,7 +561,9 @@ void func_80105160(ACTOR_WORK *work) {
     work->x56 = (work->x56 + turn) & 0xFFF;
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80105234);
+void func_80105234(u8 *o) {
+    D_8010D640[o[0x34B]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80105270);
 
@@ -739,7 +779,9 @@ void func_801091B4(WORK *work, EFFECT_REQ *req) {
     req->x20 = work->pos.z;
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801091E4);
+void func_801091E4(u8 *o) {
+    D_8010D6FC[o[0x3]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80109220);
 
@@ -799,7 +841,9 @@ void func_8010B008(void) {
     func_80031988();
 }
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B028);
+void func_8010B028(u8 *o) {
+    D_8010D808[o[0x8]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B064);
 
@@ -821,7 +865,9 @@ void func_8010B54C(EVE_WORK *evp) {
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B554);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B580);
+void func_8010B580(u8 *o) {
+    D_8010D81C[o[0x9]]();
+}
 
 void func_8010B5BC(EVE_WORK *evp) {
 }
@@ -833,7 +879,9 @@ void func_8010B608(EVE_WORK *evp) {
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B610);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CC/../../../asm/ST0CC/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_8010B640);
+void func_8010B640(u8 *o) {
+    D_8010D82C[o[0x9]]();
+}
 
 void func_8010B67C(EVE_WORK *evp) {
 }
