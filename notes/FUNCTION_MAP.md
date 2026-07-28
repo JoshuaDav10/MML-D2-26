@@ -12,7 +12,8 @@ is what produced a completion figure ~16x too high for months.
 |---|---|---|---|
 | **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **350** (31.3%) |
 | **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | **12** (0.2%) |
-| **WHOLE GAME** | | **8,183** | **362** (4.4%) |
+| **SDK** | Sony PSY-Q library linked into the exe (`asm/rock_neo/psxsdk/code.s`). NOT Capcom code — matchable from published source, a cheaper class of work. | **446** | 0 |
+| **WHOLE GAME** | | **8,629** | **362** (4.2%) |
 
 ## States
 
@@ -26,7 +27,7 @@ once covers every copy.*
 | `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 155 | — |
 | `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 614 | — |
 | `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 10,095 |
-| | | **total distinct functions in the game** | **8,183** | |
+| | | **total distinct functions in the game** | **8,629** | |
 
 > Moving `UNSPLIT -> STUB` is a *split*: bookkeeping, **not progress**. Only
 > `-> MATCHED` counts.
@@ -73,7 +74,7 @@ once covers every copy.*
 | ≤50 instructions | 354 |
 | ≤120 instructions | 559 |
 | leaf (calls nothing) | 298 |
-| in a family of ≥2 (template transfers) | 164 |
+| in a family of ≥2 (template transfers) | 165 |
 | >120 instructions (**nothing this big has ever matched**) | 210 |
 
 ## Stages — where the volume is
@@ -96,16 +97,16 @@ once covers every copy.*
 
 ### Duplication — real match-once-cover-many
 
-1,227 distinct bodies appear more than once, covering 4,322 instances.
+1,233 distinct bodies appear more than once, covering 4,340 instances.
 
 | function | instructions | copies | leaf |
 |---|---|---|---|
-| `func_8003FFA8` | 2 | **378** | yes |
+| `func_8003FFA8` | 2 | **381** | yes |
 | `func_800153CC` | 8 | **145** | no |
 | `func_801083DC` | 10 | **72** | yes |
 | `func_80110834` | 8 | **60** | no |
 | `func_8004493C` | 8 | **43** | no |
-| `func_8010190C` | 16 | **34** | no |
+| `func_80068D64` | 16 | **35** | no |
 | `func_80114148` | 8 | **28** | no |
 | `func_801080E4` | 7 | **25** | yes |
 | `func_80108404` | 31 | **24** | no |

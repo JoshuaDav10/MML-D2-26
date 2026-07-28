@@ -14,7 +14,8 @@ separate, slower step: `tools/audit_count.sh`.
 | Functions still unsplit (raw asm) | **614** | `glabel`s in `asm/rock_neo/*.s`, never split into a C TU. |
 | **Game functions in ROCK_NEO.EXE** | **1119** | 505 + 614. The MAIN-EXE denominator. |
 | Unique overlay functions | **~7064** | Measured by `tools/overlay_scope.py`; deduped across 205 overlays. |
-| **Whole-game functions** | **~8183** | 1119 main exe + ~7064 overlay. THE whole-game denominator. |
+| Sony PSY-Q SDK in the exe | **446** | `asm/rock_neo/psxsdk/code.s`, linked by rock_neo.ld. NOT Capcom code; matchable from published source. Invisible to every count before 2026-07-28 because the map globbed `asm/rock_neo/*.s` and never descended into subdirectories. |
+| **Whole-game functions** | **~8629** | 1119 main exe + ~7064 overlay + 446 SDK. THE whole-game denominator. |
 | Matched — ENGINE (real C in tree) | **350** | 505 − 155. `census.py --matched`, authoritative for the main exe. |
 | Matched — STAGE (unique bodies) | **12** | Stage overlay functions with real C. Invisible to `census.py` (it globs only `build/src/rock_neo/*.o`); read from `gen_map.py`, which proves linkage from each overlay's own `.map`. |
 | **Matched — WHOLE GAME** | **362** | 350 engine + 12 stage. |
@@ -23,7 +24,7 @@ separate, slower step: `tools/audit_count.sh`.
 | By function count (C-mapped slice) | **69.3%** | 350 / 505 — the number historically quoted. Overstates the mission. |
 | By function count (main exe) | **31.3%** | 350 / 1119. |
 | By function count (stage realm) | **0.2%** | 12 / ~7064. |
-| **By function count (WHOLE GAME)** | **~4.4%** | 362 / ~8183. The honest number. |
+| **By function count (WHOLE GAME)** | **~4.2%** | 362 / ~8629. The honest number. |
 
 ## Splitting is not progress
 A phase-0 split MOVES a function from the unsplit bucket into the C-mapped bucket. It

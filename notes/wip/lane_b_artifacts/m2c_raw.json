@@ -1,0 +1,2198 @@
+{
+ "func_800394A4": {
+  "insns": 2,
+  "name": "func_800394A4",
+  "asm": "29CA4.s",
+  "copies": 378,
+  "family": 378,
+  "out": "void func_800394A4(void) {\n\n}\n",
+  "stderr": ""
+ },
+ "func_80044934": {
+  "insns": 2,
+  "name": "func_80044934",
+  "asm": "35134.s",
+  "copies": 378,
+  "family": 378,
+  "out": "void func_80044934(void) {\n\n}\n",
+  "stderr": ""
+ },
+ "func_80044AA8": {
+  "insns": 2,
+  "name": "func_80044AA8",
+  "asm": "352A8.s",
+  "copies": 378,
+  "family": 378,
+  "out": "void func_80044AA8(void) {\n\n}\n",
+  "stderr": ""
+ },
+ "func_80047BD0": {
+  "insns": 2,
+  "name": "func_80047BD0",
+  "asm": "383D0.s",
+  "copies": 378,
+  "family": 378,
+  "out": "void func_80047BD0(void) {\n\n}\n",
+  "stderr": ""
+ },
+ "func_8005C860": {
+  "insns": 2,
+  "name": "func_8005C860",
+  "asm": "4D060.s",
+  "copies": 378,
+  "family": 378,
+  "out": "void func_8005C860(void) {\n\n}\n",
+  "stderr": ""
+ },
+ "func_8005D974": {
+  "insns": 2,
+  "name": "func_8005D974",
+  "asm": "4E174.s",
+  "copies": 378,
+  "family": 378,
+  "out": "void func_8005D974(void) {\n\n}\n",
+  "stderr": ""
+ },
+ "func_80020A40": {
+  "insns": 3,
+  "name": "func_80020A40",
+  "asm": "10638.s",
+  "copies": 1,
+  "family": 3,
+  "out": "extern s32 D_80097C3C;\n\nvoid func_80020A40(void) {\n    D_80097C3C = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80050B68": {
+  "insns": 3,
+  "name": "func_80050B68",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_80050B68(void *arg0) {\n    return arg0->unk2 != 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005C218": {
+  "insns": 3,
+  "name": "func_8005C218",
+  "asm": "4C710.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s8 D_80098830;\n\nvoid func_8005C218(s8 arg0) {\n    D_80098830 = arg0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005C224": {
+  "insns": 3,
+  "name": "func_8005C224",
+  "asm": "4C710.s",
+  "copies": 1,
+  "family": 3,
+  "out": "extern s32 D_80098AF4;\n\nvoid func_8005C224(s32 arg0) {\n    D_80098AF4 = arg0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005C230": {
+  "insns": 3,
+  "name": "func_8005C230",
+  "asm": "4C710.s",
+  "copies": 1,
+  "family": 3,
+  "out": "extern s32 D_800989E0;\n\nvoid func_8005C230(s32 arg0) {\n    D_800989E0 = arg0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005C24C": {
+  "insns": 3,
+  "name": "func_8005C24C",
+  "asm": "4C710.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s8 D_800989D4;\n\nvoid func_8005C24C(s8 arg0) {\n    D_800989D4 = arg0;\n}\n",
+  "stderr": ""
+ },
+ "func_80017820": {
+  "insns": 3,
+  "name": "func_80017820",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_80017820(u32 arg0) {\n    return (u32) sp < arg0;\n}\n",
+  "stderr": ""
+ },
+ "func_80017860": {
+  "insns": 3,
+  "name": "func_80017860",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_80017860(void) {\n    M2C_BREAK(1);\n}\n",
+  "stderr": ""
+ },
+ "func_80036A78": {
+  "insns": 4,
+  "name": "func_80036A78",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 3,
+  "out": "void func_80036A78(s16 arg0) {\n    *(s16 *)0x1F800076 = arg0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005C23C": {
+  "insns": 4,
+  "name": "func_8005C23C",
+  "asm": "4C710.s",
+  "copies": 1,
+  "family": 11,
+  "out": "extern s32 D_800989EC;\n\nvoid func_8005C23C(s32 arg0) {\n    D_800989EC = arg0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D4E8": {
+  "insns": 4,
+  "name": "func_8005D4E8",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s8 D_800BBD84;\n\nvoid func_8005D4E8(void) {\n    D_800BBD84 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D95C": {
+  "insns": 4,
+  "name": "func_8005D95C",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern u8 D_800BBD87;\n\nu8 func_8005D95C(void) {\n    return D_800BBD87;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D97C": {
+  "insns": 4,
+  "name": "func_8005D97C",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s8 D_800BBDAB;\n\nvoid func_8005D97C(void) {\n    D_800BBDAB = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005DF3C": {
+  "insns": 4,
+  "name": "func_8005DF3C",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s16 D_800986F8;\nextern s16 D_800986FC;\n\nvoid func_8005DF3C(void) {\n    D_800986F8 = 0;\n    D_800986FC = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005EBA4": {
+  "insns": 4,
+  "name": "func_8005EBA4",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 3,
+  "out": "extern s16 D_800BBD94;\n\nvoid func_8005EBA4(s16 arg0) {\n    D_800BBD94 = arg0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005EBB4": {
+  "insns": 4,
+  "name": "func_8005EBB4",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 3,
+  "out": "extern s16 D_800BBD96;\n\nvoid func_8005EBB4(s16 arg0) {\n    D_800BBD96 = arg0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005EBC4": {
+  "insns": 4,
+  "name": "func_8005EBC4",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s16 D_800BBD94;\n\ns16 func_8005EBC4(void) {\n    return D_800BBD94;\n}\n",
+  "stderr": ""
+ },
+ "func_8005EBD4": {
+  "insns": 4,
+  "name": "func_8005EBD4",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s16 D_800BBD96;\n\ns16 func_8005EBD4(void) {\n    return D_800BBD96;\n}\n",
+  "stderr": ""
+ },
+ "func_8002DE20": {
+  "insns": 5,
+  "name": "func_8002DE20",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002DE20(s32 arg0, s32 arg1, s32 *arg2) {\n    *((arg1 * 0x10) + arg0) = *arg2;\n}\n",
+  "stderr": ""
+ },
+ "func_800333A0": {
+  "insns": 5,
+  "name": "func_800333A0",
+  "asm": "22D38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? *D_80098A80;\nextern ? D_800BC728;\n\nvoid func_800333A0(void) {\n    D_80098A80 = &D_800BC728;\n}\n",
+  "stderr": ""
+ },
+ "func_80036478": {
+  "insns": 5,
+  "name": "func_80036478",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_80036478(void *arg0, s8 arg1, u32 arg2) {\n    arg0->unk6 = arg1;\n    arg0->unkF = (s8) (arg2 >> 4);\n    arg0->unk7 = 0;\n}\n",
+  "stderr": ""
+ },
+ "Pl00_shot_enable_on": {
+  "insns": 5,
+  "name": "Pl00_shot_enable_on",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 3,
+  "out": "s32 Pl00_shot_enable_on(PL_WORK *arg0) {\n    u8 temp_v0;\n\n    temp_v0 = arg0->x175[0] | 1;\n    arg0->x175[0] = temp_v0;\n    return (s32) temp_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D4C0": {
+  "insns": 5,
+  "name": "func_8005D4C0",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s8 D_800BBD84;\n\nvoid func_8005D4C0(void) {\n    D_800BBD84 = 1;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D4D4": {
+  "insns": 5,
+  "name": "func_8005D4D4",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s8 D_800BBD84;\n\nvoid func_8005D4D4(void) {\n    D_800BBD84 = 2;\n}\n",
+  "stderr": ""
+ },
+ "func_800665E8": {
+  "insns": 5,
+  "name": "func_800665E8",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_80098914;\n\nvoid func_800665E8(void) {\n    *D_80098910 = 0;\n    D_80098914 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80066750": {
+  "insns": 5,
+  "name": "func_80066750",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_80066750(void *arg0) {\n    arg0->unk0 = 0;\n    arg0->unk4 = 0;\n    arg0->unk4 = 0;\n    return 1;\n}\n",
+  "stderr": ""
+ },
+ "func_800177CC": {
+  "insns": 5,
+  "name": "func_800177CC",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "/*\nDecompilation failure in function func_800177CC:\n\nCannot find branch target func_800177CC\n*/\n",
+  "stderr": ""
+ },
+ "func_800398E0": {
+  "insns": 6,
+  "name": "func_800398E0",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s8 D_800A395F;\n\nvoid func_800398E0(s8 arg0) {\n    if (arg0 > 0) {\n        D_800A395F = arg0;\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_80039BA4": {
+  "insns": 6,
+  "name": "func_80039BA4",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s8 D_800A395A;\nextern s8 D_800A395B;\n\nvoid func_80039BA4(s8 arg0, s8 arg1) {\n    D_800A395A = arg0;\n    D_800A395B = arg1;\n}\n",
+  "stderr": ""
+ },
+ "func_8003A13C": {
+  "insns": 6,
+  "name": "func_8003A13C",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s8 D_800A3962;\n\nu32 func_8003A13C(void) {\n    return (u32) ~D_800A3962 >> 0x1F;\n}\n",
+  "stderr": ""
+ },
+ "func_8004327C": {
+  "insns": 6,
+  "name": "func_8004327C",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8004327C(s32 arg0) {\n    return -((u32) Game_work.zennyCount < (u32) -arg0);\n}\n",
+  "stderr": ""
+ },
+ "func_800177E0": {
+  "insns": 6,
+  "name": "func_800177E0",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_800177E0(s32 *arg0, s32 arg1) {\n    s32 *var_a0;\n\n    var_a0 = arg0;\n    do {\n        *var_a0 = -1;\n        var_a0 += 4;\n    } while (arg1 != var_a0);\n}\n",
+  "stderr": ""
+ },
+ "func_8002DE04": {
+  "insns": 7,
+  "name": "func_8002DE04",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002DE04(s32 arg0, s32 arg1, void *arg2) {\n    void *temp_a1;\n\n    temp_a1 = (arg1 * 8) + arg0;\n    temp_a1->unk0 = (s32) arg2->unk0;\n    temp_a1->unk4 = (s32) arg2->unk4;\n}\n",
+  "stderr": ""
+ },
+ "func_80048CEC": {
+  "insns": 7,
+  "name": "func_80048CEC",
+  "asm": "393EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s16 func_80048CEC(s32 arg0) {\n    return *((arg0 * 2) + *(s32 *)0x1F800048);\n}\n",
+  "stderr": ""
+ },
+ "func_800175FC": {
+  "insns": 7,
+  "name": "func_800175FC",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 2,
+  "out": "void func_800175FC(void) {\n\n}\n",
+  "stderr": ""
+ },
+ "func_80017668": {
+  "insns": 7,
+  "name": "func_80017668",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 2,
+  "out": "void func_80017668(void) {\n\n}\n",
+  "stderr": ""
+ },
+ "func_8003ACF4": {
+  "insns": 8,
+  "name": "func_8003ACF4",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_8015C008;\n\nvoid func_8003ACF4(s32 arg0, s32 arg1) {\n    *((arg0 * 0xC) + &D_8015C008) = arg1;\n}\n",
+  "stderr": ""
+ },
+ "func_8004493C": {
+  "insns": 8,
+  "name": "func_8004493C",
+  "asm": "35134.s",
+  "copies": 43,
+  "family": 324,
+  "out": "? func_80031988();                                  /* extern */\n\nvoid func_8004493C(void) {\n    func_80031988();\n}\n",
+  "stderr": ""
+ },
+ "func_80044A80": {
+  "insns": 8,
+  "name": "func_80044A80",
+  "asm": "35134.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80031988();                                  /* extern */\n\nvoid func_80044A80(s8 *arg0) {\n    *arg0 = 0;\n    func_80031988();\n}\n",
+  "stderr": ""
+ },
+ "func_8004557C": {
+  "insns": 8,
+  "name": "func_8004557C",
+  "asm": "352A8.s",
+  "copies": 43,
+  "family": 324,
+  "out": "? func_80031988();                                  /* extern */\n\nvoid func_8004557C(void) {\n    func_80031988();\n}\n",
+  "stderr": ""
+ },
+ "func_80045980": {
+  "insns": 8,
+  "name": "func_80045980",
+  "asm": "352A8.s",
+  "copies": 43,
+  "family": 324,
+  "out": "? func_80031988();                                  /* extern */\n\nvoid func_80045980(void) {\n    func_80031988();\n}\n",
+  "stderr": ""
+ },
+ "func_800459A0": {
+  "insns": 8,
+  "name": "func_800459A0",
+  "asm": "352A8.s",
+  "copies": 2,
+  "family": 2,
+  "out": "void func_800459A0(void *arg0) {\n    arg0->unk2E = -0x28;\n    arg0->unk34 = 5;\n    arg0->unk8 = (u8) (arg0->unk8 + 1);\n}\n",
+  "stderr": ""
+ },
+ "func_8004674C": {
+  "insns": 8,
+  "name": "func_8004674C",
+  "asm": "352A8.s",
+  "copies": 43,
+  "family": 324,
+  "out": "? func_80031988();                                  /* extern */\n\nvoid func_8004674C(void) {\n    func_80031988();\n}\n",
+  "stderr": ""
+ },
+ "func_8004676C": {
+  "insns": 8,
+  "name": "func_8004676C",
+  "asm": "352A8.s",
+  "copies": 2,
+  "family": 2,
+  "out": "void func_8004676C(void *arg0) {\n    arg0->unk2E = -0x28;\n    arg0->unk34 = 5;\n    arg0->unk8 = (u8) (arg0->unk8 + 1);\n}\n",
+  "stderr": ""
+ },
+ "func_80047BD8": {
+  "insns": 8,
+  "name": "func_80047BD8",
+  "asm": "383D0.s",
+  "copies": 43,
+  "family": 324,
+  "out": "? func_80031988();                                  /* extern */\n\nvoid func_80047BD8(void) {\n    func_80031988();\n}\n",
+  "stderr": ""
+ },
+ "func_80047C64": {
+  "insns": 8,
+  "name": "func_80047C64",
+  "asm": "383D0.s",
+  "copies": 1,
+  "family": 324,
+  "out": "? func_80047CD8();                                  /* static */\n\nvoid func_80047C64(void) {\n    func_80047CD8();\n}\n",
+  "stderr": ""
+ },
+ "func_800485C4": {
+  "insns": 8,
+  "name": "func_800485C4",
+  "asm": "383D0.s",
+  "copies": 43,
+  "family": 324,
+  "out": "? func_80031988();                                  /* extern */\n\nvoid func_800485C4(void) {\n    func_80031988();\n}\n",
+  "stderr": ""
+ },
+ "func_800153CC": {
+  "insns": 8,
+  "name": "func_800153CC",
+  "asm": "52C0.s",
+  "copies": 145,
+  "family": 324,
+  "out": "? func_80031824();                                  /* extern */\n\nvoid func_800153CC(void) {\n    func_80031824();\n}\n",
+  "stderr": ""
+ },
+ "func_80063BA8": {
+  "insns": 8,
+  "name": "func_80063BA8",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_800987B0;\nextern s32 D_800987B4;\nextern s32 D_800987B8;\n\nvoid func_80063BA8(void) {\n    D_800987B0 = 0;\n    D_800987B4 = 0;\n    D_800987B8 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80067E4C": {
+  "insns": 8,
+  "name": "func_80067E4C",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 4,
+  "out": "void func_80067E4C(void) {\n    Sce_flag_on(0x4C0);\n}\n",
+  "stderr": ""
+ },
+ "func_80017684": {
+  "insns": 8,
+  "name": "func_80017684",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "/*\nDecompilation failure in function func_80017684:\n\nCannot find branch target func_80017684\n*/\n",
+  "stderr": ""
+ },
+ "func_8002F9EC": {
+  "insns": 9,
+  "name": "func_8002F9EC",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_8002FA38(?, ?);                              /* static */\n\nvoid func_8002F9EC(? arg1) {\n    func_8002FA38(0x80190000, arg1);\n}\n",
+  "stderr": ""
+ },
+ "func_80030604": {
+  "insns": 9,
+  "name": "func_80030604",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80030628(s32);                               /* static */\n\nvoid func_80030604(void *arg0) {\n    func_80030628((s32) arg0->unk56);\n}\n",
+  "stderr": ""
+ },
+ "func_8003648C": {
+  "insns": 9,
+  "name": "func_8003648C",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_800364B0(s16);                               /* static */\n\nvoid func_8003648C(void *arg1) {\n    func_800364B0(arg1->unk56);\n}\n",
+  "stderr": ""
+ },
+ "func_8003786C": {
+  "insns": 9,
+  "name": "func_8003786C",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_8015C006;\n\nvoid func_8003786C(s32 arg0) {\n    *(((arg0 & 0xFFFF) * 0xC) + &D_8015C006) = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80039B80": {
+  "insns": 9,
+  "name": "func_80039B80",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern u8 D_800A3960;\nextern s32 D_800A396C;\n\ns32 func_80039B80(void) {\n    s32 var_v0;\n\n    var_v0 = 0;\n    if (D_800A3960 != 0) {\n        var_v0 = D_800A396C;\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80045FE4": {
+  "insns": 9,
+  "name": "func_80045FE4",
+  "asm": "352A8.s",
+  "copies": 2,
+  "family": 2,
+  "out": "? func_8002FE74(u8);                                /* extern */\n\nvoid func_80045FE4(void *arg0) {\n    func_8002FE74(arg0->unk1);\n}\n",
+  "stderr": ""
+ },
+ "func_80046008": {
+  "insns": 9,
+  "name": "func_80046008",
+  "asm": "352A8.s",
+  "copies": 2,
+  "family": 2,
+  "out": "? func_8002FE74(u8);                                /* extern */\n\nvoid func_80046008(void *arg0) {\n    func_8002FE74(arg0->unk1);\n}\n",
+  "stderr": ""
+ },
+ "func_8005D938": {
+  "insns": 9,
+  "name": "func_8005D938",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern u8 D_800BBD87;\nextern s16 D_800BBD94;\n\nu8 func_8005D938(void) {\n    u8 var_v0;\n\n    var_v0 = 0;\n    if (D_800BBD94 <= 0) {\n        var_v0 = D_800BBD87;\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_800175D8": {
+  "insns": 9,
+  "name": "func_800175D8",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_800175D8(void) {\n    *(void **)0x80098B44 = sp;\n}\n",
+  "stderr": ""
+ },
+ "func_8002DE34": {
+  "insns": 10,
+  "name": "func_8002DE34",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002DE34(s32 arg0, s32 arg1, void *arg2) {\n    void *temp_a1;\n\n    temp_a1 = (arg1 * 0x10) + arg0;\n    temp_a1->unk4 = (s32) arg2->unk0;\n    temp_a1->unk8 = (s32) arg2->unk4;\n    temp_a1->unkC = (s32) arg2->unk8;\n}\n",
+  "stderr": ""
+ },
+ "func_8002FA10": {
+  "insns": 10,
+  "name": "func_8002FA10",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 2,
+  "out": "? func_8002FA38(?, ?);                              /* static */\n\nvoid func_8002FA10(? arg1) {\n    func_8002FA38(0x801F2000, arg1);\n}\n",
+  "stderr": ""
+ },
+ "func_800354E0": {
+  "insns": 10,
+  "name": "func_800354E0",
+  "asm": "22D38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_80098798;\n\nvoid func_800354E0(s32 arg0) {\n    D_80098798 &= ~(0x80000000U >> arg0);\n}\n",
+  "stderr": ""
+ },
+ "func_80039A38": {
+  "insns": 10,
+  "name": "func_80039A38",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_800399EC();                                  /* static */\nextern s32 D_80097D6C;\nextern s32 D_80097D70;\n\nvoid func_80039A38(void) {\n    D_80097D6C = 0;\n    D_80097D70 = 0;\n    func_800399EC();\n}\n",
+  "stderr": ""
+ },
+ "Pl00_shot_enable_off": {
+  "insns": 10,
+  "name": "Pl00_shot_enable_off",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 Pl00_shot_enable_off(PL_WORK *arg0) {\n    u8 temp_v0;\n\n    arg0->x174 = 0;\n    arg0->x175[2] = 0;\n    temp_v0 = arg0->x175[0] & 0xFE;\n    arg0->x175[0] = temp_v0;\n    arg0->x101[3] = arg0->x76[0x36];\n    arg0->x100 = arg0->x76[0x2E];\n    return (s32) temp_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80049448": {
+  "insns": 10,
+  "name": "func_80049448",
+  "asm": "393EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80049470(void *, s32, u8);                   /* static */\n\nvoid func_80049448(void *arg0) {\n    func_80049470(arg0 + 0x14, arg0->unk78, arg0->unk1);\n}\n",
+  "stderr": ""
+ },
+ "func_80051B40": {
+  "insns": 10,
+  "name": "func_80051B40",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? *D_80098894;\nextern ? *D_80098898;\nextern ? D_800BC058;\nextern ? D_800BC360;\n\nvoid func_80051B40(void) {\n    D_80098894 = &D_800BC058;\n    D_80098898 = &D_800BC360;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D9C4": {
+  "insns": 10,
+  "name": "func_8005D9C4",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_8005D528();                                  /* extern */\nextern s8 D_800BBD87;\n\nvoid func_8005D9C4(void) {\n    D_800BBD87 = 0;\n    func_8005D528();\n}\n",
+  "stderr": ""
+ },
+ "func_8005DCB4": {
+  "insns": 10,
+  "name": "func_8005DCB4",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 11,
+  "out": "? func_8005DCDC();                                  /* static */\n? func_8005DE28();                                  /* static */\n\nvoid func_8005DCB4(void) {\n    func_8005DCDC();\n    func_8005DE28();\n}\n",
+  "stderr": ""
+ },
+ "func_800177F8": {
+  "insns": 10,
+  "name": "func_800177F8",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_800177F8(s32 *arg0, s32 arg1) {\n    s32 *var_a0;\n    s32 var_v0;\n\n    var_a0 = arg0;\n    var_v0 = -1;\nloop_1:\n    if (*var_a0 == -1) {\n        var_a0 += 4;\n        if (arg1 == var_a0) {\n            var_v0 = 0;\n        } else {\n            goto loop_1;\n        }\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_8002037C": {
+  "insns": 11,
+  "name": "func_8002037C",
+  "asm": "10638.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s8 D_800987D4;\nextern s8 D_800987DC;\nextern s8 *D_8009893C;\nextern s8 D_800BEAD8;\n\nvoid func_8002037C(void) {\n    D_800BEAD8 = 0;\n    D_8009893C = &D_800BEAD8;\n    D_800987D4 = 0;\n    D_800987DC = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8002F998": {
+  "insns": 11,
+  "name": "func_8002F998",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002F998(void *arg0, void *arg1) {\n    arg0->unk14 = (u16) (arg0->unk14 + arg1->unk0);\n    arg0->unk18 = (u16) (arg0->unk18 + arg1->unk4);\n}\n",
+  "stderr": ""
+ },
+ "func_8002FE74": {
+  "insns": 12,
+  "name": "func_8002FE74",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8002FE74(u32 arg0) {\n    s32 var_a0;\n\n    if (arg0 < 0x20U) {\n        var_a0 = arg0 & 0x10;\n    } else {\n        var_a0 = arg0 & 0xE0;\n        if (var_a0 == 0xA0) {\n            var_a0 = 0x80;\n        }\n    }\n    return var_a0;\n}\n",
+  "stderr": ""
+ },
+ "func_800375D4": {
+  "insns": 12,
+  "name": "func_800375D4",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 4,
+  "out": "extern ? D_80089EAC;\n\ns16 func_800375D4(s32 arg0, s32 arg1) {\n    return *(((arg0 + (arg1 * 8))->unk4F4 * 8) + *(&D_80089EAC + (arg1 * 4)));\n}\n",
+  "stderr": ""
+ },
+ "func_80037604": {
+  "insns": 12,
+  "name": "func_80037604",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 4,
+  "out": "extern ? D_80089EAC;\n\ns16 func_80037604(s32 arg0, s32 arg1) {\n    return (((arg0 + (arg1 * 8))->unk4F5 * 8) + *(&D_80089EAC + (arg1 * 4)))->unk2;\n}\n",
+  "stderr": ""
+ },
+ "func_80037634": {
+  "insns": 12,
+  "name": "func_80037634",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 4,
+  "out": "extern ? D_80089EAC;\n\ns16 func_80037634(s32 arg0, s32 arg1) {\n    return (((arg0 + (arg1 * 8))->unk4F6 * 8) + *(&D_80089EAC + (arg1 * 4)))->unk4;\n}\n",
+  "stderr": ""
+ },
+ "func_80037664": {
+  "insns": 12,
+  "name": "func_80037664",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 4,
+  "out": "extern ? D_80089EAC;\n\ns16 func_80037664(s32 arg0, s32 arg1) {\n    return (((arg0 + (arg1 * 8))->unk4F7 * 8) + *(&D_80089EAC + (arg1 * 4)))->unk6;\n}\n",
+  "stderr": ""
+ },
+ "func_80039DE8": {
+  "insns": 12,
+  "name": "func_80039DE8",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_80097D2C;\nextern s32 D_80098670;\nextern s32 D_80098674;\n\nvoid func_80039DE8(void) {\n    D_80097D2C = 0x200;\n    Player_work.x44C[1] = 0;\n    Scene_work.x1 = (u8) D_80098674;\n    Scene_work.x0 = (u8) D_80098670;\n}\n",
+  "stderr": ""
+ },
+ "func_8004324C": {
+  "insns": 12,
+  "name": "func_8004324C",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8004324C(void *arg0) {\n    s32 var_v0;\n\n    var_v0 = 1;\n    if (!(arg0->unk174 & 0xC0)) {\n        var_v0 = 1;\n        if (arg0->unk177 == 0) {\n            var_v0 = 0;\n        }\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80049C24": {
+  "insns": 12,
+  "name": "func_80049C24",
+  "asm": "393EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80049C54(s32, void *, s32, u8);              /* static */\n\nvoid func_80049C24(void *arg0) {\n    func_80049C54(arg0 + 0x14, arg0 + 0x2C, arg0->unk78, arg0->unk1);\n}\n",
+  "stderr": ""
+ },
+ "func_80052644": {
+  "insns": 12,
+  "name": "func_80052644",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_80052644(s32 arg0, void *arg1) {\n    if ((arg1->unk76 != 0) && (arg0 == arg1->unkC0)) {\n        arg1->unk76 = 0;\n        arg1->unkC0 = 0;\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_8005D4F8": {
+  "insns": 12,
+  "name": "func_8005D4F8",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s8 D_800BBD81;\nextern u8 D_800BBD85;\n\nvoid func_8005D4F8(void) {\n    if (D_800BBD85 == 0) {\n        D_800BBD85 = 2;\n        D_800BBD81 = 0x1C;\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_8005D9EC": {
+  "insns": 12,
+  "name": "func_8005D9EC",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_8005D9C4();                                  /* static */\n\nvoid func_8005D9EC(void) {\n    Player_work.life = Player_work.unkB0;\n    func_8005D9C4();\n}\n",
+  "stderr": ""
+ },
+ "func_80030934": {
+  "insns": 13,
+  "name": "func_80030934",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80030968(s16, s16, s32);                     /* static */\n\nvoid func_80030934(s16 arg2, s16 arg3) {\n    func_80030968(arg2, arg3, 0x100);\n}\n",
+  "stderr": ""
+ },
+ "func_80031268": {
+  "insns": 13,
+  "name": "func_80031268",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 ratan2(s32, s32, s16);                          /* extern */\n\ns32 func_80031268(void *arg0, void *arg1) {\n    s16 temp_a2;\n\n    temp_a2 = arg1->unk0;\n    return ratan2(temp_a2 - arg0->unk0, arg1->unk4 - arg0->unk4, temp_a2) + 0x800;\n}\n",
+  "stderr": ""
+ },
+ "func_80045918": {
+  "insns": 13,
+  "name": "func_80045918",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 3,
+  "out": "void func_80045918(void *arg0) {\n    u8 temp_v0;\n\n    temp_v0 = arg0->unkB - 1;\n    arg0->unkB = temp_v0;\n    if (!(temp_v0 & 0xFF)) {\n        arg0->unk8 = (u8) (arg0->unk8 + 2);\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_8004594C": {
+  "insns": 13,
+  "name": "func_8004594C",
+  "asm": "352A8.s",
+  "copies": 2,
+  "family": 3,
+  "out": "void func_8004594C(void *arg0) {\n    u8 temp_v0;\n\n    temp_v0 = arg0->unkB - 1;\n    arg0->unkB = temp_v0;\n    if (!(temp_v0 & 0xFF)) {\n        arg0->unk8 = (u8) (arg0->unk8 + 1);\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_80067E18": {
+  "insns": 13,
+  "name": "func_80067E18",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_800BE428;\nextern s32 D_800BE42C;\nextern s32 D_800BE430;\nextern s32 D_800BE434;\n\nvoid func_80067E18(void) {\n    D_800BE428 = 0x3F00;\n    D_800BE42C = 0x18;\n    D_800BE430 = 0x80;\n    D_800BE434 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8001782C": {
+  "insns": 13,
+  "name": "func_8001782C",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8001782C(s32 *arg0, s32 *arg1) {\n    s32 *var_a0;\n    s32 *var_a1;\n    s32 temp_a2;\n    s32 temp_t0;\n    s32 temp_t1;\n\n    var_a0 = arg0;\n    var_a1 = arg1;\n    temp_a2 = var_a0 + 0x100;\n    do {\n        temp_t0 = *var_a0;\n        temp_t1 = *var_a1;\n        var_a0 += 4;\n        *var_a1 = temp_t1 & ((temp_t0 & temp_t1) ^ -1);\n        var_a1 += 4;\n    } while (temp_a2 != var_a0);\n}\n",
+  "stderr": ""
+ },
+ "func_8002DD68": {
+  "insns": 14,
+  "name": "func_8002DD68",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002DD68(void *arg0, s32 arg1, s32 arg2) {\n    s32 sp0;\n\n    sp0 = *((arg2 * 0x10) + arg1);\n    arg0->unk3 = (unaligned s32) M2C_ERROR(/* Unable to handle lwr; missing a corresponding lwl */);\n}\n",
+  "stderr": ""
+ },
+ "func_80030CB8": {
+  "insns": 14,
+  "name": "func_80030CB8",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s16 func_80030CF0(s16, s16, s32);                   /* static */\n\ns16 func_80030CB8(s16 arg2, s16 arg3) {\n    return func_80030CF0(arg2, arg3, 0x100);\n}\n",
+  "stderr": ""
+ },
+ "func_800397E8": {
+  "insns": 14,
+  "name": "func_800397E8",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_80097D2C;\nextern s8 D_800A3962;\nextern s32 D_800A3964;\nextern s32 D_800A396C;\n\nvoid func_800397E8(void) {\n    D_800A396C = 0x30;\n    D_80097D2C = 0x200;\n    D_800A3964 = 0x200;\n    D_800A3962 = -1;\n    Player_work.x44C[1] = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80039E18": {
+  "insns": 14,
+  "name": "func_80039E18",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80039E50();                                  /* static */\nextern s32 D_80098670;\nextern s32 D_80098674;\n\nvoid func_80039E18(void) {\n    Scene_work.x1 = (u8) D_80098674;\n    Scene_work.x0 = (u8) D_80098670;\n    func_80039E50();\n}\n",
+  "stderr": ""
+ },
+ "func_80045A7C": {
+  "insns": 14,
+  "name": "func_80045A7C",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? Sound_call2(?, s32);                              /* extern */\n? func_80031988(s32);                               /* extern */\n\nvoid func_80045A7C(s32 arg0) {\n    Sound_call2(0xCF, arg0 + 0x38);\n    func_80031988(arg0);\n}\n",
+  "stderr": ""
+ },
+ "func_80048E6C": {
+  "insns": 14,
+  "name": "func_80048E6C",
+  "asm": "393EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80048EA4(s32, s32, s32, u8);                 /* static */\n\nvoid func_80048E6C(void *arg0) {\n    func_80048EA4(arg0 + 0x14, arg0->unk78, arg0->unk16 - arg0->unk2E, arg0->unk1);\n}\n",
+  "stderr": ""
+ },
+ "func_80050BF4": {
+  "insns": 14,
+  "name": "func_80050BF4",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_80050BF4(void *arg0) {\n    if (arg0->unk2 <= 0) {\n        *(s8 *)0x1F8000FF = 0x20;\n        return 1;\n    }\n    *(void *)0x1F8000FF = 0x10;\n    return 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80051BAC": {
+  "insns": 14,
+  "name": "func_80051BAC",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern void **D_80098898;\n\nvoid func_80051BAC(void *arg0) {\n    if (arg0->unk0 & 3) {\n        *D_80098898 = arg0;\n        D_80098898 += 4;\n    }\n    arg0->unk7C = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D844": {
+  "insns": 14,
+  "name": "func_8005D844",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s8 D_800BBE2C;\nextern s8 D_800BBE38;\nextern s8 D_800BBE39;\nextern s16 D_800BBE44;\nextern s16 D_800BBE46;\n\nvoid func_8005D844(s16 arg0, s16 arg1, s8 arg2) {\n    D_800BBE2C = 3;\n    D_800BBE44 = arg0;\n    D_800BBE46 = arg1;\n    D_800BBE38 = arg2;\n    D_800BBE39 = 1;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D98C": {
+  "insns": 14,
+  "name": "func_8005D98C",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_8005D4F8();                                  /* extern */\nextern s8 D_800BBD87;\nextern s16 D_800BBD94;\n\nvoid func_8005D98C(void) {\n    if (D_800BBD94 <= 0) {\n        D_800BBD87 = 1;\n        func_8005D4F8();\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_80063EF0": {
+  "insns": 14,
+  "name": "func_80063EF0",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_800C3528;\n\ns32 func_80063EF0(void) {\n    s32 *var_a0;\n    s32 *var_v1;\n    s32 temp_v0;\n    s32 var_a1;\n\n    var_a0 = &D_800C3528;\n    var_a1 = 0;\n    var_v1 = &D_800C3528 + 8;\n    do {\n        var_a1 += 1;\n        *var_a0 = 0;\n        var_v1->unk-4 = 0;\n        var_v1->unk0 = 0;\n        var_v1 += 0xC;\n        temp_v0 = var_a1 < 4;\n        var_a0 += 0xC;\n    } while (temp_v0 != 0);\n    return temp_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_800176A4": {
+  "insns": 14,
+  "name": "func_800176A4",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "/*\nDecompilation failure in function func_800176A4:\n\nCannot find branch target func_800176A4\n*/\n",
+  "stderr": ""
+ },
+ "func_8002D2DC": {
+  "insns": 15,
+  "name": "func_8002D2DC",
+  "asm": "1B370.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8002D2DC(s32 arg0, u32 arg1) {\n    return ((((arg1 >> 8) & 0xFF) * 0x14) + (((arg1 >> 0x18) * 4) + arg0)->unk70)->unk24 + ((arg1 & 0xFF) * 8);\n}\n",
+  "stderr": ""
+ },
+ "func_800334C4": {
+  "insns": 15,
+  "name": "func_800334C4",
+  "asm": "22D38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? RotMatrixYXZ(s32, ? *);                           /* extern */\n? func_80033598(s32, ? *);                          /* static */\n\nvoid func_800334C4(s32 arg0) {\n    ? sp10;\n\n    RotMatrixYXZ(arg0 + 0x54, &sp10);\n    func_80033598(arg0, &sp10);\n}\n",
+  "stderr": ""
+ },
+ "func_80037C14": {
+  "insns": 15,
+  "name": "func_80037C14",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_8015C006;\n\ns32 func_80037C14(s32 arg0) {\n    s32 var_v0;\n    u32 temp_a0;\n\n    temp_a0 = arg0 & 0xFFFF;\n    var_v0 = -1;\n    if (temp_a0 <= 0x7FFFU) {\n        var_v0 = *((temp_a0 * 0xC) + &D_8015C006) & 0xFFF;\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_800426F8": {
+  "insns": 15,
+  "name": "func_800426F8",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 4,
+  "out": "extern ? D_8008A08C;\n\nvoid func_800426F8(void *arg0) {\n    *(&D_8008A08C + (arg0->unk170 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_80042734": {
+  "insns": 15,
+  "name": "func_80042734",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 4,
+  "out": "extern ? D_8008A0C4;\n\nvoid func_80042734(void *arg0) {\n    *(&D_8008A0C4 + (arg0->unk171 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_800433C0": {
+  "insns": 15,
+  "name": "func_800433C0",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A0CC;\n\nvoid func_800433C0(void *arg0) {\n    *(&D_8008A0CC + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_800435BC": {
+  "insns": 15,
+  "name": "func_800435BC",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80031930(void *);                            /* extern */\nvoid *func_80036294(u8);                            /* extern */\n\nvoid func_800435BC(void *arg0) {\n    func_80036294(arg0->unkC)->unk198 = 0;\n    func_80031930(arg0);\n}\n",
+  "stderr": ""
+ },
+ "func_80043F34": {
+  "insns": 15,
+  "name": "func_80043F34",
+  "asm": "34600.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A208;\n\nvoid func_80043F34(void *arg0) {\n    *(&D_8008A208 + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_8004495C": {
+  "insns": 15,
+  "name": "func_8004495C",
+  "asm": "35134.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A220;\n\nvoid func_8004495C(void *arg0) {\n    *(&D_8008A220 + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_80044AB0": {
+  "insns": 15,
+  "name": "func_80044AB0",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A250;\n\nvoid func_80044AB0(void *arg0) {\n    *(&D_8008A250 + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_80044C58": {
+  "insns": 15,
+  "name": "func_80044C58",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A258;\n\nvoid func_80044C58(void *arg0) {\n    *(&D_8008A258 + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_80045038": {
+  "insns": 15,
+  "name": "func_80045038",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80031988();                                  /* extern */\n\nvoid func_80045038(void *arg0) {\n    u8 temp_v0;\n\n    temp_v0 = arg0->unkB - 1;\n    arg0->unkB = temp_v0;\n    if (!(temp_v0 & 0xFF)) {\n        arg0->unk0 = 0;\n        func_80031988();\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_80045074": {
+  "insns": 15,
+  "name": "func_80045074",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A288;\n\nvoid func_80045074(void *arg0) {\n    *(&D_8008A288 + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_80045238": {
+  "insns": 15,
+  "name": "func_80045238",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A290;\n\nvoid func_80045238(void *arg0) {\n    *(&D_8008A290 + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_8004569C": {
+  "insns": 15,
+  "name": "func_8004569C",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A358;\n\nvoid func_8004569C(void *arg0) {\n    *(&D_8008A358 + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_80047318": {
+  "insns": 15,
+  "name": "func_80047318",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A708;\n\nvoid func_80047318(void *arg0) {\n    *(&D_8008A708 + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_80047D9C": {
+  "insns": 15,
+  "name": "func_80047D9C",
+  "asm": "383D0.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A724;\n\nvoid func_80047D9C(void *arg0) {\n    *(&D_8008A724 + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_80048354": {
+  "insns": 15,
+  "name": "func_80048354",
+  "asm": "383D0.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A76C;\n\nvoid func_80048354(void *arg0) {\n    *(&D_8008A76C + (arg0->unk8 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_800485E4": {
+  "insns": 15,
+  "name": "func_800485E4",
+  "asm": "383D0.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008A778;\n\nvoid func_800485E4(void *arg0) {\n    *(&D_8008A778 + (arg0->unk4 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_8005C720": {
+  "insns": 15,
+  "name": "func_8005C720",
+  "asm": "4C710.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008D7B4;\n\nvoid func_8005C720(void *arg0) {\n    *(&D_8008D7B4 + (arg0->unk4 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_8005C868": {
+  "insns": 15,
+  "name": "func_8005C868",
+  "asm": "4D060.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008D7C0;\n\nvoid func_8005C868(void *arg0) {\n    *(&D_8008D7C0 + (arg0->unk4 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_8005C978": {
+  "insns": 15,
+  "name": "func_8005C978",
+  "asm": "4D060.s",
+  "copies": 1,
+  "family": 672,
+  "out": "extern ? D_8008D7C4;\n\nvoid func_8005C978(void *arg0) {\n    *(&D_8008D7C4 + (arg0->unk4 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_800153EC": {
+  "insns": 15,
+  "name": "func_800153EC",
+  "asm": "52C0.s",
+  "copies": 1,
+  "family": 12,
+  "out": "extern ? D_80082104;\n\nvoid func_800153EC(void *arg0) {\n    *(&D_80082104 + (arg0->unk8 * 4))(arg0 + 0x348);\n}\n",
+  "stderr": ""
+ },
+ "func_800666D8": {
+  "insns": 15,
+  "name": "func_800666D8",
+  "asm": "543A8.s",
+  "copies": 2,
+  "family": 2,
+  "out": "extern ? D_8008FD20;\n\ns32 func_800666D8(void *arg0) {\n    *(&D_8008FD20 + (arg0->unk5 * 4))();\n    return 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80066714": {
+  "insns": 15,
+  "name": "func_80066714",
+  "asm": "543A8.s",
+  "copies": 2,
+  "family": 2,
+  "out": "extern ? D_8008FD20;\n\ns32 func_80066714(void *arg0) {\n    *(&D_8008FD20 + (arg0->unk5 * 4))();\n    return 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80017E94": {
+  "insns": 15,
+  "name": "func_80017E94",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_80082140;\nextern s8 D_80098A68;\n\nvoid func_80017E94(void) {\n    *(&D_80082140 + (D_80098A68 * 4))();\n}\n",
+  "stderr": ""
+ },
+ "func_80030CF0": {
+  "insns": 16,
+  "name": "func_80030CF0",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s16 func_80030D30(s32, s32, s16, s16, s32);         /* static */\n\ns16 func_80030CF0(s32 arg0, s32 arg1, s16 arg2, s16 arg3, s16 arg4) {\n    return func_80030D30(arg0 + 0x14, arg1 + 0xC4, arg2, arg3, (s32) arg4);\n}\n",
+  "stderr": ""
+ },
+ "func_80036B00": {
+  "insns": 16,
+  "name": "func_80036B00",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern u8 D_8009A370;\nextern u8 D_8009A371;\nextern u8 D_8009A372;\nextern u16 D_8009A374;\n\nvoid func_80036B00(void *arg0) {\n    arg0->unk0 = (s16) D_8009A370;\n    arg0->unk2 = (s16) D_8009A371;\n    arg0->unk4 = (s16) D_8009A372;\n    arg0->unk6 = (u16) D_8009A374;\n}\n",
+  "stderr": ""
+ },
+ "func_80037594": {
+  "insns": 16,
+  "name": "func_80037594",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_80089EAC;\n\nvoid func_80037594(void) {\n    Player_work.weapon_data[(s8) Player_work.x172[0]].unk6 = (u16) ((Player_work.weapon_data[(s8) Player_work.x172[0]].bullet_level * 8) + *(&D_80089EAC + ((s8) Player_work.x172[0] * 4)))->unk2;\n}\n",
+  "stderr": ""
+ },
+ "func_80048268": {
+  "insns": 16,
+  "name": "func_80048268",
+  "asm": "383D0.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80031988(s8 *);                              /* extern */\n\nvoid func_80048268(s8 *arg0) {\n    Sound_call(0x8F, 0, 0);\n    *arg0 = 0;\n    func_80031988(arg0);\n}\n",
+  "stderr": ""
+ },
+ "func_80050B74": {
+  "insns": 16,
+  "name": "func_80050B74",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 2,
+  "out": "void func_80050B74(s16 *arg0) {\n    u8 var_v0;\n\n    if (*(u8 *)0x1F8000FF & 3) {\n        *(s16 *)0x1F800106 = 0;\n    }\n    var_v0 = 1;\n    if (*arg0 <= 0) {\n        var_v0 = 2;\n    }\n    *(u8 *)0x1F8000FF = var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80050BB4": {
+  "insns": 16,
+  "name": "func_80050BB4",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 2,
+  "out": "void func_80050BB4(void *arg0) {\n    u8 var_v0;\n\n    if (*(u8 *)0x1F8000FF & 0xC) {\n        *(s16 *)0x1F80010A = 0;\n    }\n    var_v0 = 4;\n    if (arg0->unk4 <= 0) {\n        var_v0 = 8;\n    }\n    *(u8 *)0x1F8000FF = var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_8003697C": {
+  "insns": 17,
+  "name": "func_8003697C",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? SetFogNear(u16, ?);                               /* extern */\nextern u16 D_800BC81C;\n\nvoid func_8003697C(void) {\n    *(s8 *)0x1F800074 = 0;\n    *(s16 *)0x1F800006 = 0xE00;\n    *(s16 *)0x1F800076 = 0xE00;\n    SetFogNear(D_800BC81C, 0x180);\n}\n",
+  "stderr": ""
+ },
+ "func_80037738": {
+  "insns": 17,
+  "name": "func_80037738",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_8003777C(s32);                               /* static */\n\nvoid func_80037738(s32 arg0) {\n    if ((arg0 > 0) && ((arg0 & 0xFFFF) <= 0x7FFF) && (arg0 & 0xF0000)) {\n        func_8003777C(arg0 & 0xFFFF);\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_80051B68": {
+  "insns": 17,
+  "name": "func_80051B68",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern void *D_80098894;\n\nvoid func_80051B68(u8 *arg0, s16 arg1, s16 arg2, s32 arg3) {\n    if (*arg0 & 3) {\n        D_80098894->unk0 = arg0;\n        D_80098894->unk4 = arg1;\n        D_80098894->unk6 = arg2;\n        D_80098894->unk8 = arg3;\n        D_80098894 += 0xC;\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_80032304": {
+  "insns": 18,
+  "name": "func_80032304",
+  "asm": "22B04.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80033A28(s32);                               /* extern */\n\nvoid func_80032304(void *arg0, s8 arg1, s32 arg2) {\n    s32 *temp_v0_2;\n    s32 temp_a2;\n    s32 temp_v0;\n\n    temp_v0 = *((arg1 * 4) + arg0->unk90);\n    temp_a2 = arg2 * 8;\n    arg0->unkAC = arg1;\n    arg0->unk94 = temp_v0;\n    temp_v0_2 = temp_v0 + temp_a2;\n    arg0->unk98 = temp_v0_2;\n    arg0->unkA4 = (s32) *temp_v0_2;\n    func_80033A28(temp_a2);\n}\n",
+  "stderr": ""
+ },
+ "func_80033EBC": {
+  "insns": 18,
+  "name": "func_80033EBC",
+  "asm": "22D38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_80098560;\nextern s32 D_80098564;\nextern s32 D_80098568;\nextern s32 D_80098798;\nextern s32 D_800988E0;\nextern s8 D_8009A306;\nextern s8 D_8009A31A;\nextern s8 D_8009A32E;\nextern s8 D_8009A342;\n\nvoid func_80033EBC(void) {\n    D_800988E0 = 0;\n    D_80098798 = 0xFF;\n    D_8009A306 = 0;\n    D_8009A31A = 0;\n    D_8009A32E = 0;\n    D_8009A342 = 0;\n    D_80098560 = 0;\n    D_80098564 = 0;\n    D_80098568 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_800395E8": {
+  "insns": 18,
+  "name": "func_800395E8",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s8 D_800A3959;\nextern s8 D_800A3960;\nextern s8 D_800A3962;\nextern s32 D_800A3964;\nextern s32 D_800A396C;\nextern s32 D_800A39B4;\n\nvoid func_800395E8(void) {\n    D_800A396C = 0x30;\n    D_800A3964 = 0x200;\n    D_800A3962 = -1;\n    D_800A3960 = 0;\n    D_800A39B4 = 0x96;\n    D_800A3959 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80045608": {
+  "insns": 18,
+  "name": "func_80045608",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_80097E08;\nextern ? D_80097E0A;\n\nvoid func_80045608(void *arg0) {\n    u16 temp_v1;\n\n    arg0->unk22 = (s8) *(&D_80097E08 + ((arg0->unk8 - 5) * 4));\n    temp_v1 = *(&D_80097E0A + ((arg0->unk8 - 5) * 4));\n    arg0->unk8 = (u8) (arg0->unk8 + 1);\n    arg0->unk23 = (s8) temp_v1;\n}\n",
+  "stderr": ""
+ },
+ "func_80046848": {
+  "insns": 18,
+  "name": "func_80046848",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? Sound_call2(?, void *);                           /* extern */\n? func_80031988(void *);                            /* extern */\n\nvoid func_80046848(void *arg0) {\n    ? var_a0;\n\n    var_a0 = 0x9D;\n    if (arg0->unk3 != 0) {\n        var_a0 = 0x9E;\n    }\n    Sound_call2(var_a0, arg0 + 0x38);\n    func_80031988(arg0);\n}\n",
+  "stderr": ""
+ },
+ "func_8005D87C": {
+  "insns": 18,
+  "name": "func_8005D87C",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_800BBE2C;\nextern s32 D_800BBE30;\nextern s32 D_800BBE34;\nextern s32 D_800BBE38;\nextern s32 D_800BBE3C;\nextern s32 D_800BBE40;\nextern s32 D_800BBE44;\nextern s32 D_800BBE48;\n\nvoid func_8005D87C(void) {\n    D_800BBE2C = 0;\n    D_800BBE30 = 0;\n    D_800BBE34 = 0;\n    D_800BBE38 = 0;\n    D_800BBE3C = 0;\n    D_800BBE40 = 0;\n    D_800BBE44 = 0;\n    D_800BBE48 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_800649EC": {
+  "insns": 18,
+  "name": "func_800649EC",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s32 D_80098708;\nextern s32 D_8009870C;\nextern s32 D_80098710;\nextern s32 D_80098714;\n\nvoid func_800649EC(void) {\n    TestEvent(D_80098708);\n    TestEvent(D_80098710);\n    TestEvent(D_8009870C);\n    TestEvent(D_80098714);\n}\n",
+  "stderr": ""
+ },
+ "func_80064A34": {
+  "insns": 18,
+  "name": "func_80064A34",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s32 D_80098718;\nextern s32 D_8009871C;\nextern s32 D_80098720;\nextern s32 D_80098724;\n\nvoid func_80064A34(void) {\n    TestEvent(D_80098718);\n    TestEvent(D_80098720);\n    TestEvent(D_8009871C);\n    TestEvent(D_80098724);\n}\n",
+  "stderr": ""
+ },
+ "func_800178FC": {
+  "insns": 18,
+  "name": "func_800178FC",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern RECT D_80097A28;\nextern RECT D_80097A30;\nextern u32 D_800B1168;\n\nvoid func_800178FC(void) {\n    LoadImage(&D_80097A28, &D_800B1168);\n    LoadImage(&D_80097A30, &D_800B1168 + 0x2000);\n}\n",
+  "stderr": ""
+ },
+ "func_8002DD1C": {
+  "insns": 19,
+  "name": "func_8002DD1C",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002DD1C(void *arg0, s32 arg1, s32 arg2) {\n    s32 sp0;\n    s32 sp4;\n    void *temp_a2;\n\n    temp_a2 = (arg2 * 8) + arg1;\n    sp0 = temp_a2->unk0;\n    sp4 = temp_a2->unk4;\n    arg0->unk3 = (unaligned s32) M2C_ERROR(/* Unable to handle lwr; missing a corresponding lwl */);\n    arg0->unk7 = (unaligned s32) M2C_ERROR(/* Unable to handle lwr; missing a corresponding lwl */);\n}\n",
+  "stderr": ""
+ },
+ "func_800303CC": {
+  "insns": 19,
+  "name": "func_800303CC",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_800303CC(void *arg0, void *arg1) {\n    s32 sp0;\n    s32 sp8;\n    s32 temp_v0;\n    s32 temp_v0_2;\n\n    temp_v0 = arg1->unk0 - arg0->unk0;\n    sp0 = temp_v0;\n    temp_v0_2 = arg1->unk4 - arg0->unk4;\n    sp8 = temp_v0_2;\n    return (temp_v0 * temp_v0) + (temp_v0_2 * temp_v0_2);\n}\n",
+  "stderr": ""
+ },
+ "func_80033500": {
+  "insns": 19,
+  "name": "func_80033500",
+  "asm": "22D38.s",
+  "copies": 1,
+  "family": 2,
+  "out": "void func_80033500(void *arg0) {\n    s32 var_a1;\n    void *var_v1;\n\n    var_a1 = 0;\n    var_v1 = arg0;\n    arg0->unk542 = 0x20;\n    arg0->unk541 = 0x20;\n    arg0->unk540 = 0x20;\n    do {\n        var_v1->unk546 = 0x20;\n        var_v1->unk545 = 0x20;\n        var_v1->unk544 = 0x20;\n        var_a1 += 1;\n        var_v1 += 4;\n    } while (var_a1 < 0x18);\n    arg0->unk6 = (u8) (arg0->unk6 | 0x40);\n}\n",
+  "stderr": ""
+ },
+ "func_8003354C": {
+  "insns": 19,
+  "name": "func_8003354C",
+  "asm": "22D38.s",
+  "copies": 1,
+  "family": 2,
+  "out": "void func_8003354C(void *arg0) {\n    s32 var_a1;\n    void *var_v1;\n\n    var_a1 = 0;\n    var_v1 = arg0;\n    arg0->unk38A = 0x20;\n    arg0->unk389 = 0x20;\n    arg0->unk388 = 0x20;\n    do {\n        var_v1->unk38E = 0x20;\n        var_v1->unk38D = 0x20;\n        var_v1->unk38C = 0x20;\n        var_a1 += 1;\n        var_v1 += 4;\n    } while (var_a1 < 0xD);\n    arg0->unk6 = (u8) (arg0->unk6 | 0x40);\n}\n",
+  "stderr": ""
+ },
+ "func_80038324": {
+  "insns": 19,
+  "name": "func_80038324",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 2,
+  "out": "? func_80037FB4();                                  /* static */\nextern ? D_800A39A0;\n\nvoid func_80038324(void *arg0) {\n    D_800A39A0.unk0 = (s32) arg0->unk0;\n    D_800A39A0.unk4 = (s32) arg0->unk4;\n    D_800A39A0.unk8 = (s32) arg0->unk8;\n    D_800A39A0.unkC = (s32) arg0->unkC;\n    func_80037FB4();\n}\n",
+  "stderr": ""
+ },
+ "func_800384A4": {
+  "insns": 19,
+  "name": "func_800384A4",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 2,
+  "out": "? func_80038370(s32, ? *);                          /* static */\nextern ? D_800A39A0;\n\nvoid func_800384A4(void *arg0) {\n    s32 temp_a2;\n\n    temp_a2 = arg0->unk8;\n    D_800A39A0.unk0 = (s32) arg0->unk0;\n    D_800A39A0.unk4 = (s32) arg0->unk4;\n    D_800A39A0.unk8 = temp_a2;\n    D_800A39A0.unkC = (s32) arg0->unkC;\n    func_80038370(temp_a2, &D_800A39A0);\n}\n",
+  "stderr": ""
+ },
+ "func_800399EC": {
+  "insns": 19,
+  "name": "func_800399EC",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_80097D6C;\nextern u32 D_80097D70;\nextern ? D_8009869C;\n\ns32 func_800399EC(s32 arg0) {\n    u32 temp_a1;\n\n    temp_a1 = D_80097D70;\n    if (temp_a1 < 8U) {\n        D_80097D70 = temp_a1 + 1;\n        *(&D_8009869C + (((D_80097D6C + temp_a1) & 7) * 4)) = arg0;\n        return 1;\n    }\n    return 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80039BBC": {
+  "insns": 19,
+  "name": "func_80039BBC",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 5,
+  "out": "extern s32 D_800A3964;\nextern s32 D_800A3968;\nextern s32 D_800A396C;\nextern ? D_800A39A0;\n\nvoid func_80039BBC(void *arg0, s32 arg1, s32 arg2, s32 arg3) {\n    D_800A39A0.unk0 = (s32) arg0->unk0;\n    D_800A39A0.unk4 = (s32) arg0->unk4;\n    D_800A39A0.unk8 = (s32) arg0->unk8;\n    D_800A39A0.unkC = (s32) arg0->unkC;\n    D_800A3964 = arg1;\n    D_800A3968 = arg2;\n    D_800A396C = arg3;\n}\n",
+  "stderr": ""
+ },
+ "func_80039C08": {
+  "insns": 19,
+  "name": "func_80039C08",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 5,
+  "out": "extern s32 D_800A3988;\nextern s32 D_800A398C;\nextern s32 D_800A3990;\nextern ? D_800A39D0;\n\nvoid func_80039C08(void *arg0, s32 arg1, s32 arg2, s32 arg3) {\n    D_800A39D0.unk0 = (s32) arg0->unk0;\n    D_800A39D0.unk4 = (s32) arg0->unk4;\n    D_800A39D0.unk8 = (s32) arg0->unk8;\n    D_800A39D0.unkC = (s32) arg0->unkC;\n    D_800A3988 = arg1;\n    D_800A398C = arg2;\n    D_800A3990 = arg3;\n}\n",
+  "stderr": ""
+ },
+ "func_80039C54": {
+  "insns": 19,
+  "name": "func_80039C54",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 5,
+  "out": "extern s32 D_800A397C;\nextern s32 D_800A3980;\nextern s32 D_800A3984;\nextern ? D_800A39C0;\n\nvoid func_80039C54(void *arg0, s32 arg1, s32 arg2, s32 arg3) {\n    D_800A39C0.unk0 = (s32) arg0->unk0;\n    D_800A39C0.unk4 = (s32) arg0->unk4;\n    D_800A39C0.unk8 = (s32) arg0->unk8;\n    D_800A39C0.unkC = (s32) arg0->unkC;\n    D_800A397C = arg1;\n    D_800A3980 = arg2;\n    D_800A3984 = arg3;\n}\n",
+  "stderr": ""
+ },
+ "func_80039CA0": {
+  "insns": 19,
+  "name": "func_80039CA0",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 5,
+  "out": "extern s32 D_800A3970;\nextern s32 D_800A3974;\nextern s32 D_800A3978;\nextern ? D_800A39B0;\n\nvoid func_80039CA0(void *arg0, s32 arg1, s32 arg2, s32 arg3) {\n    D_800A39B0.unk0 = (s32) arg0->unk0;\n    D_800A39B0.unk4 = (s32) arg0->unk4;\n    D_800A39B0.unk8 = (s32) arg0->unk8;\n    D_800A39B0.unkC = (s32) arg0->unkC;\n    D_800A3970 = arg1;\n    D_800A3974 = arg2;\n    D_800A3978 = arg3;\n}\n",
+  "stderr": ""
+ },
+ "func_80039CEC": {
+  "insns": 19,
+  "name": "func_80039CEC",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 5,
+  "out": "extern s32 D_800A3994;\nextern s32 D_800A3998;\nextern s32 D_800A399C;\nextern ? D_800A39E0;\n\nvoid func_80039CEC(void *arg0, s32 arg1, s32 arg2, s32 arg3) {\n    D_800A39E0.unk0 = (s32) arg0->unk0;\n    D_800A39E0.unk4 = (s32) arg0->unk4;\n    D_800A39E0.unk8 = (s32) arg0->unk8;\n    D_800A39E0.unkC = (s32) arg0->unkC;\n    D_800A3994 = arg1;\n    D_800A3998 = arg2;\n    D_800A399C = arg3;\n}\n",
+  "stderr": ""
+ },
+ "func_8003A218": {
+  "insns": 19,
+  "name": "func_8003A218",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_800A3968;\n\ns32 func_8003A218(s32 arg0) {\n    s32 temp_a0;\n    s32 temp_v1;\n    s32 var_a1;\n    s32 var_v0;\n\n    temp_a0 = arg0 & 0xFFF;\n    temp_v1 = D_800A3968 & 0xFFF;\n    var_a1 = temp_v1 - temp_a0;\n    if (temp_a0 < temp_v1) {\n        var_v0 = temp_a0 - (temp_v1 - 0x1000);\n    } else {\n        var_a1 = temp_a0 - temp_v1;\n        var_v0 = temp_v1 - (temp_a0 - 0x1000);\n    }\n    if (var_v0 >= var_a1) {\n        var_v0 = var_a1;\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80045650": {
+  "insns": 19,
+  "name": "func_80045650",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_80097E08;\nextern ? D_80097E0A;\n\nvoid func_80045650(void *arg0) {\n    u16 temp_v1;\n\n    arg0->unk22 = (s8) *(&D_80097E08 + ((arg0->unk8 - 5) * 4));\n    temp_v1 = *(&D_80097E0A + ((arg0->unk8 - 5) * 4));\n    arg0->unk8 = 4U;\n    arg0->unk23 = (s8) temp_v1;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D528": {
+  "insns": 19,
+  "name": "func_8005D528",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s8 D_800BBD81;\nextern u8 D_800BBD85;\nextern u8 D_800BBD87;\n\nvoid func_8005D528(void) {\n    if ((D_800BBD87 != 1) && ((u32) (D_800BBD85 - 1) < 2U)) {\n        D_800BBD85 = 3;\n        D_800BBD81 = 6;\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_8002D22C": {
+  "insns": 20,
+  "name": "func_8002D22C",
+  "asm": "1B370.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8002D22C(s32 arg0, u32 arg1) {\n    return ((((arg1 >> 8) & 0xFF) * 0x14) + (((arg1 >> 0x18) * 4) + arg0)->unk70 + ((arg1 >> 0xE) & 0x3FC))->unk18 + ((arg1 & 0xFF) * 0xC);\n}\n",
+  "stderr": ""
+ },
+ "func_80039FAC": {
+  "insns": 20,
+  "name": "func_80039FAC",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80039FFC();                                  /* static */\nextern s32 D_80098670;\nextern s32 D_80098674;\n\nvoid func_80039FAC(void) {\n    u8 temp_t0;\n    u8 temp_v1;\n\n    temp_t0 = Scene_work.x1;\n    Scene_work.x1 = 0xFF;\n    temp_v1 = Scene_work.x0;\n    Scene_work.x0 = 1;\n    D_80098674 = (s32) temp_t0;\n    D_80098670 = (s32) temp_v1;\n    func_80039FFC();\n}\n",
+  "stderr": ""
+ },
+ "func_800437A8": {
+  "insns": 20,
+  "name": "func_800437A8",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 14,
+  "out": "? func_80051BAC(void *);                            /* extern */\nextern ? D_8008A0D8;\n\nvoid func_800437A8(void *arg0) {\n    *(&D_8008A0D8 + (arg0->unk8 * 4))();\n    func_80051BAC(arg0);\n}\n",
+  "stderr": ""
+ },
+ "func_8005EBE4": {
+  "insns": 20,
+  "name": "func_8005EBE4",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern u8 D_800A38F8;\nextern u8 D_800A38F9;\nextern u8 D_800A38FA;\nextern u8 D_800A38FB;\n\nvoid func_8005EBE4(void) {\n    D_800A38F0 = 0;\n    D_800A38F8 = Player_work.rb_parts_equip_data[0];\n    D_800A38F9 = Player_work.rb_parts_equip_data[1];\n    D_800A38FA = Player_work.rb_parts_equip_data[2];\n    D_800A38FB = (u8) Player_work.weapon_right_no;\n}\n",
+  "stderr": ""
+ },
+ "func_80017618": {
+  "insns": 20,
+  "name": "func_80017618",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_800176DC(? *, s32, u32);                     /* static */\n\nvoid func_80017618(void) {\n    u32 temp_a2;\n\n    *(void **)0x80098B68 = sp;\n    temp_a2 = (u32) sp >> 0x10;\n    if (temp_a2 == 0x1F80) {\n        func_800176DC((? *)0x1F800000, 0x80280800 - ((s32) sp & 0xFFFF), temp_a2);\n        return;\n    }\n    func_800176DC(&unksp-800, 0x80280000, 0x80U);\n}\n",
+  "stderr": ""
+ },
+ "func_80017944": {
+  "insns": 20,
+  "name": "func_80017944",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern u16 D_800B1168;\n\nvoid func_80017944(void) {\n    s32 temp_v1;\n    s32 var_a1;\n    u16 *var_a0;\n    u16 temp_v0;\n\n    var_a1 = 0x2000;\n    var_a0 = &D_800B1168;\n    do {\n        temp_v0 = *var_a0;\n        temp_v1 = temp_v0 & 0xFFFF;\n        if (temp_v1 != 0) {\n            if (temp_v1 == 0x8000) {\n                *var_a0 = 0;\n            } else {\n                *var_a0 = temp_v0 | 0x8000;\n            }\n        }\n        var_a1 += 1;\n        var_a0 += 2;\n    } while (var_a1 < 0x4000);\n}\n",
+  "stderr": ""
+ },
+ "func_8002D464": {
+  "insns": 21,
+  "name": "func_8002D464",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern u32 D_800988FC;\nextern ? D_800BE6D8;\n\ns32 func_8002D464(void) {\n    s32 temp_v0;\n    u32 temp_a1;\n\n    temp_a1 = D_800988FC;\n    if (temp_a1 < 0x100U) {\n        temp_v0 = *(s32 *)0x1F800070;\n        D_800988FC = temp_a1 + 1;\n        *(&D_800BE6D8 + (temp_a1 * 4)) = temp_v0;\n        *(s32 *)0x1F800070 = temp_v0 + 0x28;\n        return temp_v0;\n    }\n    return 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8002D4B8": {
+  "insns": 21,
+  "name": "func_8002D4B8",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern u32 D_800988FC;\nextern ? D_800BE6D8;\n\ns32 func_8002D4B8(void) {\n    s32 temp_v0;\n    u32 temp_a1;\n\n    temp_a1 = D_800988FC;\n    if (temp_a1 < 0x100U) {\n        temp_v0 = *(s32 *)0x1F800070;\n        D_800988FC = temp_a1 + 1;\n        *(&D_800BE6D8 + (temp_a1 * 4)) = temp_v0;\n        *(s32 *)0x1F800070 = temp_v0 + 0x20;\n        return temp_v0;\n    }\n    return 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80037818": {
+  "insns": 21,
+  "name": "func_80037818",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80037890(?, ?, s32);                         /* static */\n\nvoid func_80037818(s32 arg0) {\n    ? var_a0;\n    s32 temp_a2;\n    s32 temp_v1;\n    u16 temp_v0;\n\n    temp_a2 = arg0 & 0xFFFF;\n    temp_v1 = temp_a2 * 0xC;\n    temp_v0 = temp_v1->unk8015C006;\n    temp_v1->unk8015C006 = 0U;\n    var_a0 = 4;\n    if ((temp_v0 >> 0xC) == 0) {\n        var_a0 = 0;\n    }\n    func_80037890(var_a0, 4, temp_a2);\n}\n",
+  "stderr": ""
+ },
+ "func_80037F60": {
+  "insns": 21,
+  "name": "func_80037F60",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80037CD8(u16);                               /* static */\nextern u16 D_80097D24;\nextern ? D_8009A376;\n\nvoid func_80037F60(void) {\n    s32 var_v0;\n\n    if (D_80097D24 != 0) {\n        var_v0 = D_80097D24 * 2;\n        do {\n            func_80037CD8(*(var_v0 + &D_8009A376));\n            var_v0 = D_80097D24 * 2;\n        } while (D_80097D24 != 0);\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_800424D4": {
+  "insns": 21,
+  "name": "func_800424D4",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_800424D4(void *arg0, void *arg1) {\n    arg1->unk0 = 7;\n    arg1->unk2 = 0x80;\n    arg1->unk3 = 2;\n    arg1->unk3B = (unaligned s32) M2C_ERROR(/* Unable to handle lwr; missing a corresponding lwl */);\n    arg1->unk3F = (unaligned s32) M2C_ERROR(/* Unable to handle lwr; missing a corresponding lwl */);\n}\n",
+  "stderr": ""
+ },
+ "func_80047C84": {
+  "insns": 21,
+  "name": "func_80047C84",
+  "asm": "383D0.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_8008A6C8;\nextern u8 D_8008A6CC;\nextern u8 D_8008A6CD;\nextern u8 D_8008A6CE;\nextern u8 D_8008A6CF;\n\nvoid func_80047C84(void *arg0) {\n    arg0->unk9 = 0;\n    arg0->unkA = (u8) D_8008A6CD;\n    arg0->unk14 = (s32) D_8008A6C8;\n    arg0->unk22 = (u8) D_8008A6CE;\n    arg0->unk23 = (u8) D_8008A6CF;\n    arg0->unk24 = (s16) D_8008A6CC;\n}\n",
+  "stderr": ""
+ },
+ "func_80048E18": {
+  "insns": 21,
+  "name": "func_80048E18",
+  "asm": "393EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_80048C60();                                /* static */\n\ns32 func_80048E18(void) {\n    s32 temp_v0;\n\n    temp_v0 = func_80048C60();\n    if (temp_v0 <= 0) {\n        return 0;\n    }\n    return ((temp_v0 * 0xC) + *(s32 *)0x1F80004C)->unk6 & 0xFFF;\n}\n",
+  "stderr": ""
+ },
+ "func_8004B3C0": {
+  "insns": 21,
+  "name": "func_8004B3C0",
+  "asm": "393EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8004B3C0(void *arg0) {\n    if (arg0 != NULL) {\n        *(s32 *)0x1F800124 = arg0->unk0;\n        *(s32 *)0x1F800128 = arg0->unk4;\n        *(s32 *)0x1F80012C = arg0->unk8;\n        return;\n    }\n    *(void *)0x1F800124 = 0;\n    *(void *)0x1F800128 = 0;\n    *(void *)0x1F80012C = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80064B60": {
+  "insns": 21,
+  "name": "func_80064B60",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? _card_info(s32);                                  /* extern */\ns32 func_8006491C();                                /* static */\n\ns32 func_80064B60(s32 arg0) {\n    s32 temp_v0;\n    s32 var_v0;\n\n    _card_info(arg0 * 0x10);\n    temp_v0 = func_8006491C();\n    if (temp_v0 == 1) {\n        return 0;\n    }\n    if ((temp_v0 == 2) || (var_v0 = -1, (temp_v0 == 0))) {\n        var_v0 = 1;\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80064BB4": {
+  "insns": 21,
+  "name": "func_80064BB4",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? _card_info(s32);                                  /* extern */\ns32 func_8006491C();                                /* static */\n\ns32 func_80064BB4(s32 arg0) {\n    s32 temp_v0;\n    s32 var_v0;\n\n    _card_info(arg0 * 0x10);\n    temp_v0 = func_8006491C();\n    var_v0 = 0;\n    if (temp_v0 != 1) {\n        if (temp_v0 == 0) {\n            return 1;\n        }\n        var_v0 = 2;\n        if (temp_v0 != 2) {\n            var_v0 = -1;\n        }\n        /* Duplicate return node #5. Try simplifying control flow for better match */\n        return var_v0;\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80030150": {
+  "insns": 22,
+  "name": "func_80030150",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_80030150(void *arg0, void *arg1) {\n    s32 temp_v0;\n    s32 temp_v0_2;\n    s32 temp_v0_3;\n\n    temp_v0 = arg0->unk0;\n    arg1->unk0 = (s16) ((temp_v0 >> 0x10) + ((temp_v0 >> 0xF) & 1));\n    temp_v0_2 = arg0->unk4;\n    arg1->unk2 = (s16) ((temp_v0_2 >> 0x10) + ((temp_v0_2 >> 0xF) & 1));\n    temp_v0_3 = arg0->unk8;\n    arg1->unk4 = (s16) ((temp_v0_3 >> 0x10) + ((temp_v0_3 >> 0xF) & 1));\n}\n",
+  "stderr": ""
+ },
+ "func_80030374": {
+  "insns": 22,
+  "name": "func_80030374",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? SquareRoot0(s32, s32, s32, s32);                  /* extern */\n\nvoid func_80030374(void *arg0, void *arg1) {\n    s32 temp_lo;\n    s32 temp_v0;\n    s32 temp_v0_2;\n\n    temp_v0 = arg1->unk0 - arg0->unk0;\n    temp_lo = temp_v0 * temp_v0;\n    temp_v0_2 = arg1->unk4 - arg0->unk4;\n    SquareRoot0(temp_lo + (temp_v0_2 * temp_v0_2), temp_lo, temp_v0, temp_v0_2);\n}\n",
+  "stderr": ""
+ },
+ "func_800318D8": {
+  "insns": 22,
+  "name": "func_800318D8",
+  "asm": "2207C.s",
+  "copies": 1,
+  "family": 3,
+  "out": "extern s32 D_800987CC;\nextern s32 D_80098808;\nextern ? D_8009CF88;\n\nvoid func_800318D8(s8 *arg0) {\n    s32 temp_v0;\n\n    temp_v0 = D_80098808 | (0x80000000U >> ((arg0 - &D_8009CF88) / 268));\n    D_80098808 = temp_v0;\n    D_80098808 = temp_v0 & D_800987CC;\n    *arg0 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80031930": {
+  "insns": 22,
+  "name": "func_80031930",
+  "asm": "2207C.s",
+  "copies": 1,
+  "family": 3,
+  "out": "extern s32 D_800989F0;\nextern s32 D_80098A60;\nextern ? D_800BFB20;\n\nvoid func_80031930(s8 *arg0) {\n    s32 temp_v0;\n\n    temp_v0 = D_80098A60 | (0x80000000U >> ((arg0 - &D_800BFB20) / 268));\n    D_80098A60 = temp_v0;\n    D_80098A60 = temp_v0 & D_800989F0;\n    *arg0 = 0;\n}\n",
+  "stderr": ""
+ },
+ "Close_EVE_WORK": {
+  "insns": 22,
+  "name": "Close_EVE_WORK",
+  "asm": "2207C.s",
+  "copies": 1,
+  "family": 3,
+  "out": "extern s32 D_800987EC;\nextern s32 D_80098818;\nextern ? D_800A2D08;\n\nvoid Close_EVE_WORK(s8 *arg0) {\n    s32 temp_v0;\n\n    temp_v0 = D_80098818 | (0x80000000U >> ((arg0 - &D_800A2D08) / 36));\n    D_80098818 = temp_v0;\n    D_80098818 = temp_v0 & D_800987EC;\n    *arg0 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80031A4C": {
+  "insns": 22,
+  "name": "func_80031A4C",
+  "asm": "2207C.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s32 D_800989CC;\nextern s32 D_80098A4C;\nextern ? D_800BF118;\n\nvoid func_80031A4C(s8 *arg0) {\n    s32 temp_v0;\n\n    temp_v0 = D_80098A4C | (0x80000000U >> ((arg0 - &D_800BF118) / 80));\n    D_80098A4C = temp_v0;\n    D_80098A4C = temp_v0 & D_800989CC;\n    *arg0 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_800333B4": {
+  "insns": 22,
+  "name": "func_800333B4",
+  "asm": "22D38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern void *D_80098A80;\n\nvoid func_800333B4(void *arg0) {\n    void *temp_v1;\n\n    temp_v1 = D_80098A80;\n    D_80098A80 = temp_v1 - 0x20;\n    temp_v1->unk-20 = (s32) arg0->unk0;\n    temp_v1->unk-1C = (s32) arg0->unk4;\n    temp_v1->unk-18 = (s32) arg0->unk8;\n    temp_v1->unk-14 = (s32) arg0->unkC;\n    temp_v1->unk-10 = (s32) arg0->unk10;\n    temp_v1->unk-C = (s32) arg0->unk14;\n    temp_v1->unk-8 = (s32) arg0->unk18;\n    temp_v1->unk-4 = (s32) arg0->unk1C;\n}\n",
+  "stderr": ""
+ },
+ "func_8003346C": {
+  "insns": 22,
+  "name": "func_8003346C",
+  "asm": "22D38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? RotMatrix(s16 *, ? *);                            /* extern */\n? func_80033598(void *, ? *);                       /* static */\n\nvoid func_8003346C(void *arg0) {\n    s16 sp10;\n    u16 sp12;\n    s16 sp14;\n    ? sp18;\n\n    sp10 = 0;\n    sp14 = 0;\n    sp12 = arg0->unk56;\n    RotMatrix(&sp10, &sp18);\n    func_80033598(arg0, &sp18);\n}\n",
+  "stderr": ""
+ },
+ "func_8003AC9C": {
+  "insns": 22,
+  "name": "func_8003AC9C",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8003AC24(?);                               /* static */\nextern ? D_8015C008;\n\ns32 func_8003AC9C(s32 arg0, ? arg1) {\n    s32 temp_s0;\n    s32 temp_s1;\n\n    temp_s0 = arg0 * 0xC;\n    temp_s1 = *(temp_s0 + &D_8015C008);\n    *(temp_s0 + &D_8015C008) = func_8003AC24(arg1);\n    return temp_s1;\n}\n",
+  "stderr": ""
+ },
+ "func_800176DC": {
+  "insns": 22,
+  "name": "func_800176DC",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "/*\nDecompilation failure in function func_800176DC:\n\nCannot find branch target func_800176DC\n*/\n",
+  "stderr": ""
+ },
+ "func_8003187C": {
+  "insns": 23,
+  "name": "func_8003187C",
+  "asm": "2207C.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_80098B20;\nextern s32 D_80098B64;\nextern ? D_800C3580;\n\nvoid func_8003187C(s8 *arg0) {\n    s32 temp_v0;\n\n    temp_v0 = D_80098B64 | (0x80000000U >> ((arg0 - &D_800C3580) / 1444));\n    D_80098B64 = temp_v0;\n    D_80098B64 = temp_v0 & D_80098B20;\n    *arg0 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_800369C0": {
+  "insns": 23,
+  "name": "func_800369C0",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 2,
+  "out": "? SetFogNear(u16, ?);                               /* extern */\nextern u16 D_800BC81C;\n\nvoid func_800369C0(void) {\n    u16 var_a0;\n\n    *(s8 *)0x1F800074 = 1;\n    *(s16 *)0x1F800006 = 0x680;\n    *(s16 *)0x1F800076 = 0x680;\n    var_a0 = D_800BC81C * 2;\n    if (var_a0 >= 0x3333U) {\n        var_a0 = D_800BC81C;\n    }\n    SetFogNear(var_a0, 0x180);\n}\n",
+  "stderr": ""
+ },
+ "func_80036A1C": {
+  "insns": 23,
+  "name": "func_80036A1C",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 2,
+  "out": "? SetFogNear(u16, ?);                               /* extern */\nextern u16 D_800BC81C;\n\nvoid func_80036A1C(void) {\n    u16 var_a0;\n\n    *(s8 *)0x1F800074 = 2;\n    *(s16 *)0x1F800006 = 0x300;\n    *(s16 *)0x1F800076 = 0x300;\n    var_a0 = D_800BC81C * 4;\n    if (var_a0 >= 0x3333U) {\n        var_a0 = D_800BC81C;\n    }\n    SetFogNear(var_a0, 0x180);\n}\n",
+  "stderr": ""
+ },
+ "func_8003B278": {
+  "insns": 23,
+  "name": "func_8003B278",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 2,
+  "out": "? func_800176DC(? *, ? *, ?);                       /* extern */\nextern ? D_800B6230;\nextern ? D_800BD3B8;\nextern s32 D_800BE1B4;\n\nvoid func_8003B278(s32 arg0) {\n    s32 *var_v0;\n    s32 var_v1;\n\n    if (arg0 == 0) {\n        var_v1 = 0x37F;\n        var_v0 = &D_800BE1B4;\n        do {\n            *var_v0 = -1;\n            var_v1 -= 1;\n            var_v0 -= 4;\n        } while (var_v1 >= 0);\n        return;\n    }\n    func_800176DC(&D_800B6230, &D_800BD3B8, 0x70);\n}\n",
+  "stderr": ""
+ },
+ "func_80048A40": {
+  "insns": 23,
+  "name": "func_80048A40",
+  "asm": "383D0.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_80039820();                                  /* extern */\n? func_80042314(PL_WORK *);                         /* extern */\nextern s8 D_800A395C;\n\nvoid func_80048A40(s8 *arg0) {\n    func_80042314(&Player_work);\n    Player_work.unk8 = 0;\n    D_800A395C = 1;\n    func_80039820();\n    Sce_flag_off(0x7B3);\n    *arg0 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005DA1C": {
+  "insns": 23,
+  "name": "func_8005DA1C",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s8 D_800BBD81;\nextern s8 D_800BBD85;\nextern u8 D_800BBD87;\n\ns32 func_8005DA1C(s32 arg0) {\n    if ((arg0 != 0) && (D_800BBD87 != 0)) {\n        D_800BBD87 = 0;\n        D_800BBD85 = 3;\n        D_800BBD81 = 6;\n        return 0;\n    }\n    return D_800BBD87 == 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005DBB4": {
+  "insns": 23,
+  "name": "func_8005DBB4",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 2,
+  "out": "? func_800176DC(? *, ? *, ?);                       /* extern */\nextern ? D_800B7030;\nextern ? D_800BC9B8;\nextern s32 D_800BD3B4;\n\nvoid func_8005DBB4(s32 arg0) {\n    s32 *var_v0;\n    s32 var_v1;\n\n    if (arg0 == 0) {\n        var_v1 = 0x27F;\n        var_v0 = &D_800BD3B4;\n        do {\n            *var_v0 = -1;\n            var_v1 -= 1;\n            var_v0 -= 4;\n        } while (var_v1 >= 0);\n        return;\n    }\n    func_800176DC(&D_800B7030, &D_800BC9B8, 0x50);\n}\n",
+  "stderr": ""
+ },
+ "func_8002CFA4": {
+  "insns": 24,
+  "name": "func_8002CFA4",
+  "asm": "1B370.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_800177CC(?, ?);                              /* extern */\nextern s32 D_800987D8;\nextern s32 D_800988FC;\n\nvoid func_8002CFA4(void) {\n    func_800177CC(0x8015BC00, 0x8015BFFC);\n    D_800987D8 = 0;\n    *(s8 *)0x1F800075 = 0;\n    *(s16 *)0x1F800004 = 0;\n    *(s16 *)0x1F800006 = 0xE00;\n    D_800988FC = 0;\n    *(s16 *)0x1F800076 = 0xE00;\n}\n",
+  "stderr": ""
+ },
+ "func_8002D27C": {
+  "insns": 24,
+  "name": "func_8002D27C",
+  "asm": "1B370.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002D27C(s32 arg0, u32 arg1, void *arg2) {\n    void *temp_v0;\n\n    temp_v0 = ((((arg1 >> 8) & 0xFF) * 0x14) + (((arg1 >> 0x18) * 4) + arg0)->unk70 + ((arg1 >> 0xE) & 0x3FC))->unk18 + ((arg1 & 0xFF) * 0xC);\n    temp_v0->unk0 = (s32) arg2->unk0;\n    temp_v0->unk4 = (s32) arg2->unk4;\n}\n",
+  "stderr": ""
+ },
+ "func_8002D404": {
+  "insns": 24,
+  "name": "func_8002D404",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8002D404(u32 arg0, s32 arg1, s32 arg2, u32 arg3) {\n    s32 temp_lo;\n    s32 temp_lo_2;\n\n    temp_lo = (arg0 / arg3) * arg2;\n    temp_lo_2 = (arg0 % arg3) * arg1;\n    return (temp_lo << 0x18) | (temp_lo_2 << 0x10) | (temp_lo << 8) | temp_lo_2;\n}\n",
+  "stderr": ""
+ },
+ "func_8003340C": {
+  "insns": 24,
+  "name": "func_8003340C",
+  "asm": "22D38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern void *D_80098A80;\n\nvoid func_8003340C(void *arg0) {\n    arg0->unk0 = (s32) D_80098A80->unk0;\n    arg0->unk4 = (s32) D_80098A80->unk4;\n    arg0->unk8 = (s32) D_80098A80->unk8;\n    arg0->unkC = (s32) D_80098A80->unkC;\n    arg0->unk10 = (s32) D_80098A80->unk10;\n    arg0->unk14 = (s32) D_80098A80->unk14;\n    arg0->unk18 = (s32) D_80098A80->unk18;\n    arg0->unk1C = (s32) D_80098A80->unk1C;\n    D_80098A80 += 0x20;\n}\n",
+  "stderr": ""
+ },
+ "func_80037534": {
+  "insns": 24,
+  "name": "func_80037534",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_80089EAC;\n\nvoid func_80037534(s32 arg0) {\n    s32 *var_a1;\n    s32 temp_v1;\n    s32 var_a2;\n    s8 *var_a3;\n    void *var_a0;\n\n    var_a3 = arg0 + 0x4F4;\n    var_a2 = 0;\n    var_a0 = arg0 + 0x4FA;\n    var_a1 = &D_80089EAC;\n    do {\n        *var_a3 = 0;\n        var_a0->unk-5 = 0;\n        var_a0->unk-4 = 0;\n        var_a0->unk-3 = 0;\n        var_a0->unk-2 = 0;\n        temp_v1 = *var_a1;\n        var_a1 += 4;\n        var_a2 += 1;\n        var_a3 += 8;\n        var_a0->unk0 = (u16) ((var_a0->unk-5 * 8) + temp_v1)->unk2;\n        var_a0 += 8;\n    } while (var_a2 < 0x10);\n}\n",
+  "stderr": ""
+ },
+ "func_80037BB4": {
+  "insns": 24,
+  "name": "func_80037BB4",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_8015C006;\n\ns32 func_80037BB4(s32 arg0) {\n    s32 temp_v1_2;\n    s32 var_v0;\n    u32 temp_v1;\n\n    temp_v1 = arg0 & 0xFFFF;\n    if (arg0 > 0) {\n        var_v0 = -1;\n        if (temp_v1 <= 0x7FFFU) {\n            temp_v1_2 = *((temp_v1 * 0xC) + &D_8015C006) & 0xFFF;\n            if (temp_v1_2 == 0) {\n                return 0;\n            }\n            var_v0 = temp_v1_2;\n            if (!(arg0 & 0xF0000)) {\n                goto block_5;\n            }\n            /* Duplicate return node #6. Try simplifying control flow for better match */\n            return var_v0;\n        }\n        /* Duplicate return node #6. Try simplifying control flow for better match */\n        return var_v0;\n    }\nblock_5:\n    var_v0 = -1;\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_8004976C": {
+  "insns": 24,
+  "name": "func_8004976C",
+  "asm": "393EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8002FE74(u8);                              /* extern */\n? func_800497CC(void *, s32, s32, u8);              /* static */\n\nvoid func_8004976C(void *arg0) {\n    s16 var_v0;\n\n    var_v0 = 0;\n    if (func_8002FE74(arg0->unk1) == 0) {\n        var_v0 = arg0->unk116;\n    }\n    func_800497CC(arg0 + 0x14, arg0->unk78, ((s32) ((arg0->unk56 - var_v0) + 0x200) >> 0xA) & 3, arg0->unk1);\n}\n",
+  "stderr": ""
+ },
+ "func_8005C258": {
+  "insns": 24,
+  "name": "func_8005C258",
+  "asm": "4C710.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_800177CC(s8 *, s8 *);                        /* extern */\nextern s32 D_80098008;\nextern s32 D_8009800C;\nextern s32 D_8009801C;\nextern s32 D_80098AF0;\nextern s8 D_800BBD78;\nextern s8 D_800BBD9C;\n\nvoid func_8005C258(void) {\n    func_800177CC(&D_800BBD78, &D_800BBD78 + 0xD4);\n    D_800BBD78 = 3;\n    D_800BBD9C = 3;\n    D_80098AF0 = 0;\n    D_8009800C = 5;\n    Scene_work.x0 = 0;\n    D_80098008 = 0;\n    D_8009801C = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8002DDA0": {
+  "insns": 25,
+  "name": "func_8002DDA0",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002DDA0(void *arg0, s32 arg1, s32 arg2) {\n    s32 sp0;\n    s32 sp4;\n    s32 sp8;\n    void *temp_a2;\n\n    temp_a2 = (arg2 * 0x10) + arg1;\n    sp4 = temp_a2->unk8;\n    sp0 = temp_a2->unk4;\n    sp8 = temp_a2->unkC;\n    arg0->unk3 = (unaligned s32) M2C_ERROR(/* Unable to handle lwr; missing a corresponding lwl */);\n    arg0->unk7 = (unaligned s32) M2C_ERROR(/* Unable to handle lwr; missing a corresponding lwl */);\n    arg0->unkB = (unaligned s32) M2C_ERROR(/* Unable to handle lwr; missing a corresponding lwl */);\n}\n",
+  "stderr": ""
+ },
+ "func_80064F8C": {
+  "insns": 25,
+  "name": "func_80064F8C",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_80064A7C(s32);                             /* static */\nextern ? D_8008FA5C;\n\ns32 func_80064F8C(s32 arg0) {\n    if (func_80064A7C() == 1) {\n        return -1;\n    }\n    format(*(&D_8008FA5C + (arg0 * 4)));\n    return -(func_80064A7C(arg0) == 1);\n}\n",
+  "stderr": ""
+ },
+ "func_80043740": {
+  "insns": 26,
+  "name": "func_80043740",
+  "asm": "32A38.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void *func_80031618();                              /* extern */\n\nvoid func_80043740(void *arg0) {\n    void *temp_v0;\n\n    temp_v0 = func_80031618();\n    if (temp_v0 != NULL) {\n        temp_v0->unk0 = 1;\n        temp_v0->unk2 = 0x84;\n        temp_v0->unk3 = 0;\n        temp_v0->unk1C = (u16) arg0->unk14;\n        temp_v0->unk1E = (u16) arg0->unk16;\n        temp_v0->unk20 = (u16) arg0->unk18;\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_80044998": {
+  "insns": 26,
+  "name": "func_80044998",
+  "asm": "35134.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_8002F9C4(?);                                 /* extern */\n\nvoid func_80044998(void *arg0) {\n    arg0->unk0 = (u8) (arg0->unk0 | 2);\n    func_8002F9C4(0);\n    arg0->unk40 = 0x02808080;\n    arg0->unk8 = (u8) (arg0->unk8 + 1);\n    arg0->unkB = 0x10;\n    arg0->unk44 = (s32) arg0->unk14->unk70->unk10;\n}\n",
+  "stderr": ""
+ },
+ "func_800469A4": {
+  "insns": 26,
+  "name": "func_800469A4",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? RotMatrixY(s16, void *);                          /* extern */\n\nvoid func_800469A4(void *arg0) {\n    u16 temp_v0;\n\n    temp_v0 = arg0->unk3E;\n    arg0->unk26 = 0;\n    arg0->unk24 = 0;\n    arg0->unk22 = 0;\n    arg0->unk1E = 0;\n    arg0->unk1C = 0;\n    arg0->unk1A = 0;\n    arg0->unk28 = temp_v0;\n    arg0->unk20 = temp_v0;\n    arg0->unk18 = temp_v0;\n    RotMatrixY(arg0->unkC, arg0 + 0x18);\n    arg0->unkC = (s16) ((u16) arg0->unkC + 0x100);\n}\n",
+  "stderr": ""
+ },
+ "func_80063BC8": {
+  "insns": 26,
+  "name": "func_80063BC8",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_800987B0;\nextern s8 D_800987B1;\nextern s16 D_800987B2;\n\nvoid func_80063BC8(s32 arg0, s8 arg1, s8 arg2, s8 arg3) {\n    if (Game_work.routine_0 == 3) {\n        D_800987B0.unk0 = 1;\n        D_800987B1 = arg1;\n        if (arg1 & 2) {\n            D_800987B2 = 2;\n            D_800987B0.unk4 = arg2;\n        } else {\n            D_800987B2 = 0;\n            D_800987B0.unk4 = arg2;\n        }\n        D_800987B0.unk5 = arg3;\n        D_800987B0.unk6 = 0;\n        D_800987B0.unk8 = arg0;\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_8006491C": {
+  "insns": 26,
+  "name": "func_8006491C",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s32 D_80098708;\nextern s32 D_8009870C;\nextern s32 D_80098710;\nextern s32 D_80098714;\n\ns32 func_8006491C(void) {\n    s32 var_v0;\n\nloop_1:\n    var_v0 = 0;\n    if (TestEvent(D_80098708) == 0) {\n        var_v0 = 1;\n        if (TestEvent(D_80098710) == 0) {\n            var_v0 = 2;\n            if (TestEvent(D_80098714) == 0) {\n                var_v0 = 3;\n                if (TestEvent(D_8009870C) == 0) {\n                    goto loop_1;\n                }\n            }\n        }\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80064984": {
+  "insns": 26,
+  "name": "func_80064984",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s32 D_80098718;\nextern s32 D_8009871C;\nextern s32 D_80098720;\nextern s32 D_80098724;\n\ns32 func_80064984(void) {\n    s32 var_v0;\n\nloop_1:\n    var_v0 = 0;\n    if (TestEvent(D_80098718) == 0) {\n        var_v0 = 1;\n        if (TestEvent(D_80098720) == 0) {\n            var_v0 = 2;\n            if (TestEvent(D_8009871C) == 0) {\n                var_v0 = 3;\n                if (TestEvent(D_80098724) == 0) {\n                    goto loop_1;\n                }\n            }\n        }\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_800665FC": {
+  "insns": 26,
+  "name": "func_800665FC",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_8008FD10;\nextern s16 D_80098912;\nextern s8 D_80098914;\nextern u16 D_80098918;\nextern u16 D_8009891A;\n\nvoid func_800665FC(s16 arg0) {\n    D_80098912 = arg0;\n    D_8009891A = D_800C0C2A;\n    D_80098918 = D_800C0C26;\n    *(&D_8008FD10 + (D_80098914 * 4))(D_80098910, D_800C0C26);\n}\n",
+  "stderr": ""
+ },
+ "func_80017994": {
+  "insns": 26,
+  "name": "func_80017994",
+  "asm": "77D4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_800176DC(? *, ? *, ?);                       /* static */\nextern ? D_80098B70;\nextern ? D_800AD168;\n\nvoid func_80017994(void) {\n    func_800176DC(&D_800AD168, &D_80098B70, 8);\n    func_800176DC(&D_800AD168 + 0x100, &D_80098B70 + 0x100, 8);\n    func_800176DC(&D_800AD168 + 0x1300, &D_80098B70 + 0x200, 8);\n}\n",
+  "stderr": ""
+ },
+ "func_80031988": {
+  "insns": 27,
+  "name": "func_80031988",
+  "asm": "2207C.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_80098838;\nextern ? D_800988C8;\nextern ? D_800A3B40;\n\nvoid func_80031988(s8 *arg0) {\n    s32 *temp_a2;\n    s32 temp_a1;\n    s32 temp_v1;\n\n    temp_v1 = ((arg0 - &D_800A3B40) / 2304) * 4;\n    temp_a2 = temp_v1 + &D_800988C8;\n    temp_a1 = *temp_a2 | (0x80000000U >> (((arg0 - &D_800A3B40) / 72) & 0x1F));\n    *temp_a2 = temp_a1;\n    *temp_a2 = temp_a1 & *(&D_80098838 + temp_v1);\n    *arg0 = 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8004559C": {
+  "insns": 27,
+  "name": "func_8004559C",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? Sound_call2(?, void *);                           /* extern */\nextern ? D_80097E08;\nextern ? D_80097E0A;\n\nvoid func_8004559C(void *arg0) {\n    u16 temp_v1;\n\n    arg0->unk22 = (s8) *(&D_80097E08 + ((arg0->unk8 - 5) * 4));\n    temp_v1 = *(&D_80097E0A + ((arg0->unk8 - 5) * 4));\n    arg0->unk8 = (u8) (arg0->unk8 + 1);\n    arg0->unk23 = (s8) temp_v1;\n    Sound_call2(0x121, arg0 + 0x1C);\n}\n",
+  "stderr": ""
+ },
+ "func_80047BF8": {
+  "insns": 27,
+  "name": "func_80047BF8",
+  "asm": "383D0.s",
+  "copies": 2,
+  "family": 2,
+  "out": "? SquareRoot0(s32, s32, s32);                       /* extern */\n\nvoid func_80047BF8(void *arg0, void *arg1) {\n    s32 temp_lo;\n    s32 temp_lo_2;\n    s32 temp_v0;\n    s32 temp_v0_2;\n    s32 temp_v0_3;\n\n    temp_v0 = arg0->unk0 - arg1->unk0;\n    temp_lo = temp_v0 * temp_v0;\n    temp_v0_2 = arg0->unk2 - arg1->unk2;\n    temp_lo_2 = temp_v0_2 * temp_v0_2;\n    temp_v0_3 = arg0->unk4 - arg1->unk4;\n    SquareRoot0(temp_lo + temp_lo_2 + (temp_v0_3 * temp_v0_3), temp_lo_2, temp_lo);\n}\n",
+  "stderr": ""
+ },
+ "func_80048DAC": {
+  "insns": 27,
+  "name": "func_80048DAC",
+  "asm": "393EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_80048DAC(void *arg0) {\n    s32 var_v0;\n\n    var_v0 = -1;\n    if ((u32) (((s32) (arg0->unk0 + 0x8000) >> 9) - *(u8 *)0x1F800040) < (u16) *(u16 *)0x1F800044) {\n        var_v0 = 0;\n        if ((u32) (((s32) (arg0->unk4 + 0x8000) >> 9) - *(u8 *)0x1F800041) >= (u16) *(u16 *)0x1F800046) {\n            var_v0 = -1;\n        }\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80050A24": {
+  "insns": 27,
+  "name": "func_80050A24",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 3,
+  "out": "s32 func_80050A24(s16 *arg0) {\n    s32 var_v1;\n\n    var_v1 = *(s16 *)0x1F8000D0 != 0;\n    if (var_v1 != 0) {\n        if (*arg0 > 0) {\n            var_v1 &= 1;\n            if (*(u8 *)0x1F8000FF & 2) {\n                var_v1 = 0;\n            }\n        } else {\n            var_v1 &= 1;\n            if (*(void *)0x1F8000FF & 1) {\n                var_v1 = 0;\n            }\n        }\n    }\n    return var_v1;\n}\n",
+  "stderr": ""
+ },
+ "func_80050A90": {
+  "insns": 27,
+  "name": "func_80050A90",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 3,
+  "out": "s32 func_80050A90(void *arg0) {\n    s32 var_v1;\n\n    var_v1 = *(s16 *)0x1F8000D4 != 0;\n    if (var_v1 != 0) {\n        if (arg0->unk4 > 0) {\n            var_v1 &= 1;\n            if (*(u8 *)0x1F8000FF & 8) {\n                var_v1 = 0;\n            }\n        } else {\n            var_v1 &= 1;\n            if (*(void *)0x1F8000FF & 4) {\n                var_v1 = 0;\n            }\n        }\n    }\n    return var_v1;\n}\n",
+  "stderr": ""
+ },
+ "func_80050AFC": {
+  "insns": 27,
+  "name": "func_80050AFC",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 3,
+  "out": "s32 func_80050AFC(void *arg0) {\n    s32 var_v1;\n\n    var_v1 = *(s16 *)0x1F8000D2 != 0;\n    if (var_v1 != 0) {\n        if (arg0->unk2 > 0) {\n            var_v1 &= 1;\n            if (*(u8 *)0x1F8000FF & 0x20) {\n                var_v1 = 0;\n            }\n        } else {\n            var_v1 &= 1;\n            if (*(void *)0x1F8000FF & 0x10) {\n                var_v1 = 0;\n            }\n        }\n    }\n    return var_v1;\n}\n",
+  "stderr": ""
+ },
+ "func_8005C0E4": {
+  "insns": 27,
+  "name": "func_8005C0E4",
+  "asm": "4C710.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern u8 D_8008D028;\n\nvoid func_8005C0E4(s32 arg0, void *arg1) {\n    arg1->unk0 = (u8) (&D_8008D028)[arg0 / 10];\n    arg1->unk1 = (u8) (&D_8008D028)[arg0 % 10];\n    if (arg1->unk0 == D_8008D028) {\n        arg1->unk0 = 0x4FU;\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_8002F928": {
+  "insns": 28,
+  "name": "func_8002F928",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002F928(void *arg0, void *arg1) {\n    if (arg0->unk0 & 4) {\n        arg0->unk38 = (u16) (arg0->unk38 + arg1->unk0);\n        arg0->unk3C = (u16) (arg0->unk3C + arg1->unk4);\n        return;\n    }\n    arg0->unk1C = (u16) (arg0->unk1C + arg1->unk0);\n    arg0->unk20 = (u16) (arg0->unk20 + arg1->unk4);\n}\n",
+  "stderr": ""
+ },
+ "func_80031D5C": {
+  "insns": 28,
+  "name": "func_80031D5C",
+  "asm": "2207C.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s16 func_80031D5C(s32 arg0, s32 arg1, s16 arg2) {\n    s16 temp_a0;\n    s16 var_a1;\n    s16 var_v1;\n\n    var_v1 = arg2;\n    temp_a0 = arg0 - arg1;\n    var_a1 = temp_a0;\n    if (temp_a0 & 0x8000) {\n        var_a1 = temp_a0 + 0x1000;\n    }\n    if (var_a1 < 0x800) {\n        if (var_a1 < arg2) {\n            var_v1 = var_a1;\n        }\n    } else {\n        var_v1 = var_a1 - 0x1000;\n        if ((0x1000 - var_a1) >= arg2) {\n            var_v1 = -arg2;\n        }\n    }\n    return var_v1;\n}\n",
+  "stderr": ""
+ },
+ "func_8003B540": {
+  "insns": 29,
+  "name": "func_8003B540",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern ? D_80089F04;\nextern ? D_800BD3B8;\n\ns32 func_8003B540(s32 arg0, s32 arg1, s32 arg2) {\n    s32 *temp_a2;\n    s32 temp_a1;\n    s8 temp_a0;\n\n    if (arg1 >= 0) {\n        temp_a0 = *(&D_80089F04 + arg0);\n        if (temp_a0 >= 0) {\n            temp_a2 = ((arg1 >> 4) * 4) + ((temp_a0 << 9) + &D_800BD3B8);\n            temp_a1 = (arg1 & 0xF) * 2;\n            *temp_a2 = (*temp_a2 & ~(3 << temp_a1)) | (arg2 << temp_a1);\n            return 1;\n        }\n    }\n    return -1;\n}\n",
+  "stderr": ""
+ },
+ "func_80048BEC": {
+  "insns": 29,
+  "name": "func_80048BEC",
+  "asm": "393EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_80048BEC(void *arg0) {\n    s32 var_v0;\n    u16 temp_a2;\n    u32 temp_a1;\n    u32 temp_v0;\n\n    temp_a2 = *(u16 *)0x1F800044;\n    temp_a1 = ((s32) (arg0->unk0 + 0x8000) >> 9) - *(u8 *)0x1F800040;\n    var_v0 = 0;\n    if (temp_a1 < temp_a2) {\n        temp_v0 = ((s32) (arg0->unk4 + 0x8000) >> 9) - *(u8 *)0x1F800041;\n        if (temp_v0 >= (u16) *(u16 *)0x1F800046) {\n            return 0;\n        }\n        var_v0 = temp_a1 + (temp_v0 * temp_a2);\n        /* Duplicate return node #4. Try simplifying control flow for better match */\n        return var_v0;\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_80051970": {
+  "insns": 29,
+  "name": "func_80051970",
+  "asm": "3EC90.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8004324C(u16);                             /* extern */\n\ns32 func_80051970(void *arg0) {\n    u16 temp_a1;\n    u8 temp_v1;\n\n    if (arg0 != NULL) {\n        temp_v1 = arg0->unk9;\n        temp_a1 = arg0->unk11E;\n        if ((arg0->unk184 == 0) && ((temp_v1 < 2U) || (temp_v1 == 4)) && (temp_a1 & arg0->unk136) && (func_8004324C(temp_a1) == 0)) {\n            return 1;\n        }\n        /* Duplicate return node #8. Try simplifying control flow for better match */\n        return 0;\n    }\n    return 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005D8C4": {
+  "insns": 29,
+  "name": "func_8005D8C4",
+  "asm": "4D1BC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_8005D4F8();                                  /* static */\nextern s8 D_800BBD82;\nextern s8 D_800BBD83;\nextern u8 D_800BBD85;\nextern s16 D_800BBD90;\nextern s16 D_800BBD94;\n\ns32 func_8005D8C4(s32 arg0) {\n    s32 var_v0;\n\n    if (D_800BBD94 > 0) {\n        return 0;\n    }\n    if ((D_800BBD85 == 0) || (var_v0 = 1, (D_800BBD85 == 3))) {\n        var_v0 = 0;\n        if (arg0 != 0) {\n            func_8005D4F8();\n            D_800BBD82 = 0;\n            D_800BBD83 = 0;\n            D_800BBD90 = 0;\n            var_v0 = 1;\n        }\n    }\n    return var_v0;\n}\n",
+  "stderr": ""
+ },
+ "func_8005DA78": {
+  "insns": 29,
+  "name": "func_8005DA78",
+  "asm": "4E174.s",
+  "copies": 1,
+  "family": 1,
+  "out": "s32 func_8005DA78(s32 arg0) {\n    if (arg0 != 0) {\n        if (((s16) Player_work.life + 2) >= Player_work.unkB0) {\n            Player_work.life = (u16) Player_work.unkB0;\n            return 1;\n        }\n        Player_work.life = (s16) Player_work.life + 2;\n        return 0;\n    }\n    return (s16) Player_work.life == Player_work.unkB0;\n}\n",
+  "stderr": ""
+ },
+ "func_80064FF0": {
+  "insns": 29,
+  "name": "func_80064FF0",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? _card_write(?, ?, s8 *);                          /* extern */\n? _new_card();                                      /* extern */\ns32 func_80064984();                                /* static */\n? func_80064A34();                                  /* static */\nextern s8 D_8009AB30;\nextern s8 D_8009AB31;\n\ns32 func_80064FF0(s32 arg0) {\n    ? var_a0;\n\n    D_8009AB31 = 0xFF;\n    D_8009AB30 = 0xFF;\n    func_80064A34();\n    _new_card();\n    var_a0 = 0x10;\n    if (arg0 == 0) {\n        var_a0 = 0;\n    }\n    _card_write(var_a0, 0, &D_8009AB30);\n    return func_80064984() == 0;\n}\n",
+  "stderr": ""
+ },
+ "func_80066664": {
+  "insns": 29,
+  "name": "func_80066664",
+  "asm": "543A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_800666D8(void *);                            /* static */\n? func_80066714(void *);                            /* static */\n? func_80067884();                                  /* static */\n\nvoid func_80066664(void *arg0) {\n    arg0->unk0 = 1;\n    if (arg0->unk2 == 0) {\n        arg0->unk4 = 2;\n        arg0->unk5 = 0;\n        arg0->unk6 = 0;\n        func_80067884();\n        func_80066714(arg0);\n        return;\n    }\n    arg0->unk4 = 1;\n    arg0->unk5 = 0;\n    arg0->unk6 = 0;\n    func_80067884();\n    func_800666D8(arg0);\n}\n",
+  "stderr": ""
+ },
+ "func_8002F3A8": {
+  "insns": 30,
+  "name": "func_8002F3A8",
+  "asm": "1DB20.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8002F3A8(void *arg0, s32 arg1) {\n    s32 var_v0;\n    s32 var_v0_2;\n    s32 var_v0_3;\n\n    var_v0 = arg1 & 4;\n    if (arg1 & 1) {\n        arg0->unk6 = (u8) (arg0->unk6 ^ 1);\n        var_v0 = arg1 & 4;\n    }\n    var_v0_2 = arg1 & 2;\n    if (var_v0 != 0) {\n        arg0->unk6 = (u8) (arg0->unk6 ^ 2);\n        var_v0_2 = arg1 & 2;\n    }\n    var_v0_3 = arg1 & 8;\n    if (var_v0_2 != 0) {\n        arg0->unk6 = (u8) (arg0->unk6 | 1);\n        var_v0_3 = arg1 & 8;\n    }\n    if (var_v0_3 != 0) {\n        arg0->unk6 = (u8) (arg0->unk6 | 2);\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_80030968": {
+  "insns": 30,
+  "name": "func_80030968",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? func_800309E0(s32, s32, s32, s32, s32, s32, s32); /* static */\n\nvoid func_80030968(void *arg0, s32 arg1, s16 arg2, s16 arg3, s32 arg4) {\n    func_800309E0(arg0 + 0x14, arg1 + 0xC4, arg0 + 0x44, arg1 + 0xCA, (s32) arg2, (s32) arg3, (s32) (s16) arg4);\n    arg0->unk50 = 0;\n    arg0->unk4C = 0;\n    arg0->unk4E = (s16) arg4;\n}\n",
+  "stderr": ""
+ },
+ "func_800316BC": {
+  "insns": 30,
+  "name": "func_800316BC",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s32 D_800987EC;\nextern ? D_800A2D08;\n\n? *func_800316BC(void) {\n    ? *var_v1;\n    s32 var_a1;\n\n    var_a1 = 0;\n    var_v1 = &D_800A2D08;\nloop_1:\n    if ((D_800987EC << var_a1) >= 0) {\n        var_v1->unk10 = 0;\n        D_800987EC |= 0x80000000U >> var_a1;\n        var_v1->unk2 = 0;\n        var_v1->unk4 = 0;\n        var_v1->unkC = 0;\n        var_v1->unk8 = 0;\n        var_v1->unk6 = 3;\n        return var_v1;\n    }\n    var_a1 += 1;\n    var_v1 += 0x24;\n    if (var_a1 >= 0x10) {\n        return NULL;\n    }\n    goto loop_1;\n}\n",
+  "stderr": ""
+ },
+ "func_80031734": {
+  "insns": 30,
+  "name": "func_80031734",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 2,
+  "out": "extern s32 D_800989CC;\nextern ? D_800BF118;\n\n? *func_80031734(void) {\n    ? *var_v1;\n    s32 var_a1;\n\n    var_a1 = 0;\n    var_v1 = &D_800BF118;\nloop_1:\n    if ((D_800989CC << var_a1) >= 0) {\n        var_v1->unk10 = 0;\n        D_800989CC |= 0x80000000U >> var_a1;\n        var_v1->unk2 = 0;\n        var_v1->unk4 = 0;\n        var_v1->unkC = 0;\n        var_v1->unk8 = 0;\n        var_v1->unk6 = 3;\n        return var_v1;\n    }\n    var_a1 += 1;\n    var_v1 += 0x50;\n    if (var_a1 >= 0x20) {\n        return NULL;\n    }\n    goto loop_1;\n}\n",
+  "stderr": ""
+ },
+ "func_800317AC": {
+  "insns": 30,
+  "name": "func_800317AC",
+  "asm": "201EC.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_800989CC;\nextern ? D_800BF118;\n\nvoid *func_800317AC(s32 arg0) {\n    void *temp_v0;\n\n    if (arg0 < 0x20) {\n        if ((D_800989CC << arg0) >= 0) {\n            temp_v0 = (arg0 * 0x50) + &D_800BF118;\n            D_800989CC |= 0x80000000U >> arg0;\n            temp_v0->unk2 = 0;\n            temp_v0->unk4 = 0;\n            temp_v0->unkC = 0;\n            temp_v0->unk8 = 0;\n            temp_v0->unk6 = 3;\n            temp_v0->unk10 = 0;\n            return temp_v0;\n        }\n        /* Duplicate return node #4. Try simplifying control flow for better match */\n        return NULL;\n    }\n    return NULL;\n}\n",
+  "stderr": ""
+ },
+ "func_80036A88": {
+  "insns": 30,
+  "name": "func_80036A88",
+  "asm": "26C78.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? SetFarColor();                                    /* extern */\n? SetFogNear(s16, ?);                               /* extern */\nextern s8 D_8009A370;\nextern s8 D_8009A371;\nextern s8 D_8009A372;\nextern s16 D_8009A374;\n\nvoid func_80036A88(s8 arg0, s8 arg1, s8 arg2, s16 arg3) {\n    SetFarColor();\n    SetFogNear(arg3, 0x180);\n    D_8009A370 = arg0;\n    D_8009A371 = arg1;\n    D_8009A372 = arg2;\n    D_8009A374 = arg3;\n}\n",
+  "stderr": ""
+ },
+ "func_8003AC24": {
+  "insns": 30,
+  "name": "func_8003AC24",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "extern s32 D_8013A004;\n\ns32 func_8003AC24(s32 arg0) {\n    s32 *var_a1;\n    u32 var_v1;\n\n    if (D_8013A004 != 0) {\n        var_v1 = 0;\n        var_a1 = (s32 *)0x8013A000;\nloop_2:\n        if (var_v1 < 0x4000U) {\n            if (*var_a1 == arg0) {\n                return *(var_v1 + &D_8013A004);\n            }\n            var_v1 += 8;\n            var_a1 += 8;\n            if (*(var_v1 + &D_8013A004) == 0) {\n                /* Duplicate return node #7. Try simplifying control flow for better match */\n                return 0;\n            }\n            goto loop_2;\n        }\n        /* Duplicate return node #7. Try simplifying control flow for better match */\n        return 0;\n    }\n    return 0;\n}\n",
+  "stderr": ""
+ },
+ "func_8003BDC0": {
+  "insns": 30,
+  "name": "func_8003BDC0",
+  "asm": "29CA4.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void func_8003BDC0(u8 *arg0, s32 arg1, s32 arg2) {\n    s32 *temp_v0;\n    s32 temp_v0_2;\n    u32 var_a3;\n    void *var_v1;\n\n    *arg0 = 0;\n    var_a3 = 1;\n    var_v1 = (void *)0x8015C012;\nloop_1:\n    temp_v0 = var_v1->unk2;\n    if (temp_v0 != NULL) {\n        temp_v0_2 = *temp_v0 & 0xFFFF0000;\n        if (((temp_v0_2 == arg1) || (temp_v0_2 == arg2)) && (var_v1->unk0 == 0)) {\n            *arg0 += 1;\n        }\n        var_a3 += 1;\n        var_v1 += 0xC;\n        if (var_a3 < 0x800U) {\n            goto loop_1;\n        }\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_80043E00": {
+  "insns": 30,
+  "name": "func_80043E00",
+  "asm": "34600.s",
+  "copies": 1,
+  "family": 1,
+  "out": "void *func_80031618();                              /* extern */\n\nvoid func_80043E00(void *arg0, s8 arg1) {\n    void *temp_v0;\n\n    temp_v0 = func_80031618();\n    if (temp_v0 != NULL) {\n        temp_v0->unk0 = 9;\n        temp_v0->unk2 = 0x82;\n        temp_v0->unk1C = (u16) arg0->unk14;\n        temp_v0->unk1E = (u16) arg0->unk16;\n        temp_v0->unk3 = 1;\n        temp_v0->unkC = arg1;\n        temp_v0->unk20 = (u16) arg0->unk18;\n    }\n}\n",
+  "stderr": ""
+ },
+ "func_800456D8": {
+  "insns": 30,
+  "name": "func_800456D8",
+  "asm": "352A8.s",
+  "copies": 1,
+  "family": 1,
+  "out": "? Sound_call2(?, void *);                           /* extern */\n? func_8002F9C4(void *, void *);                    /* extern */\n? func_80045AB4(void *);                            /* static */\n? func_80045BC8(void *);                            /* static */\n\nvoid func_800456D8(void *arg0) {\n    if (rand() & 1) {\n        arg0->unk0 = (u8) (arg0->unk0 | 2);\n    }\n    func_8002F9C4(arg0, arg0 + 3);\n    arg0->unk8 = (u8) (arg0->unk8 + 1);\n    Sound_call2(0x9B, arg0 + 0x38);\n    func_80045AB4(arg0);\n    func_80045BC8(arg0);\n}\n",
+  "stderr": ""
+ }
+}

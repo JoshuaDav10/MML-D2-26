@@ -7,7 +7,7 @@
 | C-mapped slice | 350 / **505** = 69.3% |
 | main executable | 350 / **1119** = **31.3%** |
 | **stage overlays** | 12 / **~7064** |
-| **whole game** | 362 / **~8183** = **~4.4%** |
+| **whole game** | 362 / **~8629** = **~4.2%** |
 | active INCLUDE_ASM stubs | **155** |
 | still unsplit raw asm | **614** functions in `asm/rock_neo/*.s` |
 <!-- END GENERATED COUNTS -->

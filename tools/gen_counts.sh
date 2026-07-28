@@ -51,7 +51,8 @@ SHADOWED=$(( RAWGREP - STUBS ))
 # from the asm itself. Two tools publishing different whole-game numbers (8129 vs 8183)
 # is the drift this project keeps getting bitten by, so read it from the map.
 OVL_UNIQUE=$(mapget stage_unique)
-WHOLE=$(( TOTAL + OVL_UNIQUE ))
+SDK=$(mapget sdk_total)
+WHOLE=$(( TOTAL + OVL_UNIQUE + SDK ))
 
 pct() { awk "BEGIN{printf \"%.1f\", 100*$1/$2}"; }
 P_SLICE=$(pct "$MATCHED" "$CMAP"); P_EXE=$(pct "$MATCHED" "$TOTAL")
@@ -81,7 +82,8 @@ separate, slower step: \`tools/audit_count.sh\`.
 | Functions still unsplit (raw asm) | **$UNSPLIT** | \`glabel\`s in \`asm/rock_neo/*.s\`, never split into a C TU. |
 | **Game functions in ROCK_NEO.EXE** | **$TOTAL** | $CMAP + $UNSPLIT. The MAIN-EXE denominator. |
 | Unique overlay functions | **~$OVL_UNIQUE** | Measured by \`tools/overlay_scope.py\`; deduped across 205 overlays. |
-| **Whole-game functions** | **~$WHOLE** | $TOTAL main exe + ~$OVL_UNIQUE overlay. THE whole-game denominator. |
+| Sony PSY-Q SDK in the exe | **$SDK** | \`asm/rock_neo/psxsdk/code.s\`, linked by rock_neo.ld. NOT Capcom code; matchable from published source. Invisible to every count before 2026-07-28 because the map globbed \`asm/rock_neo/*.s\` and never descended into subdirectories. |
+| **Whole-game functions** | **~$WHOLE** | $TOTAL main exe + ~$OVL_UNIQUE overlay + $SDK SDK. THE whole-game denominator. |
 | Matched — ENGINE (real C in tree) | **$MATCHED** | $CMAP − $STUBS. \`census.py --matched\`, authoritative for the main exe. |
 | Matched — STAGE (unique bodies) | **$STAGE_MATCHED** | Stage overlay functions with real C. Invisible to \`census.py\` (it globs only \`build/src/rock_neo/*.o\`); read from \`gen_map.py\`, which proves linkage from each overlay's own \`.map\`. |
 | **Matched — WHOLE GAME** | **$MATCHED_TOTAL** | $MATCHED engine + $STAGE_MATCHED stage. |

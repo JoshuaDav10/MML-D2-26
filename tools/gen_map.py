@@ -95,8 +95,11 @@ def code_files(root_glob, skip_engine):
         if "header" in b or f"{os.sep}data{os.sep}" in f:
             continue
         if not skip_engine:
+            if "nonmatchings" in f:
+                continue        # per-function copies; the chunk already covers them
             lk = linked_chunks()
-            if lk is not None and b[:-2] not in lk:
+            ld = (ROOT / "rock_neo.ld").read_text() if (ROOT / "rock_neo.ld").is_file() else ""
+            if lk is not None and b[:-2] not in lk and f"psxsdk/{b}.o" not in ld:
                 continue        # orphan chunk: on disk, not in the binary
         out.append(f)
     return sorted(out)
@@ -240,10 +243,17 @@ def build():
                          insns=size, leaf=lf, body=b, skel=sk))
 
     # ---- ENGINE: still raw ---------------------------------------------------
-    for f in code_files("asm/rock_neo/*.s", skip_engine=False):
+    # Recursive. It used to be "asm/rock_neo/*.s", which does not descend into
+    # subdirectories — so asm/rock_neo/psxsdk/code.s (446 functions, genuinely linked via
+    # rock_neo.ld) was invisible to every count this map produced. Same defect as the
+    # 484-vs-1119 scandal: a denominator set by what a glob matches, not by the binary.
+    for f in code_files("asm/rock_neo/**/*.s", skip_engine=False):
         for fn in parse_asm(f):
-            rows.append(dict(name=fn["name"], realm="ENGINE", container=os.path.basename(f),
-                             state="UNSPLIT", insns=len(fn["words"]),
+            sdk = "psxsdk" in f
+            rows.append(dict(name=fn["name"],
+                             realm="SDK" if sdk else "ENGINE",
+                             container=("psxsdk/" if sdk else "") + os.path.basename(f),
+                             state="SDK" if sdk else "UNSPLIT", insns=len(fn["words"]),
                              leaf=not any(o in CALLS for o in fn["ops"]),
                              body=hashlib.md5("".join(fn["words"]).encode()).hexdigest(),
                              skel=hashlib.md5(",".join(fn["ops"]).encode()).hexdigest()))
@@ -276,6 +286,7 @@ def build():
         r["family_size"] = skels.get(r["skel"], 1) if r["skel"] else 1
 
     uniq_stage = len({r["body"] for r in rows if r["realm"] == "STAGE"})
+    sdk_n = sum(1 for r in rows if r["realm"] == "SDK")
     engine_n = sum(1 for r in rows if r["realm"] == "ENGINE")
     unsplit_n = sum(1 for r in rows if r['state'] == 'UNSPLIT')
     # Name every numerator, like every denominator. A bare "matched" is how the two
@@ -286,7 +297,7 @@ def build():
                        if r["realm"] == "STAGE" and r["state"] == "MATCHED"})
     return rows, dict(engine_total=engine_n, unsplit_engine=unsplit_n,
                       stage_instances=sum(1 for r in rows if r["realm"] == "STAGE"),
-                      stage_unique=uniq_stage, whole_game=engine_n + uniq_stage,
+                      stage_unique=uniq_stage, sdk_total=sdk_n, whole_game=engine_n + uniq_stage + sdk_n,
                       engine_matched=eng_matched, stage_matched=stg_matched,
                       stage_matched_instances=stg_matched_inst,
                       matched_total=eng_matched + stg_matched)
@@ -312,6 +323,7 @@ def render(rows, s):
     A("|---|---|---|---|")
     A(f"| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **{s['engine_total']:,}** | **{s['engine_matched']}** ({pct(s['engine_matched'], s['engine_total'])}) |")
     A(f"| **STAGES** | 37 code archives (168 more are asset-only). {s['stage_instances']:,} copies of {s['stage_unique']:,} unique bodies. | **{s['stage_unique']:,}** | **{s['stage_matched']}** ({pct(s['stage_matched'], s['stage_unique'])}) |")
+    A(f"| **SDK** | Sony PSY-Q library linked into the exe (`asm/rock_neo/psxsdk/code.s`). NOT Capcom code — matchable from published source, a cheaper class of work. | **{s['sdk_total']:,}** | 0 |")
     A(f"| **WHOLE GAME** | | **{s['whole_game']:,}** | **{s['matched_total']}** ({pct(s['matched_total'], s['whole_game'])}) |")
     A("")
 
