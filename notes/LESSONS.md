@@ -1367,3 +1367,23 @@ defect is a *denominator set by what a glob matches rather than by the binary*.
 **When a count moves in a way you did not cause, or fails to move when you did cause it,
 suspect the glob before the code.** And prefer failing loudly over quiet dedupe: a silent
 correction hides the config error that produced it.
+- **Source order for a store pair can follow ASCENDING field offset even when the target
+  stores DESCENDING — the scheduler does the swap; source order only picks the register.**
+  ST0C func_801091B4 emits `sh -1,0x1E` before `sh v1,0x1C`, so writing `x1E = -1;` first
+  looks right — it gives 9 hard, because the `lhu` lands in `$v0`, collides with the `-1`
+  constant, and a load-delay `nop` appears (13 words vs 12). Writing them in field order
+  (x1C then x1E) puts the `lhu` in `$v1`, lets it hoist above the `addiu -1`, and the
+  scheduler reorders the two `sh`s itself. An `s16` or `s32` temp for the loaded value is
+  also wrong (7 hard) — it loads too early. **The register split is the tell, not the
+  store order.**
+- **A constant-materialising assignment placed FIRST in an if-body gets stolen into the
+  guarding branch's delay slot; a store-first body forces the `nop`.** ST03 func_8010F878
+  (near-twin of func_8010C37C): `work->step = 0x14;` must come LAST, because as the first
+  statement the `li 0x14` is delay-slot-safe on the taken path and collapses a word, while
+  func_8010C37C's timer store in the same position is NOT safe and stays put. So "which
+  statement goes first" is decided by whether that statement is delay-slot-safe — not
+  simply by which store you want sunk.
+- Corollary measured on the same function: `r = rand(); … (angle + 0x7D0 + (r & 0x3F))` is
+  byte-identical to the fully inline form, but hoisting the mask into the temp
+  (`r = rand() & 0x3F`) is NOT (4 hard) — the `& 0x3F` has to stay inside the sum so the
+  `andi` lands after the `li`.

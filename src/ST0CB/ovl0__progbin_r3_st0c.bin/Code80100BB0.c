@@ -37,7 +37,9 @@ typedef struct WORK {
     s16     targetAngle;         /* 0x064 */
     u8      pad66[0xA7 - 0x66];
     s8      xA7;                 /* 0x0A7 signed state flag */
-    u8      padA8[0x350 - 0xA8];
+    u8      padA8[0x328 - 0xA8];
+    s16     x328;                /* 0x328 stepped/clamped angle output */
+    u8      pad32A[0x350 - 0x32A];
     s16     x350;                /* 0x350 countdown timer / turn rate */
     s16     homeAngle;           /* 0x352 */
     PosXYZ  homePos;             /* 0x354 */
@@ -119,6 +121,27 @@ typedef struct ENTITY_WORK {
     ENTITY_FUNCS  *funcs;        /* 0x0A4 */
 } ENTITY_WORK;
 
+typedef struct EFFECT_REQ {
+    u8      x0;                  /* 0x000 effect kind */
+    u8      pad1;
+    u8      x2;                  /* 0x002 sub-kind / flags */
+    u8      x3;                  /* 0x003 parameter */
+    u8      pad4[0x1C - 0x4];
+    s16     x1C;                 /* 0x01C X */
+    s16     x1E;                 /* 0x01E Y (-1 = use default) */
+    s16     x20;                 /* 0x020 Z */
+    u8      pad22[0x38 - 0x22];
+    PosXYZ  pos;                 /* 0x038 */
+} EFFECT_REQ;
+
+typedef struct SCE_TBL {
+    u32  num;
+    u8  *list;
+} SCE_TBL;
+
+void func_8001DF10(SCE_TBL *st);
+extern SCE_TBL D_8010CB40;
+
 u8  pad0[0x4];
 void func_80103AB0(s32 idx);
 void func_80101B70(void);
@@ -197,7 +220,12 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80100ED4);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80100F58);
+void func_80100F58(EVE_WORK *evp) {
+    if (evp->x4 == 0) {
+        func_8001DF10(&D_8010CB40);
+        evp->x4 = 0xFF;
+    }
+}
 
 void func_80100FA4(EVE_WORK *evp) {
 }
@@ -644,9 +672,29 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801086E8);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80108740);
+void func_80108740(WORK *work, s16 want, s16 cur) {
+    s32 diff;
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80108784);
+    diff = want - cur;
+    if (diff < 0) {
+        diff = -diff;
+    }
+    if (diff >= 0x21) {
+        work->x328 = (cur < want) ? want + 0x20 : want - 0x20;
+    }
+}
+
+void func_80108784(WORK *work, s16 want, s16 cur) {
+    s32 diff;
+
+    diff = want - cur;
+    if (diff < 0) {
+        diff = -diff;
+    }
+    if (diff >= 0x21) {
+        work->x328 = (cur < want) ? want - 0x20 : want + 0x20;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801087C8);
 
@@ -672,9 +720,24 @@ INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80109108);
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_80109174);
+void func_80109174(WORK *work, EFFECT_REQ *req) {
+    req->x0 = 7;
+    req->x2 = 0x80;
+    req->x3 = 0x42;
+    req->pos = work->pos;
+}
 
-INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801091B4);
+void func_801091B4(WORK *work, EFFECT_REQ *req) {
+    req->x0 = 3;
+    req->x2 = 0x83;
+    req->x3 = 0;
+    /* Field order (x1C then x1E) is load-bearing even though the target STORES
+     * x1E first -- the scheduler does that swap; source order decides which
+     * register the lhu gets. See LESSONS. */
+    req->x1C = work->pos.x;
+    req->x1E = -1;
+    req->x20 = work->pos.z;
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST0CB/../../../asm/ST0CB/ovl0__progbin_r3_st0c.bin/nonmatchings/Code80100BB0", func_801091E4);
 

@@ -43,6 +43,36 @@ extern s32  func_80048C60(void *);
 extern s32  Sce_flag_test(s32);
 extern u8   D_800B51C4[];
 
+/* A third genus in this cluster: the boss/enemy work struct. Kept separate from
+ * ENEMY_WORK above because its `step` is at 0x9 (not 0xB) and its targetAngle is
+ * at 0x34A (not 0x66) -- merging would silently move fields. */
+typedef struct BOSS_WORK {
+    u8      pad0[0x8];
+    u8      routine;             /* 0x008 top-level state */
+    u8      step;                /* 0x009 sub-state */
+    u8      phase;               /* 0x00A intro/spawn phase counter */
+    u8      padB[0x14 - 0xB];
+    s16     pos[4];              /* 0x014 position (passed by address) */
+    u8      pad1C[0x46 - 0x1C];
+    s16     pitch;               /* 0x046 */
+    u8      pad48[0x56 - 0x48];
+    s16     angle;               /* 0x056 facing (12-bit) */
+    u8      pad58[0x66 - 0x58];
+    s16     targetPitch;         /* 0x066 */
+    u8      pad68[0xAC - 0x68];
+    u8      flags;               /* 0x0AC */
+    u8      padAD[0x348 - 0xAD];
+    u16     timer;               /* 0x348 frame counter (u16: andi+sltiu) */
+    s16     targetAngle;         /* 0x34A */
+    s16     wobble;              /* 0x34C odd 1..0x7F */
+} BOSS_WORK;
+
+extern void *func_80049C24(void);
+extern void  func_80037BB4(BOSS_WORK *);
+extern void  func_80037738(void *, s32);
+extern void  Sce_flag_on(s32);
+extern void  Sound_call2(s32, s16 *);
+
 void func_8010C37C(ENEMY_WORK *work, s32 enable) {
     if (enable) {
         work->timer++;
@@ -83,7 +113,12 @@ INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_S
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010C934);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010C954);
+void func_8010C954(BOSS_WORK *work) {
+    if (work->phase == 0) {
+        work->phase++;
+        work->flags = 0;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010C974);
 
@@ -155,7 +190,11 @@ INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_S
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010E820);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010E8FC);
+void func_8010E8FC(BOSS_WORK *work) {
+    work->wobble = (rand() & 0x7F) | 1;
+    work->pitch = (rand() & 0xF) + 8;
+    work->targetPitch = (rand() & 0xF) - 8;
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010E950);
 
@@ -169,7 +208,10 @@ INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_S
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010F060);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010F238);
+void func_8010F238(BOSS_WORK *work) {
+    work->routine = 1;
+    work->step = 0;
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010F248);
 
@@ -181,7 +223,19 @@ INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_S
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010F7EC);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010F878);
+void func_8010F878(BOSS_WORK *work, s32 enable) {
+    if (enable) {
+        work->timer++;
+        if (work->timer >= 0x3D) {
+            work->timer = 0;
+            /* Flat, left-to-right, constant in the MIDDLE (see LESSONS). */
+            work->targetAngle = (work->angle + 0x7D0 + (rand() & 0x3F)) & 0xFFF;
+            /* Must come LAST: placed first, the `li 0x14` is delay-slot-safe and
+             * gets stolen into the guarding bnez, costing a word. */
+            work->step = 0x14;
+        }
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010F8E8);
 
@@ -260,7 +314,17 @@ INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_S
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_80111930);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_80111A50);
+void func_80111A50(BOSS_WORK *work) {
+    void *obj = func_80049C24();
+
+    if (obj != 0) {
+        func_80037BB4(work);
+        func_80037738(obj, 0x8000);
+        Sce_flag_on(0x30);
+        Sce_flag_on(0x31C);
+        Sound_call2(0x17F, work->pos);
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03B/../../../asm/ST03B/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_80111ABC);
 
