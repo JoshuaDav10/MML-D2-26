@@ -1,3 +1,8 @@
 #include "common.h"
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800333A0", func_800333A0);
+extern u8 D_800BC728[];
+extern u8 *D_80098A80;
+
+void func_800333A0(void) {
+    D_80098A80 = D_800BC728;
+}

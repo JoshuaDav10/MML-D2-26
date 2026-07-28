@@ -60,7 +60,11 @@ func, ref_path, obj_path = sys.argv[1:4]
 
 word_re = re.compile(r"/\*\s+[0-9A-Fa-f]+\s+[0-9A-Fa-f]+\s+([0-9A-Fa-f]{8})\s+\*/")
 reloc_re = re.compile(
-    r"%hi|%lo|\bjal\b|\bj\b|\bbeq\b|\bbne\b|\bble\b|\bbgt\b|\bblt\b|\bbge\b|"
+    # %gp_rel added 2026-07-29: R_MIPS_GPREL16 slots were counted as HARD
+    # mismatches, so any gp-heavy function reported a false failure (two agents
+    # hit this independently on func_800665E8 / func_80039DE8; both were proven
+    # correct by linking at real VRAM with _gp=0x80097864).
+    r"%hi|%lo|%gp_rel|\bjal\b|\bj\b|\bbeq\b|\bbne\b|\bble\b|\bbgt\b|\bblt\b|\bbge\b|"
     r"\bbeql\b|\bbnel\b|\bbgtl\b|\bbltl\b|\bbgel\b|\bbgtz\b|\bblez\b|"
     r"\bbgtzl\b|\bblezl\b|\bbnezl\b|\bbeqzl\b|\bb\b|\bbal\b|"
     r"\bbranch\b|\b\.L[0-9A-Fa-f]+\b",

@@ -1,3 +1,7 @@
 #include "common.h"
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code800354E0", func_800354E0);
+extern u32 D_80098798;
+
+void func_800354E0(s32 arg0) {
+    D_80098798 &= ~(0x80000000 >> arg0);
+}

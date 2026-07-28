@@ -10,10 +10,10 @@ is what produced a completion figure ~16x too high for months.
 
 | realm | what it is | functions | done |
 |---|---|---|---|
-| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **381** (34.0%) |
+| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **404** (36.1%) |
 | **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | **12** (0.2%) |
 | **SDK** | Sony PSY-Q library linked into the exe (`asm/rock_neo/psxsdk/code.s`). NOT Capcom code — matchable from published source, a cheaper class of work. | **446** | 0 |
-| **WHOLE GAME** | | **8,629** | **393** (4.6%) |
+| **WHOLE GAME** | | **8,629** | **416** (4.8%) |
 
 ## States
 
@@ -23,9 +23,9 @@ once covers every copy.*
 
 | state | realm | meaning | functions | (raw instances) |
 |---|---|---|---|---|
-| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **393** | — |
-| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 180 | — |
-| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 558 | — |
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **416** | — |
+| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 159 | — |
+| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 556 | — |
 | `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 10,095 |
 | | | **total distinct functions in the game** | **8,629** | |
 
@@ -64,7 +64,7 @@ once covers every copy.*
 | `2A3BC.s` | 6 | 0 | 0 | 6 |
 | `2A618.s` | 30 | 0 | 0 | 30 |
 | `32A38.s` | 9 | 0 | 0 | 9 |
-| `32F34.s` | 10 | 0 | 0 | 10 |
+| `32F70.s` | 9 | 0 | 0 | 9 |
 | `33BFC.s` | 8 | 0 | 0 | 8 |
 | `34600.s` | 2 | 0 | 0 | 2 |
 | `34770.s` | 3 | 0 | 0 | 3 |
@@ -109,23 +109,23 @@ once covers every copy.*
 | `52C0.s` | 4 | 0 | 0 | 4 |
 | `543A8.s` | 29 | 0 | 0 | 29 |
 | `56DFC.s` | 2 | 0 | 0 | 2 |
-| `56F14.s` | 13 | 0 | 0 | 13 |
+| `56F50.s` | 12 | 0 | 0 | 12 |
 | `5864C.s` | 2 | 0 | 0 | 2 |
 | `5C28.s` | 1 | 0 | 0 | 1 |
 | `77D4.s` | 43 | 0 | 0 | 43 |
-| `src/rock_neo` | 561 | 381 | 180 | 0 |
+| `src/rock_neo` | 563 | 404 | 159 | 0 |
 
 ### Engine work pools (not yet MATCHED)
 
 | pool | count |
 |---|---|
-| ≤10 instructions | 63 |
-| ≤20 instructions | 142 |
-| ≤30 instructions | 217 |
-| ≤50 instructions | 323 |
-| ≤120 instructions | 528 |
-| leaf (calls nothing) | 285 |
-| in a family of ≥2 (template transfers) | 137 |
+| ≤10 instructions | 52 |
+| ≤20 instructions | 119 |
+| ≤30 instructions | 194 |
+| ≤50 instructions | 300 |
+| ≤120 instructions | 505 |
+| leaf (calls nothing) | 270 |
+| in a family of ≥2 (template transfers) | 134 |
 | >120 instructions (**nothing this big has ever matched**) | 210 |
 
 ## Stages — where the volume is

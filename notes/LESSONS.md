@@ -1204,3 +1204,46 @@ silently hand you a poisoned tree.
 **Worth trying next:** build with debug off to see whether the delta vanishes; check
 whether `-fverbose-asm` or the `.comment` section carries the command line; try a worktree
 whose path is not merely the same length but sorts identically in the string table.
+
+## 2026-07-29 (Opus, +41 batch: dispatchers + Tier A singles) — hash-gated
+
+- **`p[0]` aliases globals but `p[1..]` does not — GCC 2.7 `MEM_IN_STRUCT_P`.**
+  In `expand_expr`'s INDIRECT_REF case cc1-27 sets `MEM_IN_STRUCT_P` when the address
+  is a `PLUS_EXPR`, so `p[0]` gets `in_struct=0` while `p[1]`/`p[2]`/… get `in_struct=1`.
+  GCC 2.x `true_dependence` then rules "one ref in-struct with a varying address vs one
+  not-in-struct with a constant address ⇒ cannot conflict", so loads of scalar externs
+  hoist above the `p[1..]` stores but NOT above the `p[0]` store — batching the loads and
+  sinking the stores (14 words instead of the target's strictly serialised 16).
+  **Fix: give the LOADS the unsized-array spelling** (`extern u8 SYM[]; … = SYM[0];`).
+  That sets `MEM_IN_STRUCT_P=1` on the load with a still-constant address, defeating the
+  disambiguation the other way and pinning the order. With a constant index the addressing
+  bytes are unchanged (`lui %hi` + `lbu/lhu %lo`, zero addend).
+  **So the array spelling is an ALIASING knob, not only an addressing knob** — a second,
+  independent reason to reach for it beyond READ FIRST §1's address-materialisation rule.
+  (func_80036B00.)
+- **Flag in `$v1` ⇒ two `return`s; flag in `$v0` ⇒ one accumulator.** The
+  single-accumulator form (`s32 v = 0; if (f) v = X; return v;`) and the early-return form
+  (`if (!f) return 0; return X;`) are NOT interchangeable, despite two drafts calling them
+  "the same genus". When the accumulator loses `$v0` to the flag it costs a trailing
+  `move $v0,$v1` in the `jr` delay slot. Read which register the flag load targets and
+  pick the shape to match. (func_80039B80 early-return vs func_8005D938.)
+- **`tools/bytecmp.sh` scored `%gp_rel` as a HARD mismatch** (its `reloc_re` had
+  `%hi|%lo|jal|j|b*` but not `%gp_rel`), so every gp-relative store produced a false
+  failure. Three agents hit it independently in one session and six good functions were
+  nearly discarded. Fixed 2026-07-29. **Verification pattern worth reusing:** link the
+  scratch `.o` at its real VRAM with `_gp = 0x80097864` (`rock_neo.ld`) plus real symbol
+  values, `objcopy -O binary`, and diff against the splat comment column. That check is
+  strictly stronger than bytecmp — it also validates `%hi`/`%lo` carry arithmetic, which
+  bytecmp skips entirely.
+- **`phase0_split.py` cannot split a function that starts exactly ON an existing segment
+  boundary** — it reports `SKIP … already at a segment boundary` and does nothing. The
+  conversion is still trivial by hand: change `- [OFF, asm]` to `- [OFF, c, CodeADDR]` and
+  insert `- [OFF+size, asm]` after it (the rest of that raw chunk keeps building as asm).
+  Recovered func_80042734 and func_80066714 this way.
+- **A SKIP also leaves a PHANTOM `.c` behind** (the tool writes the file before the yaml
+  insert). Delete it immediately — census counts it, the linker never references it, and
+  the hash stays green because the original bytes shipped.
+- **Auto-derive the template parameters from the target asm, don't transcribe them.**
+  A generator that parsed each dispatcher's own asm for load type / index offset / table
+  symbol got 17/18 first try, and the 18th exposed a documented-but-wrong note
+  (func_800153EC is a TWO-arg call — the computed address lands in `$a1`, not `$a0`).
