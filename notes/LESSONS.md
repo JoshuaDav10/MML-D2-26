@@ -1282,3 +1282,28 @@ checked for collisions against all 466 normal-order symbols (zero false positive
 reg-first symbols uncovered), then regression-tested with a forced full recompile.
 **If a function mismatches ONLY in an `addu $at` operand order, add its prefix here — no
 C shape can fix it.**
+
+## 2026-07-29 (stage/ST03 high-duplicate cluster) — hash-gated on both twins
+
+- **`tools/tryfn.sh` (and therefore `tools/bytecmp.sh`) was missing `-mel`.** The Makefile
+  has passed it forever (line 25) because cc1-27 defaults to BIG-endian for UNALIGNED
+  access; without it `lwl`/`lwr` and `swl`/`swr` carry swapped byte offsets. So the scratch
+  harness silently disagreed with the real build for any function containing an unaligned
+  struct copy — ST03 `func_80108648` reported **8 phantom hard mismatches on correct C**.
+  Fixed 2026-07-29 (0 mismatches after). **Any scratch harness must be flag-identical to
+  the Makefile; when they drift, the harness lies in both directions.**
+  Note this is a second instance of the same class as the `%gp_rel` bug found the same day.
+- **A 2-byte-aligned struct member is what produces `lwl/lwr` + `swl/swr`.** ST03's
+  `PosXYZ {s16 x,y,z,unk6}` at offset 0x14 copied whole (`w->pos = w->homePos;`) emits the
+  unaligned pair, not `lw`/`sw`. If you see lwl/lwr, look for a whole-struct assignment of
+  a 2-aligned struct — not for hand-written byte shuffling.
+- **`lh` vs `lhu` is NOT a signedness signal on the field.** In this file every 16-bit
+  field is `s16`, and cc1-27 picks `lhu` whenever the loaded value is only consumed by
+  truncating arithmetic (a 16-bit store, a byte store, an `andi`) and `lh` when the full
+  value matters (a zero test, or an argument needing sign extension). The same field
+  (`angle`, 0x56) appears as both. Chasing `lhu` into a `u16` declaration is a trap.
+  Contrast with the *other* rule that IS a signedness signal: a 16-bit value tested after
+  arithmetic gives `sll 16` for s16 vs `andi 0xffff` for u16.
+- **`w->a = expr; w->b = w->a;` and `w->b = w->a = expr;` are not interchangeable.**
+  func_80108828 needed the two-statement form; the chained form ordered the two
+  source-value loads differently and swapped `$v0`/`$v1`.
