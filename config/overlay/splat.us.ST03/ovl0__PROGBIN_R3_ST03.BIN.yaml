@@ -38,5 +38,11 @@ segments:
       # first fn func_80101064 -> 0x1864; last fn func_801018F8 +0x20 -> 0x2118.
       - [0x1864, c, Code80101064]
       - [0x2118, asm]
+      # High-duplicate cluster: 64 functions, ZERO jump tables (so this C file
+      # emits no .rodata and the "C rodata must be a text suffix" rule does not
+      # bite). Contains the 14 most-copied bodies in the game -- func_80107F3C
+      # alone has 144 copies across 33 archives.
+      - [0x873C, c, Code80107F3C]
+      - [0xAD94, asm]
       - [0x14AE8, data]
   - [0x1D370]
