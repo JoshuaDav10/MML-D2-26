@@ -11,9 +11,9 @@ is what produced a completion figure ~16x too high for months.
 | realm | what it is | functions | done |
 |---|---|---|---|
 | **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **407** (36.4%) |
-| **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | **12** (0.2%) |
+| **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | **35** (0.5%) |
 | **SDK** | Sony PSY-Q library linked into the exe (`asm/rock_neo/psxsdk/code.s`). NOT Capcom code — matchable from published source, a cheaper class of work. | **446** | 0 |
-| **WHOLE GAME** | | **8,629** | **419** (4.9%) |
+| **WHOLE GAME** | | **8,629** | **442** (5.1%) |
 
 ## States
 
@@ -23,10 +23,10 @@ once covers every copy.*
 
 | state | realm | meaning | functions | (raw instances) |
 |---|---|---|---|---|
-| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **419** | — |
-| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 159 | — |
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **481** | — |
+| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 161 | — |
 | `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 553 | — |
-| `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 10,095 |
+| `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 10,031 |
 | | | **total distinct functions in the game** | **8,629** | |
 
 > Moving `UNSPLIT -> STUB` is a *split*: bookkeeping, **not progress**. Only

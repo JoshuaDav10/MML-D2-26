@@ -33,5 +33,10 @@ segments:
     subsegments:
       - [0x800, rodata]
       - [0xCBC, asm]
+      # 32-function run, all <=30 insns, NO rodata/jump tables in range.
+      # rom = vram - 0x800FF800 (overlay constant; the main exe uses 0x8000F800).
+      # first fn func_80101064 -> 0x1864; last fn func_801018F8 +0x20 -> 0x2118.
+      - [0x1864, c, Code80101064]
+      - [0x2118, asm]
       - [0x14AE8, data]
   - [0x1D370]

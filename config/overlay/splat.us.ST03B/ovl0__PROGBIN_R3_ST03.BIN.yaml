@@ -33,5 +33,9 @@ segments:
     subsegments:
       - [0x800, rodata]
       - [0xCBC, asm]
+      # Mirror of ST03: the code chunk is byte-identical to ST03's, so the same
+      # C matches here. rom = vram - 0x800FF800.
+      - [0x1864, c, Code80101064]
+      - [0x2118, asm]
       - [0x14AE8, data]
   - [0x1D370]
