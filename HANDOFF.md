@@ -17,40 +17,51 @@
 `tools/sync_docs.sh` and byte-diffed by `tools/check_docs.sh`. Never hand-type a count
 into this file; the stale table that used to sit here said 282 long after it was 301.
 
-> **Always name WHICH denominator.** `/505` = C-slice · `/1119` = main exe (invariant) ·
-> `/~8183` = whole game. A *split* MOVES a function between buckets — it is bookkeeping,
+> **Always name WHICH denominator.** `/566` = C-slice · `/1119` = main exe (invariant) ·
+> `/~8629` = whole game. A *split* MOVES a function between buckets — it is bookkeeping,
 > not progress. Only a rise in **matched** counts.
+>
+> **Stage counting has TWO honest numbers and they are both real:** *unique bodies* (the
+> headline, 106) and *function instances* (449). Transplanting a solved body into a new
+> archive adds instances but **zero** unique bodies — say which one you mean, and do not
+> present instance growth as headline growth.
 
-> ## ⭐ NEXT SESSION — goal is MATCHES; skip the meta
-> **The work queue already exists: `notes/wip/lane_b_drafts.md`.** An agent ran m2c over
-> all 244 unmatched engine functions ≤30 insns and wrote ~95 cleaned C drafts in four
-> confidence tiers. **Tier S is spent (+13 landed 2026-07-28); Tier A is 47 drafts and
-> untouched.** Raw m2c output for all 244 is in `notes/wip/lane_b_artifacts/`.
+> ## ⭐ NEXT SESSION — the stage duplicate lane is the live one
+> **Highest leverage now: keep opening stage archives and transplanting solved bodies.**
+> Six archives are wired (ST03/ST03B, ST0C/ST0CB/ST0CC, ST10/ST10B, plus ST1A/eve19).
+> `tools/dups.py` ranks the rest; the "already" column is free work waiting.
 >
-> **How to land a batch** (this is the loop that produced +13):
-> ```
-> tools/phase0_split.py func_A func_B ...      # ascending address order
-> # DELETE the .c of anything it reports SKIP — the tool writes the file before the
-> # yaml insert, so a skipped insert leaves a compiled-but-unlinked PHANTOM behind
-> python3 tools/splat/split.py config/splat.us.rock_neo.yaml
-> # apply the cleaned C, then compile-probe each file and stub any that fail
-> make CPP=cpp check_rock_neo_only        # must print OK
-> tools/audit_count.sh                    # the count must RISE; nothing is claimed until it does
-> make CPP=cpp chunks                     # audit_count deletes the overlay BINs
-> ```
-> Two of my own bugs to avoid repeating: drafts for PAIRED sections ("S13/S14") share one
-> code block, so naively writing it to both files defines each function twice; and stripping
-> the unwanted function can orphan an `extern` that sat between the two.
+> The compounding is real and measured: ST0C's free-win count went **8 → 69** purely
+> because of ST03 work, with no new matching effort. Rank, open, transplant, repeat.
 >
-> **Other ready work, in value order:**
-> - **ST03 conversion** — recipe in `notes/wip/lane_c_st03.md`; ST03 == ST03B verified by
->   hash, so converting one gives its twin free. This is the test of whether the stage
->   shortcut is real: 1,331 unmatched functions share a shape we have already solved, and
->   almost all of them are in stage files.
-> - **Rename 37 SDK functions today** — `notes/wip/lane_a_library.md` byte-identified 187
->   psxsdk addresses; 21 names are unambiguous. Free readability, no matching required.
-> - `func_80032488` (3 rows) and `Sub_screen_status_calc` (82 rows) are parked with their
->   closed levers written down. Read the notes before retrying either.
+> **Recipe for opening an archive** (proven 4x this session):
+> ```
+> # 1. confirm twins: sha1 the code chunk of each candidate (ST03==ST03B, ST0C==ST0CB==ST0CC,
+> #    ST10==ST10B, ST04==ST04B, ST11==ST11B) -- one C file then serves 2-3 archives
+> # 2. edit the yaml: turn the bulk `- [OFF, asm]` text subsegment into
+> #      - [OFF, c, Code<VRAM>]
+> #    for the WHOLE text. rom = vram - 0x800FF800 (overlay constant; main exe is 0x8000F800)
+> # 3. mirror the SAME edit into every twin's yaml, refresh generated syms, re-split each
+> # 4. DELETE the stale bulk OFF.s splat leaves behind -- gen_map now FAILS if you forget
+> # 5. build stubs only and prove byte-identical BEFORE writing any C:
+> #      make CPP=cpp chunks ; echo $?     # READ THE EXIT CODE
+> #      cmp build/<A>.BIN disks/us/CDDATA/DAT/<A>.BIN
+> # 6. transplant: for each function whose body hash is already MATCHED, paste the solved
+> #    body renamed, and RE-VERIFY each against THIS archive's own asm with bytecmp
+> # 7. after landing: tools/checksizes.py, then chunks + cmp + check_overlays
+> ```
+>
+> **Landing checklist (each step caught a real bug this session):**
+> - `bytecmp` per function BEFORE landing — and AGAIN after, if you adapted anything.
+> - `tools/checksizes.py <built.o> <nonmatchings-dir>` — catches dropped code instantly.
+> - `make CPP=cpp chunks` **exit code**, not just `check_overlays` (a failed chunks leaves
+>   stale BINs and check_overlays then passes on them).
+> - `cmp` each twin against the disc.
+>
+> **Also ready:** ~20 Tier A engine drafts remain in `notes/wip/lane_b_drafts.md`
+> (Tier S spent, most of Tier A landed 2026-07-29). The four-parallel-read-only-agent
+> pattern worked well: agents draft+verify in /tmp with a unique `BYTECMP_OBJ`, the main
+> thread lands serially behind the build gate. 21/21 and 10/10 on two waves.
 
 > ## ⚠️ LANDMINES — read before touching the build
 > **1. splat offsets.** `rom_offset = vram - 0x8000F800`, NOT `- 0x80010000` (a 0x800
@@ -68,11 +79,50 @@ into this file; the stale table that used to sit here said 282 long after it was
 > **build-gated work must stay in the main tree.** Read-only agents in parallel are fine and
 > productive — that is how the three analysis lanes were produced.
 >
+> **5. cc1-27 ACCEPTS AN UNKNOWN STRUCT MEMBER.** `-lang-c` keeps the pre-ANSI global
+> member namespace, so `work->x328` compiles even when `WORK` has no such field — it
+> resolves against some other struct and the body can be **eliminated entirely**. Two
+> functions silently became 2 words (an empty body) while `make chunks` exited 0. Never
+> dedupe typedefs by NAME across files; use distinct names or assert the field exists.
+> **A function that builds to 2 words had its body eliminated** — that is the fingerprint.
+>
+> **6. A STALE BULK `.s` DOUBLE-COUNTS EVERY FUNCTION.** Turning `- [OFF, asm]` into
+> `- [OFF, c, Name]` makes splat write the new `nonmatchings/*.s` but NOT delete the old
+> `OFF.s`. `gen_map`'s recursive glob then sees everything twice (645 phantom rows on the
+> ST0C triplet; 34 real C functions reported as 68). The headline unique-BODY count was
+> unaffected, so no gate saw it. **`gen_map` now FAILS LOUDLY** on duplicate
+> `(archive, function)` keys — delete the stale file it names.
+>
+> **7. SCRATCH HARNESSES MUST BE FLAG-IDENTICAL TO THE MAKEFILE.** `tools/tryfn.sh` (used
+> by `bytecmp.sh`) was missing `-mel`, so it disagreed with the real build on any unaligned
+> struct copy — 8 phantom mismatches on correct C. Also fixed: `bytecmp`'s reloc regex
+> omitted `%gp_rel`, scoring every gp-relative store as a hard mismatch. **When the harness
+> and the build disagree, the harness lies in BOTH directions.**
+>
 > **4. A DENOMINATOR BUG SURVIVED UNTIL 2026-07-28.** `gen_map` globbed `asm/rock_neo/*.s`,
 > which does not descend into subdirectories, so `asm/rock_neo/psxsdk/code.s` — **446
 > functions, genuinely linked** — was invisible to every count this project ever produced.
 > Whole game 8,183 → **8,629**. Same class as the 484-vs-1119 scandal, found by an agent
 > rather than by any gate. When a number looks stable, ask what the glob cannot see.
+
+> ## ✅ WHAT 2026-07-29 DID (all hash-gated, 20 commits pushed)
+> **Engine 363 → 407** (+44): the 20-function jalr-dispatcher family on a template already
+> proven twice in the tree, 21 Tier A singles via four parallel read-only agents, and 3
+> functions that were **unmatchable from any C source** until the ASPSX prefix table was
+> completed from a census (52 reg-first sites / 21 symbols; the tuple had 5).
+> **Stage 12 → 106 unique bodies / 449 real function instances across 8 archives**: opened
+> ST03+twin, the ST0C triplet, and ST10+twin, chose work by COPY COUNT rather than address
+> order, and transplanted solved bodies between archives.
+>
+> **Four tool bugs fixed, every one of which had been silently distorting results** — see
+> landmines 5-7 plus the ASPSX table. New tools: `tools/checksizes.py` (per-function word
+> count vs reference; localised two transcription bugs no other gate caught) and
+> `tools/structdiff.py`. New LESSONS entries: ~20, all measured not guessed, including a
+> four-way decision table for conditional-return shapes.
+>
+> **Method note worth keeping:** auto-deriving template parameters from each function's own
+> asm beat transcribing them from write-ups — 17/18 and 25/32 first-pass, and every miss was
+> an error in the notes, not the code.
 
 > ## 📋 THE PLAN → `notes/NEXT_STEPS.md`
 > Template leverage lives in the STAGE files (1,331 functions) not the engine (32), so
