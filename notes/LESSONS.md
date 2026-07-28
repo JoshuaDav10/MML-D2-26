@@ -1330,3 +1330,16 @@ C shape can fix it.**
   in $v0 with `addu $v0,$zero,$zero` in the delay slot. The accumulator and `&&` forms
   put the accumulator in $a2 and cost a trailing `move`; goto and two-return forms cost
   an extra `j`. (Fourth distinct conditional-return shape — see the decision table.)
+- **A three-term sum must stay FLAT and left-to-right, with the constant in the middle.**
+  ST03 func_8010C37C: `(work->angle + 0x7D0 + (rand() & 0x3F))` matches;
+  `work->angle + ((rand() & 0x3F) + 0x7D0)` attaches the `addiu 0x7D0` to the ANGLE
+  register instead of the call-result register — 5 hard mismatches. Distinct from the
+  existing parenthesisation/reassociation notes: here both forms are the same tree shape
+  to a human, and what moves is which operand the constant folds into. Statement order also
+  mattered (timer / angle / routine): putting the routine store first sinks it into the
+  `jal` delay slot (17 hard).
+- **Only a struct member's OFFSET matters for codegen when it is merely passed by address.**
+  Merging several handlers' views into one typedef, an identifier block at 0x38 declared
+  `[0x10]` overlapped a real field at 0x46. Declaring it `[0x8]` matched byte-for-byte —
+  the asm only does `addiu $a0,$work,0x38`. Shrink such blocks freely to keep a merged
+  struct consistent; do NOT widen them and shift later fields.

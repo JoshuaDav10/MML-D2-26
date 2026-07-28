@@ -16,11 +16,58 @@
 void func_800318D8(void);
 void func_80031988(void);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010C37C);
+/* Merged from the three handlers in this cluster. NOTE: the 0x38 identifier
+ * block is declared 8 bytes, not 0x10 -- only its OFFSET matters for codegen
+ * (it is just passed as a pointer), and 0x10 would overlap unk46 at 0x46. */
+typedef struct ENEMY_WORK {
+    u8      pad0[0x8];
+    u8      routine;             /* 0x008 */
+    u8      pad9[0xB - 0x9];
+    u8      step;                /* 0x00B */
+    s8      timer;               /* 0x00C frame counter */
+    u8      padD[0x38 - 0xD];
+    u8      name[0x8];           /* 0x038 identifier block (passed by address) */
+    u8      pad40[0x46 - 0x40];
+    s16     unk46;               /* 0x046 */
+    u8      pad48[0x54 - 0x48];
+    s16     speed;               /* 0x054 clamped to 0x400 */
+    s16     angle;               /* 0x056 facing (12-bit) */
+    u8      pad58[0x66 - 0x58];
+    s16     targetAngle;         /* 0x066 */
+} ENEMY_WORK;
+
+extern s32  rand(void);
+extern void func_80032538(ENEMY_WORK *);
+extern void func_800334C4(ENEMY_WORK *);
+extern s32  func_80048C60(void *);
+extern s32  Sce_flag_test(s32);
+extern u8   D_800B51C4[];
+
+void func_8010C37C(ENEMY_WORK *work, s32 enable) {
+    if (enable) {
+        work->timer++;
+        if (work->timer >= 0x3D) {
+            work->timer = 0;
+            /* The three summands must stay FLAT and left-to-right with the
+             * constant in the middle -- parenthesising the rand term attaches
+             * the addiu to the angle register instead. See LESSONS. */
+            work->targetAngle = (work->angle + 0x7D0 + (rand() & 0x3F)) & 0xFFF;
+            work->routine = 8;
+        }
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010C3F0);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010C460);
+void func_8010C460(ENEMY_WORK *work) {
+    work->unk46 += 4;
+    work->speed += 0x20;
+    if (work->speed > 0x400) {
+        work->speed = 0x400;
+    }
+    func_80032538(work);
+    func_800334C4(work);
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8010C4C4);
 
@@ -266,4 +313,11 @@ INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST0
 
 INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_80112FF4);
 
-INCLUDE_ASM("config/overlay/splat.us.ST03/../../../asm/ST03/ovl0__PROGBIN_R3_ST03.BIN/nonmatchings/Code8010C37C", func_8011311C);
+void func_8011311C(ENEMY_WORK *work) {
+    if (func_80048C60(work->name) == func_80048C60(D_800B51C4)) {
+        if (!Sce_flag_test(0x7B1)) {
+            work->routine++;
+            work->step = 0;
+        }
+    }
+}

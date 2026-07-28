@@ -38,6 +38,10 @@ segments:
       # first fn func_80101064 -> 0x1864; last fn func_801018F8 +0x20 -> 0x2118.
       - [0x1864, c, Code80101064]
       - [0x2118, asm]
+      # 7 functions; 2 use jump tables and stay INCLUDE_ASM. Holds the two
+      # 34-copy per-entity "act" trampolines.
+      - [0x5340, c, Code80104B40]
+      - [0x57F4, asm]
       # High-duplicate cluster: 64 functions, ZERO jump tables (so this C file
       # emits no .rodata and the "C rodata must be a text suffix" rule does not
       # bite). Contains the 14 most-copied bodies in the game -- func_80107F3C
