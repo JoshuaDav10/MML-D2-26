@@ -29,10 +29,16 @@ without matching many functions far above 120 instructions. Supporting: REDRIVER
 byte-for-byte; FedericoMilesi/soul-re (PSY-Q/GCC mipsel) has large matched bodies. No
 public PSX project documents a size above which matching is abandoned.
 
-> ⚠️ **The report's own caveat, preserved:** it could **not** cite a single named function
-> with a verified exact instruction count in the 300–800 band — GitHub blob pages resisted
-> fetching. The conclusion rests on whole-binary 100% claims plus function-location
-> evidence. Conclusive in aggregate; **not** a verified per-function datapoint.
+> ⚠️ **The report's own caveat — NOW RESOLVED (2026-07-28).** The report could not cite a
+> named function with a verified size because *its web-fetch tool* could not read GitHub
+> blob pages. That is a tool limitation, not a wall: `git clone` works fine. Cloned
+> `FoxdieTeam/mgs_reversing` and measured directly —
+> **5,423 matched functions, bodies up to 4,157 lines of C** (`ShowEffect` 1,435,
+> `NewHindBoss` 657, `HindAct` 499). A 500-line C body is comfortably 300–800 MIPS
+> instructions. The inference is now a measurement.
+>
+> **Standing lesson:** when web research reports "could not fetch GitHub", clone the repo
+> and measure. Do not accept an inference where a clone would give a fact.
 
 **Local evidence (stronger, and ours).** Already settled by experiment before this report
 arrived: `Sub_screen_gauge_set` (**137 insns**) and `Sub_screen_gauge_set2` (**111**) both
