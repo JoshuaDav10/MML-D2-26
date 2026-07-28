@@ -44,5 +44,12 @@ segments:
       # alone has 144 copies across 33 archives.
       - [0x873C, c, Code80107F3C]
       - [0xAD94, asm]
+      # Second high-duplicate cluster: 119 functions. 7 of them use jump tables
+      # and MUST stay INCLUDE_ASM (a C file's .rodata can only be a tail of the
+      # rodata section, so a C-ified switch here would shift every table).
+      # Captures 10 more of the most-copied bodies, including one 8-insn body
+      # that appears 6x in ST03 alone and 60x across the game.
+      - [0xCB7C, c, Code8010C37C]
+      - [0x13988, asm]
       - [0x14AE8, data]
   - [0x1D370]
