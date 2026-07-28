@@ -25,3 +25,6 @@ notes/wip/permuter_53b40.log
 # self-test scratch from tools/adversarial_audit.sh
 tools/_selftest_ac.sh
 build/counts.json
+
+# third-party reference sources (tools/fetch_vendor.sh)
+vendor/

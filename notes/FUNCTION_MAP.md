@@ -72,8 +72,8 @@ once covers every copy.*
 | ≤30 instructions | 248 |
 | ≤50 instructions | 354 |
 | ≤120 instructions | 559 |
-| leaf (calls nothing) | 281 |
-| in a family of ≥2 (template transfers) | 152 |
+| leaf (calls nothing) | 298 |
+| in a family of ≥2 (template transfers) | 164 |
 | >120 instructions (**nothing this big has ever matched**) | 210 |
 
 ## Stages — where the volume is
@@ -96,11 +96,11 @@ once covers every copy.*
 
 ### Duplication — real match-once-cover-many
 
-1,225 distinct bodies appear more than once, covering 4,288 instances.
+1,227 distinct bodies appear more than once, covering 4,322 instances.
 
 | function | instructions | copies | leaf |
 |---|---|---|---|
-| `func_800394A4` | 2 | **348** | yes |
+| `func_8003FFA8` | 2 | **378** | yes |
 | `func_800153CC` | 8 | **145** | no |
 | `func_801083DC` | 10 | **72** | yes |
 | `func_80110834` | 8 | **60** | no |

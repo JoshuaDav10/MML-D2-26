@@ -57,6 +57,16 @@ into this file; the stale table that used to sit here said 282 long after it was
 > silently drifted to 1,345 from stale chunk files. **Counting objects is not counting the
 > binary.**
 
+> ## 📋 THE PLAN → `notes/NEXT_STEPS.md`
+> Priority order, with the evidence behind each. Short version:
+> **(1) convert stage archive #2 — pick a twin pair (ST03≡ST03B etc.), convert one and its
+> twin is free; 1,331 of its functions already share a shape we've solved.
+> (2) m2c on the 354 engine functions ≤50 insns — installed at `tools/m2c`, drafts only.
+> (3) identify library code before RE'ing it — `tools/fetch_vendor.sh` pulls the PSY-Q
+> libs, reference C and `libgcc2.c`. (4) deliberately attack the 120–200 band (97 available).**
+> Key reframe: template leverage lives in the STAGE files (1,331) not the engine (32), so
+> converting archives beats grinding the engine.
+
 > ## ✅ RESEARCH ANSWERED 2026-07-26 → `notes/RESEARCH_FINDINGS_scaling.md`
 > CANDIDATE / not hash-gated — verify before trusting paths and flags.
 > - **The >120 ceiling is OURS, not the toolchain's.** MGS's ~626 KB main exe is 100%

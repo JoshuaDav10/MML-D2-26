@@ -189,6 +189,44 @@ def cpp_stub_names_stage():
     return names
 
 
+
+_NONMATCH_IDX = None
+
+
+def nonmatching_index():
+    """name -> path of the per-function asm kept under any nonmatchings/ directory.
+
+    Matched functions are C now, so there is no assembly in their .o to fingerprint —
+    which made family/duplicate detection blind to 350 of 362 matches and silently
+    UNDERCOUNT how many templates we already own. But splat leaves the original
+    per-function .s on disk even after a match lands, so the fingerprint is recoverable.
+    Added 2026-07-28 after dups.py found a 669-member family whose template we already
+    had, and could only see it because the two solved members happened to be stage
+    functions (the only ones then carrying a hash).
+    """
+    global _NONMATCH_IDX
+    if _NONMATCH_IDX is None:
+        _NONMATCH_IDX = {}
+        for f in glob.glob("asm/**/nonmatchings/**/*.s", recursive=True):
+            _NONMATCH_IDX.setdefault(os.path.basename(f)[:-2], f)
+    return _NONMATCH_IDX
+
+
+def fingerprint(name):
+    """(body_hash, skel_hash, leaf, insns) from the archived asm, or Nones."""
+    path = nonmatching_index().get(name)
+    if not path:
+        return None, None, None, None
+    for fn in parse_asm(path):
+        if fn["name"] != name:
+            continue
+        return (hashlib.md5("".join(fn["words"]).encode()).hexdigest(),
+                hashlib.md5(",".join(fn["ops"]).encode()).hexdigest(),
+                not any(o in CALLS for o in fn["ops"]),
+                len(fn["words"]))
+    return None, None, None, None
+
+
 def build():
     rows = []
 
@@ -196,9 +234,10 @@ def build():
     engine_c = objdump_engine_c()
     stubs = cpp_stub_names() if engine_c else set()
     for name, size in engine_c.items():
+        b, sk, lf, _n = fingerprint(name)
         rows.append(dict(name=name, realm="ENGINE", container="src/rock_neo",
                          state="STUB" if name in stubs else "MATCHED",
-                         insns=size, leaf=None, body=None, skel=None))
+                         insns=size, leaf=lf, body=b, skel=sk))
 
     # ---- ENGINE: still raw ---------------------------------------------------
     for f in code_files("asm/rock_neo/*.s", skip_engine=False):
