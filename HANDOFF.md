@@ -22,50 +22,65 @@ into this file; the stale table that used to sit here said 282 long after it was
 > not progress. Only a rise in **matched** counts.
 
 > ## ⭐ NEXT SESSION — goal is MATCHES; skip the meta
-> The full inventory is `notes/FUNCTION_MAP.md` (generated, gated). Query it directly:
-> ```
-> tools/gen_map.py --query UNSPLIT --max-insns 20 --leaf
-> ```
-> **Best pools right now (engine, 818 unmatched):**
-> - **≤10 insn: 76 functions.** The 2-instruction `jr $ra; nop` freebies are gone (landed
->   this session) — what remains needs real reading, but it is small.
-> - **families: 62 groups covering 168 functions** — identical mnemonic skeletons differing
->   only in registers/constants. Solve one, template the siblings. Biggest live family:
->   15 x 15-insn starting `func_800433C0`. `func_80031824` (matched) has **six siblings**
->   in `2207C.s` — same "divide byte-offset by stride, set bit, AND mask, clear byte" shape.
-> - **`func_80032488` is 3 rows off.** Do not re-try the five source shapes listed in
->   `src/rock_neo/Code80032488.c` — read that note first. Permuter-ready.
+> **The work queue already exists: `notes/wip/lane_b_drafts.md`.** An agent ran m2c over
+> all 244 unmatched engine functions ≤30 insns and wrote ~95 cleaned C drafts in four
+> confidence tiers. **Tier S is spent (+13 landed 2026-07-28); Tier A is 47 drafts and
+> untouched.** Raw m2c output for all 244 is in `notes/wip/lane_b_artifacts/`.
 >
-> **The ritual for every claim:** write C → `make CPP=cpp check_rock_neo_only` = OK →
-> `tools/audit_count.sh` (clean rebuild) must show the count RISE → `make CPP=cpp chunks`
-> (the clean rebuild deletes the overlay BINs) → commit.
+> **How to land a batch** (this is the loop that produced +13):
+> ```
+> tools/phase0_split.py func_A func_B ...      # ascending address order
+> # DELETE the .c of anything it reports SKIP — the tool writes the file before the
+> # yaml insert, so a skipped insert leaves a compiled-but-unlinked PHANTOM behind
+> python3 tools/splat/split.py config/splat.us.rock_neo.yaml
+> # apply the cleaned C, then compile-probe each file and stub any that fail
+> make CPP=cpp check_rock_neo_only        # must print OK
+> tools/audit_count.sh                    # the count must RISE; nothing is claimed until it does
+> make CPP=cpp chunks                     # audit_count deletes the overlay BINs
+> ```
+> Two of my own bugs to avoid repeating: drafts for PAIRED sections ("S13/S14") share one
+> code block, so naively writing it to both files defines each function twice; and stripping
+> the unwanted function can orphan an `extern` that sat between the two.
+>
+> **Other ready work, in value order:**
+> - **ST03 conversion** — recipe in `notes/wip/lane_c_st03.md`; ST03 == ST03B verified by
+>   hash, so converting one gives its twin free. This is the test of whether the stage
+>   shortcut is real: 1,331 unmatched functions share a shape we have already solved, and
+>   almost all of them are in stage files.
+> - **Rename 37 SDK functions today** — `notes/wip/lane_a_library.md` byte-identified 187
+>   psxsdk addresses; 21 names are unambiguous. Free readability, no matching required.
+> - `func_80032488` (3 rows) and `Sub_screen_status_calc` (82 rows) are parked with their
+>   closed levers written down. Read the notes before retrying either.
 
-> ## ⚠️ TWO LANDMINES FOUND 2026-07-26 — read before touching the build
-> **1. splat offsets.** `rom_offset = vram - 0x8000F800`, NOT `vram - 0x80010000`. A 0x800
-> header sits between them (`- [0x800, header]` then `start: 0x800, vram: 0x80010000`).
-> Four earlier phase-0 splits used the wrong formula; it stayed invisible because the yaml
-> notes *"splat is not re-run here"*. Running splat regenerated every chunk from the bad
-> offsets, truncated a chunk mid-function and broke the link — and `asm/` is gitignored, so
-> there was no backup. **Now fixed: splat IS safe to re-run.** Use `tools/phase0_split.py`,
-> which has the correct constant.
+> ## ⚠️ LANDMINES — read before touching the build
+> **1. splat offsets.** `rom_offset = vram - 0x8000F800`, NOT `- 0x80010000` (a 0x800
+> header sits between). Use `tools/phase0_split.py`, which has the correct constant.
+> Splat IS safe to re-run now; it was not before.
 >
 > **2. PHANTOM MATCHES — a green hash cannot detect them.** A `.c` can compile to a `.o`
-> that `rock_neo.ld` never references. census counts it; the binary still links the raw
-> asm; the full-binary hash stays **OK** because the original bytes are what shipped. This
-> briefly read 307 against a real 301. Guards are now in `census.py` and `gen_map.py`
-> (both negative-tested), and `gen_map` asserts the engine invariant of 1,119 — which had
-> silently drifted to 1,345 from stale chunk files. **Counting objects is not counting the
-> binary.**
+> that `rock_neo.ld` never references: census counts it, the binary links the raw asm, and
+> the full hash stays **OK** because the original bytes shipped. Guards are in `census.py`
+> and `gen_map.py`, both negative-tested. **Counting objects is not counting the binary.**
+>
+> **3. WORKTREE PARALLELISM DOES NOT WORK — unresolved.** `-gcoff` embeds the absolute
+> source path in every C object, so a worktree at any other path builds a different binary
+> and can never match. Equalising path LENGTH did not fix it. See LESSONS.md. Consequence:
+> **build-gated work must stay in the main tree.** Read-only agents in parallel are fine and
+> productive — that is how the three analysis lanes were produced.
+>
+> **4. A DENOMINATOR BUG SURVIVED UNTIL 2026-07-28.** `gen_map` globbed `asm/rock_neo/*.s`,
+> which does not descend into subdirectories, so `asm/rock_neo/psxsdk/code.s` — **446
+> functions, genuinely linked** — was invisible to every count this project ever produced.
+> Whole game 8,183 → **8,629**. Same class as the 484-vs-1119 scandal, found by an agent
+> rather than by any gate. When a number looks stable, ask what the glob cannot see.
 
 > ## 📋 THE PLAN → `notes/NEXT_STEPS.md`
-> Priority order, with the evidence behind each. Short version:
-> **(1) convert stage archive #2 — pick a twin pair (ST03≡ST03B etc.), convert one and its
-> twin is free; 1,331 of its functions already share a shape we've solved.
-> (2) m2c on the 354 engine functions ≤50 insns — installed at `tools/m2c`, drafts only.
-> (3) identify library code before RE'ing it — `tools/fetch_vendor.sh` pulls the PSY-Q
-> libs, reference C and `libgcc2.c`. (4) deliberately attack the 120–200 band (97 available).**
-> Key reframe: template leverage lives in the STAGE files (1,331) not the engine (32), so
-> converting archives beats grinding the engine.
+> Template leverage lives in the STAGE files (1,331 functions) not the engine (32), so
+> converting archives beats grinding the engine. m2c is installed and proven. Library code
+> is downloadable via `tools/fetch_vendor.sh` — but note Lane A's finding: **zero of the
+> 614 unsplit engine functions are library code.** All 614 are Capcom; the real SDK is the
+> separate psxsdk segment. `notes/wip/SDK_CANDIDATES.md` is 100% false positives and should
+> not be trusted.
 
 > ## ✅ RESEARCH ANSWERED 2026-07-26 → `notes/RESEARCH_FINDINGS_scaling.md`
 > CANDIDATE / not hash-gated — verify before trusting paths and flags.
