@@ -332,7 +332,11 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101D68);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101E4C);
+void func_80101E4C(WORK *p) {
+    if (--p->x350 == 0) {
+        p->xA = 1;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101E74);
 
@@ -350,7 +354,16 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_8010225C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102298);
+void func_80102298(WORK *w) {
+    w->x35C = 0;
+    w->x35E = 0;
+    w->x362 = 0;
+    w->x46 = 0;
+    w->x48 = 0;
+    w->x366 = w->xE * 8;
+    w->x360 = w->x366;
+    w->xA++;
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801022CC);
 
@@ -358,7 +371,11 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_8010260C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_8010273C);
+void func_8010273C(WORK *p) {
+    if (--p->x350 == 0) {
+        p->xA = 1;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102764);
 
@@ -372,11 +389,22 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102B58);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102CF8);
+void func_80102CF8(WORK *p) {
+    if (--p->x350 == 0) {
+        p->xA = 1;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102D20);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102DC8);
+void func_80102DC8(WORK *w) {
+    s16 turn = func_80031D5C(w->targetAngle, w->angle, 0x40);
+
+    if (turn == 0) {
+        w->xA = w->x366;
+    }
+    w->angle = (w->angle + turn) & 0xFFF;
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102E2C);
 
@@ -416,7 +444,13 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_8010398C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80103A44);
+void func_80103A44(ACTOR_WORK *work) {
+    if (Game_work.routine_0 == 3) {
+        MojiTaskKill();
+        MojiTaskExec2(0, 0xDC);
+        work->x34B--;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80103A9C);
 
@@ -459,11 +493,31 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801048E4);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80104A14);
+void func_80104A14(ENEMY_WORK *work, s32 enable) {
+    if (enable) {
+        work->timer++;
+        if (work->timer >= 0x3D) {
+            work->timer = 0;
+            /* The three summands must stay FLAT and left-to-right with the
+             * constant in the middle -- parenthesising the rand term attaches
+             * the addiu to the angle register instead. See LESSONS. */
+            work->targetAngle = (work->angle + 0x7D0 + (rand() & 0x3F)) & 0xFFF;
+            work->routine = 8;
+        }
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80104A88);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80104AF8);
+void func_80104AF8(ENEMY_WORK *work) {
+    work->unk46 += 4;
+    work->speed += 0x20;
+    if (work->speed > 0x400) {
+        work->speed = 0x400;
+    }
+    func_80032538(work);
+    func_800334C4(work);
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80104B5C);
 
@@ -504,7 +558,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80106694);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801067A0);
+void func_801067A0(void) {
+    func_80031824();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801067C0);
 
@@ -520,9 +576,29 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80107024);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_8010707C);
+void func_8010707C(WORK *work, s16 want, s16 cur) {
+    s32 diff;
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801070C0);
+    diff = want - cur;
+    if (diff < 0) {
+        diff = -diff;
+    }
+    if (diff >= 0x21) {
+        work->x328 = (cur < want) ? want + 0x20 : want - 0x20;
+    }
+}
+
+void func_801070C0(WORK *work, s16 want, s16 cur) {
+    s32 diff;
+
+    diff = want - cur;
+    if (diff < 0) {
+        diff = -diff;
+    }
+    if (diff >= 0x21) {
+        work->x328 = (cur < want) ? want - 0x20 : want + 0x20;
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80107104);
 
@@ -532,9 +608,21 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801075CC);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80107638);
+void func_80107638(WORK *work, EFFECT_REQ *req) {
+    req->x0 = 7;
+    req->x2 = 0x80;
+    req->x3 = 0x42;
+    req->pos = work->pos;
+}
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80107678);
+void func_80107678(WORK *work, EFFECT_REQ *req) {
+    req->x0 = 3;
+    req->x2 = 0x83;
+    req->x3 = 0;
+    req->x1C = work->pos.x;
+    req->x1E = -1;
+    req->x20 = work->pos.z;
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801076A8);
 
@@ -566,7 +654,14 @@ INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_s
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801086F4);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_8010881C);
+void func_8010881C(ENEMY_WORK *work) {
+    if (func_80048C60(work->name) == func_80048C60(D_800B51C4)) {
+        if (!Sce_flag_test(0x7B1)) {
+            work->routine++;
+            work->step = 0;
+        }
+    }
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11B/../../../asm/ST11B/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80108888);
 
