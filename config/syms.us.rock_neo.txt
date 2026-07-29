@@ -5,7 +5,7 @@ main = 0x80011C90;
 idk_Init_system_maybe = 0x80011F04;
 vsync_cb = 0x800123FC;
 
-
+func_800176DC = 0x800176DC;
 
 
 

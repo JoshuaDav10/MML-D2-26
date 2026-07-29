@@ -10,10 +10,10 @@ is what produced a completion figure ~16x too high for months.
 
 | realm | what it is | functions | done |
 |---|---|---|---|
-| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **441** (39.4%) |
+| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,122** | **451** (40.2%) |
 | **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | **112** (1.6%) |
 | **SDK** | Sony PSY-Q library linked into the exe (`asm/rock_neo/psxsdk/code.s`). NOT Capcom code — matchable from published source, a cheaper class of work. | **446** | 0 |
-| **WHOLE GAME** | | **8,629** | **553** (6.4%) |
+| **WHOLE GAME** | | **8,632** | **563** (6.5%) |
 
 ## States
 
@@ -23,11 +23,11 @@ once covers every copy.*
 
 | state | realm | meaning | functions | (raw instances) |
 |---|---|---|---|---|
-| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **958** | — |
-| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 1,589 | — |
-| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 521 | — |
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **968** | — |
+| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 1,603 | — |
+| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 500 | — |
 | `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 8,158 |
-| | | **total distinct functions in the game** | **8,629** | |
+| | | **total distinct functions in the game** | **8,632** | |
 
 > Moving `UNSPLIT -> STUB` is a *split*: bookkeeping, **not progress**. Only
 > `-> MATCHED` counts.
@@ -42,9 +42,11 @@ once covers every copy.*
 | `17AD0.s` | 15 | 0 | 0 | 15 |
 | `1A960.s` | 2 | 0 | 0 | 2 |
 | `1B370.s` | 17 | 0 | 0 | 17 |
-| `1DB20.s` | 10 | 0 | 0 | 10 |
-| `1E634.s` | 11 | 0 | 0 | 11 |
-| `20238.s` | 14 | 0 | 0 | 14 |
+| `1DB20.s` | 8 | 0 | 0 | 8 |
+| `1E5A0.s` | 1 | 0 | 0 | 1 |
+| `1E65C.s` | 10 | 0 | 0 | 10 |
+| `20238.s` | 2 | 0 | 0 | 2 |
+| `206A4.s` | 11 | 0 | 0 | 11 |
 | `20E28.s` | 22 | 0 | 0 | 22 |
 | `2207C.s` | 16 | 0 | 0 | 16 |
 | `22B04.s` | 3 | 0 | 0 | 3 |
@@ -55,7 +57,8 @@ once covers every copy.*
 | `260F0.s` | 4 | 0 | 0 | 4 |
 | `26CB0.s` | 4 | 0 | 0 | 4 |
 | `27288.s` | 1 | 0 | 0 | 1 |
-| `27340.s` | 15 | 0 | 0 | 15 |
+| `27340.s` | 7 | 0 | 0 | 7 |
+| `27E94.s` | 4 | 0 | 0 | 4 |
 | `28090.s` | 2 | 0 | 0 | 2 |
 | `28450.s` | 11 | 0 | 0 | 11 |
 | `29CAC.s` | 1 | 0 | 0 | 1 |
@@ -68,7 +71,8 @@ once covers every copy.*
 | `2A954.s` | 10 | 0 | 0 | 10 |
 | `2B514.s` | 14 | 0 | 0 | 14 |
 | `32A38.s` | 9 | 0 | 0 | 9 |
-| `32F70.s` | 9 | 0 | 0 | 9 |
+| `32F70.s` | 5 | 0 | 0 | 5 |
+| `33A94.s` | 2 | 0 | 0 | 2 |
 | `33BFC.s` | 8 | 0 | 0 | 8 |
 | `34600.s` | 2 | 0 | 0 | 2 |
 | `34770.s` | 3 | 0 | 0 | 3 |
@@ -79,7 +83,6 @@ once covers every copy.*
 | `35A74.s` | 4 | 0 | 0 | 4 |
 | `35D9C.s` | 3 | 0 | 0 | 3 |
 | `35ED8.s` | 2 | 0 | 0 | 2 |
-| `3614C.s` | 1 | 0 | 0 | 1 |
 | `361C0.s` | 12 | 0 | 0 | 12 |
 | `36F8C.s` | 9 | 0 | 0 | 9 |
 | `37B54.s` | 3 | 0 | 0 | 3 |
@@ -93,40 +96,48 @@ once covers every copy.*
 | `396A4.s` | 2 | 0 | 0 | 2 |
 | `39C70.s` | 16 | 0 | 0 | 16 |
 | `3EC90.s` | 18 | 0 | 0 | 18 |
-| `41374.s` | 8 | 0 | 0 | 8 |
-| `42368.s` | 5 | 0 | 0 | 5 |
+| `41374.s` | 2 | 0 | 0 | 2 |
+| `4142C.s` | 5 | 0 | 0 | 5 |
+| `42368.s` | 1 | 0 | 0 | 1 |
+| `423E4.s` | 3 | 0 | 0 | 3 |
 | `42E74.s` | 7 | 0 | 0 | 7 |
 | `4C710.s` | 4 | 0 | 0 | 4 |
 | `4CA58.s` | 2 | 0 | 0 | 2 |
 | `4CF5C.s` | 1 | 0 | 0 | 1 |
 | `4D0A4.s` | 1 | 0 | 0 | 1 |
 | `4D1BC.s` | 6 | 0 | 0 | 6 |
-| `4DCF8.s` | 6 | 0 | 0 | 6 |
+| `4DD28.s` | 5 | 0 | 0 | 5 |
 | `4E07C.s` | 2 | 0 | 0 | 2 |
 | `4E18C.s` | 1 | 0 | 0 | 1 |
 | `4E1EC.s` | 9 | 0 | 0 | 9 |
 | `4E74C.s` | 4 | 0 | 0 | 4 |
 | `4F3E4.s` | 1 | 0 | 0 | 1 |
 | `52C0.s` | 3 | 0 | 0 | 3 |
-| `543C8.s` | 28 | 0 | 0 | 28 |
+| `543C8.s` | 2 | 0 | 0 | 2 |
+| `54728.s` | 25 | 0 | 0 | 25 |
 | `56DFC.s` | 2 | 0 | 0 | 2 |
 | `56F64.s` | 11 | 0 | 0 | 11 |
 | `5866C.s` | 1 | 0 | 0 | 1 |
 | `5C28.s` | 1 | 0 | 0 | 1 |
-| `77D4.s` | 43 | 0 | 0 | 43 |
-| `src/rock_neo` | 598 | 441 | 157 | 0 |
+| `77D4.s` | 8 | 0 | 0 | 8 |
+| `7DF8.s` | 1 | 0 | 0 | 1 |
+| `7E14.s` | 2 | 0 | 0 | 2 |
+| `7E80.s` | 1 | 0 | 0 | 1 |
+| `7EA4.s` | 3 | 0 | 0 | 3 |
+| `806C.s` | 21 | 0 | 0 | 21 |
+| `src/rock_neo` | 622 | 451 | 171 | 0 |
 
 ### Engine work pools (not yet MATCHED)
 
 | pool | count |
 |---|---|
-| ≤10 instructions | 16 |
-| ≤20 instructions | 82 |
-| ≤30 instructions | 157 |
-| ≤50 instructions | 263 |
-| ≤120 instructions | 468 |
-| leaf (calls nothing) | 245 |
-| in a family of ≥2 (template transfers) | 110 |
+| ≤10 instructions | 19 |
+| ≤20 instructions | 75 |
+| ≤30 instructions | 150 |
+| ≤50 instructions | 256 |
+| ≤120 instructions | 461 |
+| leaf (calls nothing) | 238 |
+| in a family of ≥2 (template transfers) | 108 |
 | >120 instructions (**nothing this big has ever matched**) | 210 |
 
 ## Stages — where the volume is
@@ -149,7 +160,7 @@ once covers every copy.*
 
 ### Duplication — real match-once-cover-many
 
-1,233 distinct bodies appear more than once, covering 4,340 instances.
+1,234 distinct bodies appear more than once, covering 4,343 instances.
 
 | function | instructions | copies | leaf |
 |---|---|---|---|
