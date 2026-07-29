@@ -203,6 +203,12 @@ extern void (*D_8011701C[])(void);
 void func_80031824(void);
 s16  func_80031D5C(s16 target, s16 current, s16 step);
 extern PL_WORK2 Player_work;
+extern void (*D_8010A1EC[])(void);
+extern void (*D_8010A23C[])(void);
+extern void (*D_8010A2D8[])(void);
+extern void (*D_8010A334[])(void);
+extern void (*D_8010A3A0[])(void);
+extern void (*D_8010A3B0[])(void);
 extern GAME_WORK2 Game_work;
 extern s8 D_800987B0[];
 s32  func_8003A13C(void);
@@ -311,7 +317,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st1
 void func_801019AC(void) {
     func_80031824();
 }
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801019CC);
+void func_801019CC(u8 *o) {
+    D_8010A1EC[o[0xA]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101A08);
 
@@ -324,7 +332,9 @@ void func_80101B54(WORK *p) {
         p->xA = 0;
     }
 }
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101B70);
+void func_80101B70(u8 *o) {
+    D_8010A23C[o[0xA]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101BAC);
 
@@ -376,7 +386,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st1
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102218);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_8010225C);
+void func_8010225C(u8 *o) {
+    D_8010A2D8[o[0xA]]();
+}
 
 void func_80102298(WORK *w) {
     w->x35C = 0;
@@ -417,7 +429,9 @@ void func_80102764(WORK *w) {
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_8010280C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102898);
+void func_80102898(u8 *o) {
+    D_8010A334[o[0xA]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801028D4);
 
@@ -444,7 +458,9 @@ void func_80102DC8(WORK *w) {
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102E2C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102E7C);
+void func_80102E7C(u8 *o) {
+    D_8010A3A0[o[0x34B]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80102EB8);
 
@@ -456,7 +472,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st1
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801031A0);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80103264);
+void func_80103264(u8 *o) {
+    D_8010A3B0[o[0x34B]]();
+}
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801032A0);
 
