@@ -931,3 +931,19 @@
   (ST03 == ST03B verified by hash).
 - `Sub_screen_status_calc` (123 insn) attempted and parked at 82 rows — m2c understood it
   immediately; register allocation is the blocker, not comprehension.
+
+## 2026-07-29 (playbook wave 1)
+- **+16 engine matches in ONE build cycle (407 -> 423).** audit_count clean-rebuild
+  verified: hash OK, raw cmp byte-identical, 205/205 overlays.
+- Applied `notes/THROUGHPUT_PLAYBOOK.md` after the previous run managed only +6. Six agents
+  x 3 functions, each self-verifying with bytecmp, **18/18 verified**, accumulated in /tmp,
+  then landed together. One build instead of six.
+- `tools/phase0_split.py` extended: it used to refuse any function starting exactly AT a
+  segment boundary, which skipped **13 of 16** targets. Now it either converts a
+  single-function segment wholesale to `c`, or emits `c` + reopens `asm` after the function.
+- Agent findings worth keeping: `func_80066750`'s `sw` then `sb` at the same offset is two C
+  assignments through different declared types (`p->x4 = 0;` then `*(u8*)&p->x4 = 0;`);
+  `nor $v0,$zero,$v0` + `srl 31` is `~val >> 31`, i.e. `val >= 0` on a signed byte;
+  `Pl00_shot_enable_on` must return `unknown_t` — void or s32 changes codegen.
+- Model note: sonnet 18/18 on small engine functions, zero false passes, and it correctly
+  flagged where bytecmp itself could not decide.

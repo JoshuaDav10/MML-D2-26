@@ -64,7 +64,20 @@ def insert_yaml(off, name, end):
         return False, "no enclosing asm segment"
     start, line, pos = max(encl, key=lambda e: e[0])
     if start == off:
-        return False, "already at a segment boundary"
+        # The function begins exactly AT a segment start. Two sub-cases, and refusing both
+        # (as this tool used to) needlessly skipped 13 of 16 targets on 2026-07-29:
+        #   - the segment holds ONLY this function -> convert the whole thing to `c`
+        #   - it holds more -> emit `c` then reopen `asm` right after the function
+        nxt = min((int(m.group(1), 16)
+                   for m in re.finditer(r"^      - \[0x([0-9A-Fa-f]+),", txt, re.M)
+                   if int(m.group(1), 16) > off), default=None)
+        if nxt == end:
+            new = f"      - [0x{off:X}, c, {name}]"
+        else:
+            new = (f"      - [0x{off:X}, c, {name}]\n"
+                   f"      - [0x{end:X}, asm]")
+        YAML.write_text(txt[:pos] + new + txt[pos + len(line):])
+        return True, None
     # A trailing asm segment that starts exactly where the NEXT segment starts is
     # zero-length: splat emits no .s for it, but the generated rock_neo.ld still
     # references its .o and the link dies with "cannot find .../2C640.s.o".

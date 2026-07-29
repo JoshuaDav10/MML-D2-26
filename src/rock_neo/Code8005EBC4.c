@@ -1,3 +1,7 @@
 #include "common.h"
 
-INCLUDE_ASM("config/../asm/rock_neo/nonmatchings/Code8005EBC4", func_8005EBC4);
+extern s16 D_800BBD94;
+
+s16 func_8005EBC4(void) {
+    return D_800BBD94;
+}
