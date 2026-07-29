@@ -23,8 +23,8 @@ once covers every copy.*
 
 | state | realm | meaning | functions | (raw instances) |
 |---|---|---|---|---|
-| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **856** | — |
-| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 1,659 | — |
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **870** | — |
+| `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 1,645 | — |
 | `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 553 | — |
 | `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 8,158 |
 | | | **total distinct functions in the game** | **8,629** | |

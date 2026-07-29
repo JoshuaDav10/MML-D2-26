@@ -1,5 +1,264 @@
 #include "common.h"
 
+/* ST11 ovl0 (== ST11B, sha1-verified over the whole code chunk).
+ * Whole text is one C segment. Bodies below were already solved in ST10B and
+ * are byte-identical here; each re-verified against ST11's OWN asm before
+ * landing. Typedefs are ST10B's proven set, not re-derived -- cc1 silently
+ * accepts an unknown struct member, so a re-derived layout can delete a body.
+ */
+
+typedef struct EVE_WORK {
+    u8  pad0[0x4];
+    u8  x4;       /* 0x04 - "already fired" latch, set to 0xFF */
+} EVE_WORK;
+typedef struct ENTITY_FUNCS {
+    void (*init)(void *);
+    void (*act)(void *);
+} ENTITY_FUNCS;
+typedef struct ENTITY_WORK {
+    u8             pad0[0x8];
+    u8             routine;      /* 0x008; 0xFF = dead */
+    u8             pad9[0xA4 - 0x9];
+    ENTITY_FUNCS  *funcs;        /* 0x0A4 */
+} ENTITY_WORK;
+typedef struct PosXYZ {
+    s16 x;
+    s16 y;
+    s16 z;
+    s16 unk6;
+} PosXYZ;
+typedef struct WORK {
+    u8      pad0[0xA];
+    u8      xA;                  /* 0x00A routine/step byte */
+    u8      padB[0xE - 0xB];
+    u8      xE;                  /* 0x00E swing amplitude (units of 8) */
+    u8      padF[0x14 - 0xF];
+    PosXYZ  pos;                 /* 0x014 */
+    s32     posFxX;              /* 0x01C 16.16 fixed-point position */
+    s32     posFxY;              /* 0x020 */
+    s32     posFxZ;              /* 0x024 */
+    u8      pad28[0x46 - 0x28];
+    s16     x46;                 /* 0x046 */
+    s16     x48;                 /* 0x048 */
+    u8      pad4A[0x56 - 0x4A];
+    s16     angle;               /* 0x056 */
+    u8      pad58[0x64 - 0x58];
+    s16     targetAngle;         /* 0x064 */
+    u8      pad66[0xA7 - 0x66];
+    s8      xA7;                 /* 0x0A7 signed state flag */
+    u8      padA8[0x328 - 0xA8];
+    s16     x328;                /* 0x328 stepped/clamped angle output */
+    u8      pad32A[0x350 - 0x32A];
+    s16     x350;                /* 0x350 countdown timer / turn rate */
+    s16     homeAngle;           /* 0x352 */
+    PosXYZ  homePos;             /* 0x354 */
+    s16     x35C;                /* 0x35C direction flag */
+    s16     x35E;                /* 0x35E swing counter */
+    s16     x360;                /* 0x360 */
+    s16     x362;                /* 0x362 second direction flag */
+    s16     x364;                /* 0x364 */
+    s16     x366;                /* 0x366 swing limit / target step */
+} WORK;
+typedef struct ACTOR_WORK {
+    u8      pad0[0x9];
+    u8      x9;                  /* 0x009 routine */
+    u8      padA[0xC - 0xA];
+    u8      xC;                  /* 0x00C */
+    u8      xD;                  /* 0x00D next-routine; bit 7 = force */
+    u8      padE[0x14 - 0xE];
+    u16     x14;                 /* 0x014 world X */
+    u16     x16;                 /* 0x016 */
+    u16     x18;                 /* 0x018 world Z */
+    u8      pad1A[0x56 - 0x1A];
+    u16     x56;                 /* 0x056 facing angle (12-bit) */
+    u8      pad58[0xAC - 0x58];
+    u8      xAC;                 /* 0x0AC requested action id */
+    u8      padAD[0x348 - 0xAD];
+    u16     x348;                /* 0x348 flag bits */
+    u8      x34A;                /* 0x34A action id to run on arrival */
+    u8      x34B;                /* 0x34B subtask refcount */
+    s16     x34C;                /* 0x34C target angle */
+    s16     x34E;                /* 0x34E turn rate */
+} ACTOR_WORK;
+typedef struct PL_WORK2 {
+    u8      x0;                  /* 0x000 status flag bits */
+    u8      pad1[0x9 - 0x1];
+    u8      x9;                  /* 0x009 routine */
+    u8      xA;                  /* 0x00A sub-routine */
+    u8      padB[0x14 - 0xB];
+    u16     x14;                 /* 0x014 world X */
+    u16     x16;
+    u16     x18;                 /* 0x018 world Z */
+} PL_WORK2;
+typedef struct GAME_WORK2 {
+    s8      routine_0;
+} GAME_WORK2;
+typedef struct OFS {
+    s16 x0;
+    s16 x2;                      /* X offset */
+    s16 x4;
+    s16 x6;
+    s16 x8;
+    s16 xA;                      /* Z offset */
+    s16 xC;
+    s16 xE;
+} OFS;
+typedef struct ENEMY_WORK {
+    u8      pad0[0x8];
+    u8      routine;             /* 0x008 */
+    u8      pad9[0xB - 0x9];
+    u8      step;                /* 0x00B */
+    s8      timer;               /* 0x00C frame counter */
+    u8      padD[0x38 - 0xD];
+    u8      name[0x8];           /* 0x038 identifier block (passed by address) */
+    u8      pad40[0x46 - 0x40];
+    s16     unk46;               /* 0x046 */
+    u8      pad48[0x54 - 0x48];
+    s16     speed;               /* 0x054 clamped to 0x400 */
+    s16     angle;               /* 0x056 facing (12-bit) */
+    u8      pad58[0x66 - 0x58];
+    s16     targetAngle;         /* 0x066 */
+} ENEMY_WORK;
+typedef struct BOSS_WORK {
+    u8      pad0[0x8];
+    u8      routine;             /* 0x008 top-level state */
+    u8      step;                /* 0x009 sub-state */
+    u8      phase;               /* 0x00A intro/spawn phase counter */
+    u8      padB[0x14 - 0xB];
+    s16     pos[4];              /* 0x014 position (passed by address) */
+    u8      pad1C[0x46 - 0x1C];
+    s16     pitch;               /* 0x046 */
+    u8      pad48[0x56 - 0x48];
+    s16     angle;               /* 0x056 facing (12-bit) */
+    u8      pad58[0x66 - 0x58];
+    s16     targetPitch;         /* 0x066 */
+    u8      pad68[0xAC - 0x68];
+    u8      flags;               /* 0x0AC */
+    u8      padAD[0x348 - 0xAD];
+    u16     timer;               /* 0x348 frame counter (u16: andi+sltiu) */
+    s16     targetAngle;         /* 0x34A */
+    s16     wobble;              /* 0x34C odd 1..0x7F */
+} BOSS_WORK;
+typedef struct EFFECT_REQ {
+    u8      x0;                  /* 0x000 effect kind */
+    u8      pad1;
+    u8      x2;                  /* 0x002 sub-kind / flags */
+    u8      x3;                  /* 0x003 parameter */
+    u8      pad4[0x1C - 0x4];
+    s16     x1C;                 /* 0x01C X */
+    s16     x1E;                 /* 0x01E Y (-1 = use default) */
+    s16     x20;                 /* 0x020 Z */
+    u8      pad22[0x38 - 0x22];
+    PosXYZ  pos;                 /* 0x038 */
+} EFFECT_REQ;
+typedef struct SCE_TBL {
+    u32  num;
+    u8  *list;
+} SCE_TBL;
+typedef struct SWEEP_WORK {
+    u8  pad0[0x9];
+    u8  x9;                      /* 0x009 routine */
+    u8  padA[0xC - 0xA];
+    s16 xC;                      /* 0x00C */
+    u8  padE[0x22 - 0xE];
+    u8  x22;                     /* 0x022 */
+    u8  pad23[0x38 - 0x23];
+    s16 x38;                     /* 0x038 */
+    s16 x3A;                     /* 0x03A */
+} SWEEP_WORK;
+typedef struct LATCH_WORK {
+    u8  pad0[0xD];
+    s8  xD;                      /* 0x00D pending-next-routine */
+    u8  padE[0x168 - 0xE];
+    u8  x168;
+    u8  x169;
+    u8  pad16A[0x448 - 0x16A];
+    u8  x448;                    /* 0x448 requested action */
+} LATCH_WORK;
+typedef struct FLAG_WORK {
+    u8  pad0[0xFF];
+    s8  xFF;
+    u8  pad100[0x103 - 0x100];
+    s8  x103;
+    u8  pad104[0x107 - 0x104];
+    s8  x107;
+} FLAG_WORK;
+
+void func_80103AB0(s32 idx);
+void func_80101B70(void);
+s32  Sce_flag_test(s32 id);
+void Sce_flag_on(s32 id);
+u8  *func_80031418(void);
+void func_8001EB98(u8 *p);
+extern u8 D_801151DC[];
+extern void (*D_80116F44[])(void);
+extern void (*D_80117054[])(void);
+extern void (*D_80116EA8[])(void);
+extern void (*D_8011700C[])(void);
+extern void (*D_80116E58[])(void);
+extern void (*D_80117028[])(void);
+extern void (*D_80116FA0[])(void);
+extern void (*D_80117040[])(void);
+extern void (*D_8011701C[])(void);
+void func_80031824(void);
+s16  func_80031D5C(s16 target, s16 current, s16 step);
+extern PL_WORK2 Player_work;
+extern GAME_WORK2 Game_work;
+extern s8 D_800987B0[];
+s32  func_8003A13C(void);
+s32  func_80063BC8(void *, s32, s32, s32);
+s16  func_80031BEC(void *, void *, s16, s16);
+s16  func_80031D5C(s16, s16, s16);
+void func_80030058(OFS *, s16, s16, s32, s32);
+s32  MojiTaskKill();
+s32  MojiTaskExec2(s32, s32);
+extern void (*D_80117104[])(void);
+extern void (*D_80117140[])(void);
+extern void (*D_80117460[])(void);
+extern void (*D_8011734C[])(void);
+extern void (*D_801170E0[])(void);
+extern void (*D_801171D8[])(void);
+void func_800318D8(void);
+void func_80031988(void);
+extern s32  rand(void);
+extern void func_80032538(ENEMY_WORK *);
+extern void func_800334C4(ENEMY_WORK *);
+extern s32  func_80048C60(void *);
+extern s32  Sce_flag_test(s32);
+extern u8   D_800B51C4[];
+extern void *func_80049C24(void);
+extern void  func_80037BB4(BOSS_WORK *);
+extern void  func_80037738(void *, s32);
+extern void  Sce_flag_on(s32);
+extern void  Sound_call2(s32, s16 *);
+extern void (*D_8010D414[])(void);
+extern void (*D_8010D444[])(void);
+extern void (*D_8010D494[])(void);
+extern void (*D_8010D530[])(void);
+extern void (*D_8010D58C[])(void);
+void func_8001DDE4(s32);
+extern void (*D_8010D608[])(void);
+extern void (*D_8010D640[])(void);
+extern void (*D_8010D62C[])(void);
+extern void (*D_8010D82C[])(void);
+extern void (*D_8010D614[])(void);
+extern void (*D_8010D808[])(void);
+extern void (*D_8010D81C[])(void);
+extern void (*D_8010D5F8[])(void);
+extern void (*D_8010D6FC[])(void);
+void func_8001DF10(SCE_TBL *st);
+extern SCE_TBL D_8010CB40;
+extern SCE_TBL D_8010CB48;
+void func_8003786C(s32 id);
+extern u8 D_800C1B60;
+extern s8 D_800C356C;
+extern u8 D_800C356D;
+extern u8 D_800C356E;
+extern u8 D_800C356F;
+extern u8 D_800C3570;
+extern u8 D_800C3571;
+
+
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801000B4);
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_8010011C);
@@ -28,8 +287,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st1
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801007CC);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80100A50);
-
+void func_80100A50(void) {
+    func_80031824();
+}
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80100A70);
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80100ADC);
@@ -48,8 +308,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st1
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801017F0);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801019AC);
-
+void func_801019AC(void) {
+    func_80031824();
+}
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801019CC);
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101A08);
@@ -58,8 +319,11 @@ INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st1
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101AEC);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101B54);
-
+void func_80101B54(WORK *p) {
+    if (p->xA7 < 0) {
+        p->xA = 0;
+    }
+}
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101B70);
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80101BAC);
@@ -168,8 +432,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st1
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80103E1C);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80103EBC);
-
+s32 func_80103EBC(u8 a) {
+    return a == 0x11;
+}
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80103ECC);
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80103F0C);
@@ -212,8 +477,9 @@ INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st1
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80104F20);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80105214);
-
+void func_80105214(void) {
+    func_80031824();
+}
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80105234);
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80105298);
@@ -304,10 +570,10 @@ INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st1
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80108888);
 
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801089AC);
-
-INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801089B4);
-
+void func_801089AC(EVE_WORK *evp) {
+}
+void func_801089B4(EVE_WORK *evp) {
+}
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_801089BC);
 
 INCLUDE_ASM("config/overlay/splat.us.ST11/../../../asm/ST11/ovl0__progbin_r3_st11.bin/nonmatchings/Code801000B4", func_80108A08);
