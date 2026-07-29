@@ -183,7 +183,7 @@ segments:
       - [0x4CA18, c, Code8005C218]
       - [0x4CA24, c, Code8005C224]
       - [0x4CA30, c, Code8005C230]
-      - [0x4CA3C, asm]
+      - [0x4CA3C, c, Code8005C23C]
       - [0x4CA4C, c, Code8005C24C]
       - [0x4CA58, asm]
       - [0x4CF20, c, Code8005C720]

@@ -10,10 +10,10 @@ is what produced a completion figure ~16x too high for months.
 
 | realm | what it is | functions | done |
 |---|---|---|---|
-| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **423** (37.8%) |
+| **ENGINE** | `ROCK_NEO.EXE`. Resident in RAM always; every stage calls into it. | **1,119** | **424** (37.9%) |
 | **STAGES** | 37 code archives (168 more are asset-only). 10,107 copies of 7,064 unique bodies. | **7,064** | **112** (1.6%) |
 | **SDK** | Sony PSY-Q library linked into the exe (`asm/rock_neo/psxsdk/code.s`). NOT Capcom code — matchable from published source, a cheaper class of work. | **446** | 0 |
-| **WHOLE GAME** | | **8,629** | **535** (6.2%) |
+| **WHOLE GAME** | | **8,629** | **536** (6.2%) |
 
 ## States
 
@@ -23,9 +23,9 @@ once covers every copy.*
 
 | state | realm | meaning | functions | (raw instances) |
 |---|---|---|---|---|
-| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **940** | — |
+| `MATCHED` | engine | real C, recompiles to identical bytes. **The deliverable.** | **941** | — |
 | `STUB` | engine | in a C file but body is still `INCLUDE_ASM`. Bookkeeping only. | 1,590 | — |
-| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 538 | — |
+| `UNSPLIT` | engine | still in a raw asm chunk, no C file. | 537 | — |
 | `STAGE` | stages | in a stage archive; C pipeline not yet set up (1 of 37 done). | 7,064 | 8,158 |
 | | | **total distinct functions in the game** | **8,629** | |
 
@@ -95,7 +95,6 @@ once covers every copy.*
 | `42368.s` | 5 | 0 | 0 | 5 |
 | `42E74.s` | 7 | 0 | 0 | 7 |
 | `4C710.s` | 4 | 0 | 0 | 4 |
-| `4CA3C.s` | 1 | 0 | 0 | 1 |
 | `4CA58.s` | 2 | 0 | 0 | 2 |
 | `4CF5C.s` | 1 | 0 | 0 | 1 |
 | `4D0A4.s` | 1 | 0 | 0 | 1 |
@@ -112,19 +111,19 @@ once covers every copy.*
 | `5864C.s` | 2 | 0 | 0 | 2 |
 | `5C28.s` | 1 | 0 | 0 | 1 |
 | `77D4.s` | 43 | 0 | 0 | 43 |
-| `src/rock_neo` | 581 | 423 | 158 | 0 |
+| `src/rock_neo` | 582 | 424 | 158 | 0 |
 
 ### Engine work pools (not yet MATCHED)
 
 | pool | count |
 |---|---|
-| ≤10 instructions | 34 |
-| ≤20 instructions | 100 |
-| ≤30 instructions | 175 |
-| ≤50 instructions | 281 |
-| ≤120 instructions | 486 |
-| leaf (calls nothing) | 251 |
-| in a family of ≥2 (template transfers) | 122 |
+| ≤10 instructions | 33 |
+| ≤20 instructions | 99 |
+| ≤30 instructions | 174 |
+| ≤50 instructions | 280 |
+| ≤120 instructions | 485 |
+| leaf (calls nothing) | 250 |
+| in a family of ≥2 (template transfers) | 121 |
 | >120 instructions (**nothing this big has ever matched**) | 210 |
 
 ## Stages — where the volume is
