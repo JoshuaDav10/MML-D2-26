@@ -70,7 +70,7 @@ segments:
       - [0x1E634, asm]
       - [0x20198, c, Code8002F998]
       - [0x201C4, c, Code8002F9C4]  # func_8002F9C4 (10 insns, phase-0 split template)
-      - [0x201EC, asm]
+      - [0x201EC, c, Code8002F9EC]
       - [0x20210, c, Code8002FA10]
       - [0x20238, asm]
       - [0x20E04, c, Code80030604]
@@ -222,6 +222,8 @@ segments:
       - [0x4E174, c, Code8005D974]
       - [0x4E17C, c, Code8005D97C]
       - [0x4E18C, asm]
+      - [0x4E1C4, c, Code8005D9C4]
+      - [0x4E1EC, asm]
       - [0x4E73C, c, Code8005DF3C]
       - [0x4E74C, asm]
       - [0x4F3A4, c, Code8005EBA4]

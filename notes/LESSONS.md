@@ -1446,3 +1446,38 @@ Detection chain, in the order things looked fine:
   elsewhere, not a scheduling problem.
 - `checksizes.py` earns its keep: this is the second transcription-class bug in one session
   that it localised instantly and that no other gate caught.
+
+## psxsdk functions are NOT landable yet — writing C there is a guaranteed phantom (2026-07-29)
+
+`config/splat.us.rock_neo.yaml` maps the whole SDK as **one named asm segment**:
+`- [0x587F8, asm, psxsdk/code]`. It links as a single object. There is no
+`src/rock_neo/psxsdk/` directory and no psxsdk function has ever been matched here.
+
+So a `.c` written for an SDK function **compiles, gets counted by a naive census, and the
+linker still ships the original assembly** — the exact phantom-match trap. census's guard
+catches it now, but the work is wasted either way.
+
+An agent verified four SDK bodies (`CdMix`, `CdGetSector`, `func_800721C4`, `CdSync`) at 0
+hard mismatches and then explicitly **refused to claim they link**, which is the right
+call. The templates are banked in `notes/wip/agent_reports/wave_b3_family.md` for whenever
+someone carves that segment properly.
+
+Also note `cd.c` already declares `CdMix` returning `void`, which conflicts with the
+`return 1` the bytes require — an existing declaration can contradict the target.
+
+## The 8-instruction thin-wrapper family: engine is EXHAUSTED, overlays are the prize
+
+Measured 2026-07-29: **366 occurrences game-wide**, 334 of them one pure pass-through
+shape. The "324" figure in `lane_b_drafts.md` is a WHOLE-GAME number and was misread as an
+engine number for most of a session.
+
+  engine   : 53 unique thin wrappers — **all 10 landable ones are done**
+  overlays : 309 unique — untouched, and this is where the leverage actually is
+
+Consequence: chasing this family inside `ROCK_NEO.EXE` is finished. The remaining 309 live
+in stage archives, so they only become reachable as archives are opened. **Six variants are
+documented with templates** in `notes/wip/agent_reports/wave_b3_family.md`.
+
+Useful tell for identifying a variant at a glance: when a wrapper has post-call work, it
+fills the load-delay slot after `lw $ra` and pushes `addiu $sp` into the `jr` delay slot.
+That schedule flip distinguishes the shapes without reading the whole body.
