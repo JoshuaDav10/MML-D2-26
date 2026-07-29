@@ -17,14 +17,14 @@ separate, slower step: `tools/audit_count.sh`.
 | Sony PSY-Q SDK in the exe | **446** | `asm/rock_neo/psxsdk/code.s`, linked by rock_neo.ld. NOT Capcom code; matchable from published source. Invisible to every count before 2026-07-28 because the map globbed `asm/rock_neo/*.s` and never descended into subdirectories. |
 | **Whole-game functions** | **~8629** | 1119 main exe + ~7064 overlay + 446 SDK. THE whole-game denominator. |
 | Matched — ENGINE (real C in tree) | **407** | 566 − 159. `census.py --matched`, authoritative for the main exe. |
-| Matched — STAGE (unique bodies) | **106** | Stage overlay functions with real C. Invisible to `census.py` (it globs only `build/src/rock_neo/*.o`); read from `gen_map.py`, which proves linkage from each overlay's own `.map`. |
-| **Matched — WHOLE GAME** | **513** | 407 engine + 106 stage. |
+| Matched — STAGE (unique bodies) | **112** | Stage overlay functions with real C. Invisible to `census.py` (it globs only `build/src/rock_neo/*.o`); read from `gen_map.py`, which proves linkage from each overlay's own `.map`. |
+| **Matched — WHOLE GAME** | **519** | 407 engine + 112 stage. |
 | Active INCLUDE_ASM stubs | **159** | Stubs still pulled in AFTER cpp (ifdef-aware). |
 | Raw `grep -c INCLUDE_ASM` | 166 | **DO NOT USE.** Blind to `#define ACCEPT_REORDERING_BULLSHIT` in game.c/sub_scrn.c; 7 stubs are shadowed by an active `#else` body. Un-gating one is a NO-OP that reads as +1 — this caused the 2026-07-19 inflation. |
 | By function count (C-mapped slice) | **71.9%** | 407 / 566 — the number historically quoted. Overstates the mission. |
 | By function count (main exe) | **36.4%** | 407 / 1119. |
-| By function count (stage realm) | **1.5%** | 106 / ~7064. |
-| **By function count (WHOLE GAME)** | **~5.9%** | 513 / ~8629. The honest number. |
+| By function count (stage realm) | **1.6%** | 112 / ~7064. |
+| **By function count (WHOLE GAME)** | **~6.0%** | 519 / ~8629. The honest number. |
 
 ## Splitting is not progress
 A phase-0 split MOVES a function from the unsplit bucket into the C-mapped bucket. It

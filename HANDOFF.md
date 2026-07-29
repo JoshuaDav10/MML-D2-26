@@ -6,8 +6,8 @@
 | matched functions | **407** |
 | C-mapped slice | 407 / **566** = 71.9% |
 | main executable | 407 / **1119** = **36.4%** |
-| **stage overlays** | 106 / **~7064** |
-| **whole game** | 513 / **~8629** = **~5.9%** |
+| **stage overlays** | 112 / **~7064** |
+| **whole game** | 519 / **~8629** = **~6.0%** |
 | active INCLUDE_ASM stubs | **159** |
 | still unsplit raw asm | **553** functions in `asm/rock_neo/*.s` |
 <!-- END GENERATED COUNTS -->
@@ -25,6 +25,43 @@ into this file; the stale table that used to sit here said 282 long after it was
 > headline, 106) and *function instances* (449). Transplanting a solved body into a new
 > archive adds instances but **zero** unique bodies — say which one you mean, and do not
 > present instance growth as headline growth.
+
+> ## ⏸ LOOP STOPPED 2026-07-29 ~00:10 — usage limit (resets 4:30am CT)
+> Stopped cleanly. Tree is GREEN and pushed: hash OK, 205/205 overlays, nothing half-edited.
+>
+> **DRAFTED AND VERIFIED BUT NOT LANDED — do this first, it is nearly free.**
+> `/tmp/st11_new1.md` holds 5 finished bodies for ST11/ST11B that an agent verified but I
+> ran out of budget before landing. **/tmp may be cleared on reboot — rescue it early.**
+> Landing needs three things applied to BOTH `src/ST11/*/Code801000B4.c` and `src/ST11B/...`:
+> 1. `BOSS_WORK` needs a byte at 0x0B — split `u8 padB[0x14 - 0xB];` into
+>    `u8 xB;` + `u8 padC[0x14 - 0xC];`
+> 2. add `extern volatile u16 System_timer;` and `extern void (*D_8010A1BC[])(void);`
+> 3. `tools/land_stage_batch.py /tmp/st11_new1.md Code801000B4 ST11 ST11B`
+> Then chunks (check exit code) + cmp both BINs + checksizes + check_overlays.
+>
+> ⚠️ **`func_80109034` in that batch reports 2 HARD mismatches in bytecmp and is still
+> correct.** bytecmp decides "is this a relocation slot?" by regex-matching the reference
+> asm text for `%hi`/`%lo`; splat never attached the symbol there, so the line reads as
+> literal arithmetic `lui $v0, (0x1F800002 >> 16)` and two real reloc slots get graded as
+> failures. The agent linked and disassembled it to prove the 7 words match. **Gate it on
+> the full build, not on bytecmp.** This is a harness blind spot worth fixing.
+>
+> **New idiom, worth a LESSONS entry:** `volatile` on `System_timer` is load-bearing —
+> without it gcc sees `(x << 3) & 0x60` keeps only bits 2-3 and narrows the halfword load
+> to `lbu`, breaking the match. Reusable for any hardware/scratchpad read.
+>
+> **Also queued:** 7 more dispatchers in ST11 (`func_801015F4` D_8010A1BC 0x8;
+> `func_80103524` D_8010A3BC 0x34B; `func_80103768` D_8010A3D4 0x34B; `func_80103B70`
+> D_8010A3E8 0x34B; `func_80107EBC` D_8010E138 0x8; `func_80108394` D_8010E14C 0x8;
+> `func_80109050` D_8010E26C 0x8). Template is the landed `func_801019CC`. An agent was
+> mid-sweep of the other seven open archives for this same family when usage ran out —
+> **that sweep is the highest-value unfinished question.**
+>
+> **Note:** `func_801015F4` was accidentally assigned to two agents at once. Dedupe batches.
+>
+> **Model note:** sonnet went 28/28 on transplants and 6/6 on the template family, and
+> correctly flagged its own tool's false failure rather than shipping a bad pass. Good fit
+> for both lanes.
 
 > ## ⭐ NEXT SESSION — the stage duplicate lane is the live one
 > **Highest leverage now: keep opening stage archives and transplanting solved bodies.**
