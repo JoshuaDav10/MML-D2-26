@@ -2,15 +2,15 @@
 
 
 typedef struct {
-    u8 _0[0x8];
+    char pad0[8];
     u8 x8;
-    u8 _9[0x2E - 0x9];
+    char pad9[0x25];
     s16 x2E;
-    u8 _30[0x34 - 0x30];
-    s16 x34;
+    char pad30[4];
+    u16 x34;
 } OBJ;
 
-void func_800459A0(OBJ *o) {
+void func_8004676C(OBJ *o) {
     o->x2E = -0x28;
     o->x34 = 5;
     o->x8 = o->x8 + 1;

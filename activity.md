@@ -947,3 +947,23 @@
   `Pl00_shot_enable_on` must return `unknown_t` — void or s32 changes codegen.
 - Model note: sonnet 18/18 on small engine functions, zero false passes, and it correctly
   flagged where bytecmp itself could not decide.
+
+## 2026-07-29 (playbook wave 2)
+- **+15 engine matches in ONE build cycle (424 -> 439).** audit_count verified: hash OK,
+  raw cmp byte-identical, 205/205 overlays. Six agents x 3, **15/15 verified**, accumulated
+  then landed together.
+- **THE THIN-WRAPPER FAMILY is the best lane found so far.** 8-instruction bodies that just
+  tail-call another function; ~324 by skeleton, 33 known call sites to func_80031988 alone.
+  Two variants confirmed: pure pass-through (nop delay slot) and store-then-call (the
+  delay-slot store comes FIRST in C). An agent is enumerating the rest.
+- `func_800153CC` landed — its body appears **145 times** game-wide.
+- New idioms recorded by agents:
+  * A negative constant into a `u16` field emits `ori`; an `s16` field emits `addiu`.
+    Field signedness is load-bearing.
+  * Not every symbol is in the gp census — some correctly compile to lui/$at from a plain
+    `extern s32`. Check the asm rather than assuming the array form.
+  * `func_8002DE04`: both args must be `s32`, not pointers. A pointer arg makes gcc
+    accumulate in $a0 instead of $a1 and three instructions come out wrong.
+- **New landing trap:** agents include `typedef ... s32;` style base-type definitions,
+  which collide with include/types.h. The landing pass now strips typedefs of primitive
+  types while keeping struct typedefs.
